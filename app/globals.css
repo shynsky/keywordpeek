@@ -26,6 +26,7 @@
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-accent-secondary: var(--accent-secondary);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -43,7 +44,7 @@
   --color-score-hard: var(--score-hard);
   --color-credit: var(--credit);
 
-  /* Radii */
+  /* Radii - chunky for Playful Pro */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -59,111 +60,150 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 1rem;  /* 16px base - chunky */
 
-  /* KeywordPeek Light Theme - Warm & Confident */
-  --background: oklch(0.988 0.002 90);           /* Warm cream #FAFAF8 */
-  --foreground: oklch(0.15 0.01 285);            /* Deep charcoal #1A1A1F */
+  /* ============================================
+     PLAYFUL PRO - Soft Brutalist + Maximalist
+     Vibrant, confident, bold palette
+     ============================================ */
 
-  --card: oklch(0.995 0.001 90);                 /* Slightly brighter card */
-  --card-foreground: oklch(0.15 0.01 285);
+  --background: oklch(0.99 0.002 80);           /* Warm off-white #FFFDF9 */
+  --foreground: oklch(0.18 0.03 280);           /* Deep purple-black #1E1B2E */
 
-  --popover: oklch(0.995 0.001 90);
-  --popover-foreground: oklch(0.15 0.01 285);
+  --card: oklch(1 0 0);                          /* Pure white */
+  --card-foreground: oklch(0.18 0.03 280);
 
-  --primary: oklch(0.65 0.2 25);                 /* Punchy coral #FF6B4A */
-  --primary-foreground: oklch(0.995 0 0);        /* White */
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.03 280);
 
-  --secondary: oklch(0.96 0.005 90);             /* Warm light gray */
-  --secondary-foreground: oklch(0.25 0.01 285);
+  --primary: oklch(0.72 0.2 320);               /* Vibrant magenta #E879F9 */
+  --primary-foreground: oklch(0.18 0.03 280);   /* Dark text on magenta */
 
-  --muted: oklch(0.94 0.008 90);                 /* Muted warm */
-  --muted-foreground: oklch(0.5 0.01 285);
+  --secondary: oklch(0.96 0.01 80);             /* Warm cream */
+  --secondary-foreground: oklch(0.25 0.03 280);
 
-  --accent: oklch(0.65 0.2 25);                  /* Same coral accent */
-  --accent-foreground: oklch(0.995 0 0);
+  --muted: oklch(0.94 0.015 80);                /* Soft warm gray */
+  --muted-foreground: oklch(0.45 0.02 280);
 
-  --destructive: oklch(0.55 0.22 25);            /* Deeper red */
+  --accent: oklch(0.85 0.15 90);                /* Warm yellow #FCD34D */
+  --accent-foreground: oklch(0.18 0.03 280);
 
-  --border: oklch(0.9 0.01 90);                  /* Warm border */
-  --input: oklch(0.92 0.008 90);
-  --ring: oklch(0.65 0.2 25);                    /* Coral ring */
+  --accent-secondary: oklch(0.7 0.18 190);      /* Cyan #22D3D1 */
 
-  /* Keyword Score Colors */
-  --score-easy: oklch(0.7 0.18 145);             /* Fresh green */
-  --score-medium: oklch(0.75 0.15 75);           /* Amber */
-  --score-hard: oklch(0.6 0.2 25);               /* Coral/red */
-  --credit: oklch(0.6 0.15 280);                 /* Purple for credits */
+  --destructive: oklch(0.6 0.22 25);            /* Coral red */
 
-  /* Chart colors - vibrant but cohesive */
-  --chart-1: oklch(0.65 0.2 25);                 /* Coral */
-  --chart-2: oklch(0.7 0.18 145);                /* Green */
-  --chart-3: oklch(0.65 0.12 250);               /* Blue */
-  --chart-4: oklch(0.75 0.15 75);                /* Amber */
-  --chart-5: oklch(0.6 0.15 280);                /* Purple */
+  --border: oklch(0.9 0.02 280);                /* Purple-tinted gray */
+  --input: oklch(0.96 0.01 280);
+  --ring: oklch(0.72 0.2 320);                  /* Magenta ring */
 
-  /* Sidebar */
-  --sidebar: oklch(0.98 0.003 90);
-  --sidebar-foreground: oklch(0.15 0.01 285);
-  --sidebar-primary: oklch(0.65 0.2 25);
-  --sidebar-primary-foreground: oklch(0.995 0 0);
-  --sidebar-accent: oklch(0.94 0.01 90);
-  --sidebar-accent-foreground: oklch(0.2 0.01 285);
-  --sidebar-border: oklch(0.92 0.008 90);
-  --sidebar-ring: oklch(0.65 0.2 25);
+  /* Score colors - candy-like */
+  --score-easy: oklch(0.72 0.2 155);            /* Mint green */
+  --score-medium: oklch(0.8 0.18 85);           /* Sunny yellow */
+  --score-hard: oklch(0.68 0.22 20);            /* Coral pink */
+  --credit: oklch(0.72 0.2 320);                /* Matches primary magenta */
+
+  /* Chart colors - vibrant candy palette */
+  --chart-1: oklch(0.72 0.2 320);               /* Magenta */
+  --chart-2: oklch(0.7 0.18 190);               /* Cyan */
+  --chart-3: oklch(0.85 0.15 90);               /* Yellow */
+  --chart-4: oklch(0.72 0.2 155);               /* Mint */
+  --chart-5: oklch(0.68 0.22 20);               /* Coral */
+
+  /* Sidebar - subtle purple tint */
+  --sidebar: oklch(0.98 0.01 280);
+  --sidebar-foreground: oklch(0.18 0.03 280);
+  --sidebar-primary: oklch(0.72 0.2 320);
+  --sidebar-primary-foreground: oklch(0.18 0.03 280);
+  --sidebar-accent: oklch(0.94 0.02 280);
+  --sidebar-accent-foreground: oklch(0.2 0.03 280);
+  --sidebar-border: oklch(0.9 0.02 280);
+  --sidebar-ring: oklch(0.72 0.2 320);
+
+  /* Gradient definitions */
+  --gradient-primary: linear-gradient(135deg,
+    oklch(0.72 0.2 320) 0%,
+    oklch(0.65 0.22 280) 50%,
+    oklch(0.7 0.18 190) 100%
+  );
+  --gradient-accent: linear-gradient(135deg,
+    oklch(0.85 0.15 90) 0%,
+    oklch(0.72 0.2 320) 100%
+  );
+  --gradient-hero: linear-gradient(135deg,
+    oklch(0.72 0.2 320 / 0.15) 0%,
+    oklch(0.7 0.18 190 / 0.1) 50%,
+    oklch(0.85 0.15 90 / 0.15) 100%
+  );
 }
 
 .dark {
-  /* KeywordPeek Dark Theme - Deep & Bold */
-  --background: oklch(0.14 0.015 280);           /* Deep blue-black */
-  --foreground: oklch(0.95 0.005 90);            /* Warm white */
+  /* ============================================
+     PLAYFUL PRO - Dark Mode
+     Deep purple-black with bright accents
+     ============================================ */
 
-  --card: oklch(0.18 0.015 280);
-  --card-foreground: oklch(0.95 0.005 90);
+  --background: oklch(0.12 0.025 280);          /* Deep purple-black */
+  --foreground: oklch(0.95 0.01 80);            /* Warm white */
 
-  --popover: oklch(0.18 0.015 280);
-  --popover-foreground: oklch(0.95 0.005 90);
+  --card: oklch(0.16 0.025 280);
+  --card-foreground: oklch(0.95 0.01 80);
 
-  --primary: oklch(0.7 0.2 25);                  /* Brighter coral in dark */
-  --primary-foreground: oklch(0.12 0.01 280);
+  --popover: oklch(0.16 0.025 280);
+  --popover-foreground: oklch(0.95 0.01 80);
 
-  --secondary: oklch(0.22 0.015 280);
-  --secondary-foreground: oklch(0.92 0.005 90);
+  --primary: oklch(0.78 0.2 320);               /* Brighter magenta */
+  --primary-foreground: oklch(0.12 0.025 280);
 
-  --muted: oklch(0.25 0.015 280);
-  --muted-foreground: oklch(0.65 0.01 90);
+  --secondary: oklch(0.2 0.025 280);
+  --secondary-foreground: oklch(0.92 0.01 80);
 
-  --accent: oklch(0.7 0.2 25);
-  --accent-foreground: oklch(0.12 0.01 280);
+  --muted: oklch(0.22 0.025 280);
+  --muted-foreground: oklch(0.65 0.02 280);
 
-  --destructive: oklch(0.6 0.22 25);
+  --accent: oklch(0.88 0.15 90);                /* Brighter yellow */
+  --accent-foreground: oklch(0.12 0.025 280);
 
-  --border: oklch(0.28 0.015 280);
-  --input: oklch(0.25 0.015 280);
-  --ring: oklch(0.7 0.2 25);
+  --accent-secondary: oklch(0.75 0.18 190);     /* Brighter cyan */
 
-  /* Keyword Score Colors - brighter for dark mode */
-  --score-easy: oklch(0.75 0.18 145);
-  --score-medium: oklch(0.8 0.15 75);
-  --score-hard: oklch(0.65 0.2 25);
-  --credit: oklch(0.7 0.15 280);
+  --destructive: oklch(0.65 0.22 25);
+
+  --border: oklch(0.28 0.025 280);
+  --input: oklch(0.2 0.025 280);
+  --ring: oklch(0.78 0.2 320);
+
+  /* Score colors - brighter for dark mode */
+  --score-easy: oklch(0.78 0.2 155);
+  --score-medium: oklch(0.85 0.18 85);
+  --score-hard: oklch(0.72 0.22 20);
+  --credit: oklch(0.78 0.2 320);
 
   /* Chart colors */
-  --chart-1: oklch(0.7 0.2 25);
-  --chart-2: oklch(0.75 0.18 145);
-  --chart-3: oklch(0.7 0.15 250);
-  --chart-4: oklch(0.8 0.15 75);
-  --chart-5: oklch(0.7 0.15 280);
+  --chart-1: oklch(0.78 0.2 320);
+  --chart-2: oklch(0.75 0.18 190);
+  --chart-3: oklch(0.88 0.15 90);
+  --chart-4: oklch(0.78 0.2 155);
+  --chart-5: oklch(0.72 0.22 20);
 
   /* Sidebar */
-  --sidebar: oklch(0.16 0.015 280);
-  --sidebar-foreground: oklch(0.95 0.005 90);
-  --sidebar-primary: oklch(0.7 0.2 25);
-  --sidebar-primary-foreground: oklch(0.12 0.01 280);
-  --sidebar-accent: oklch(0.22 0.015 280);
-  --sidebar-accent-foreground: oklch(0.92 0.005 90);
-  --sidebar-border: oklch(0.28 0.015 280);
-  --sidebar-ring: oklch(0.7 0.2 25);
+  --sidebar: oklch(0.14 0.025 280);
+  --sidebar-foreground: oklch(0.95 0.01 80);
+  --sidebar-primary: oklch(0.78 0.2 320);
+  --sidebar-primary-foreground: oklch(0.12 0.025 280);
+  --sidebar-accent: oklch(0.2 0.025 280);
+  --sidebar-accent-foreground: oklch(0.92 0.01 80);
+  --sidebar-border: oklch(0.28 0.025 280);
+  --sidebar-ring: oklch(0.78 0.2 320);
+
+  --gradient-primary: linear-gradient(135deg,
+    oklch(0.78 0.2 320) 0%,
+    oklch(0.7 0.22 280) 50%,
+    oklch(0.75 0.18 190) 100%
+  );
+  --gradient-hero: linear-gradient(135deg,
+    oklch(0.78 0.2 320 / 0.2) 0%,
+    oklch(0.75 0.18 190 / 0.15) 50%,
+    oklch(0.88 0.15 90 / 0.2) 100%
+  );
 }
 
 @layer base {
@@ -177,16 +217,17 @@
     font-feature-settings: "cv11", "ss01", "ss03";
   }
 
-  /* Display typography for headings */
+  /* Display typography for headings - Outfit */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-family-display);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-weight: 700;
+    letter-spacing: -0.025em;
   }
 
-  /* Monospace for data/numbers */
+  /* Monospace for data/numbers - Fira Code */
   .font-mono, code, kbd, pre {
     font-family: var(--font-family-mono);
+    font-feature-settings: "liga" on, "calt" on;
   }
 
   /* Data numbers should be tabular */
@@ -195,60 +236,159 @@
   }
 }
 
-/* KeywordPeek specific utilities */
+/* ============================================
+   PLAYFUL PRO - Animation System
+   Bouncy, playful, delightful
+   ============================================ */
+
 @layer utilities {
-  /* Gradient text for hero */
-  .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(
-      135deg,
-      oklch(0.65 0.2 25) 0%,
-      oklch(0.7 0.18 40) 50%,
-      oklch(0.65 0.2 25) 100%
+  /* Bouncy spring easing */
+  .ease-bounce {
+    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .ease-out-back {
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  /* Squish effect for button clicks */
+  @keyframes squish {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+  }
+
+  .animate-squish {
+    animation: squish 0.15s ease-out;
+  }
+
+  /* Float animation for decorative elements */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(2deg); }
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float 4s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
+  .animate-float-slow {
+    animation: float 6s ease-in-out infinite;
+    animation-delay: 2s;
+  }
+
+  /* Bounce in animation */
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.3) translateY(20px);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05) translateY(-5px);
+    }
+    70% { transform: scale(0.95) translateY(2px); }
+    100% { transform: scale(1) translateY(0); }
+  }
+
+  .animate-bounce-in {
+    animation: bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    opacity: 0;
+  }
+
+  /* Pop animation for new items */
+  @keyframes pop {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .animate-pop {
+    animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Wiggle animation for attention */
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-3deg); }
+    75% { transform: rotate(3deg); }
+  }
+
+  .animate-wiggle {
+    animation: wiggle 0.3s ease-in-out;
+  }
+
+  /* Pulse glow for emphasis */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 0 0 oklch(0.72 0.2 320 / 0.4);
+    }
+    50% {
+      box-shadow: 0 0 20px 4px oklch(0.72 0.2 320 / 0.2);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Shimmer loading effect */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      oklch(0.94 0.015 80) 0%,
+      oklch(0.98 0.005 80) 50%,
+      oklch(0.94 0.015 80) 100%
     );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
   }
 
-  /* Subtle noise texture overlay */
-  .texture-noise {
-    position: relative;
-  }
-  .texture-noise::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    opacity: 0.03;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  .dark .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      oklch(0.22 0.025 280) 0%,
+      oklch(0.28 0.025 280) 50%,
+      oklch(0.22 0.025 280) 100%
+    );
+    background-size: 200% 100%;
   }
 
-  /* Score badge variants */
-  .score-easy {
-    @apply bg-score-easy/15 text-score-easy border-score-easy/30;
-  }
-  .score-medium {
-    @apply bg-score-medium/15 text-score-medium border-score-medium/30;
-  }
-  .score-hard {
-    @apply bg-score-hard/15 text-score-hard border-score-hard/30;
+  /* Gradient shift animation */
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
 
-  /* Credit display styling */
-  .credit-badge {
-    @apply bg-credit/10 text-credit border-credit/20;
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 4s ease infinite;
   }
 
-  /* Staggered animation delays */
-  .stagger-1 { animation-delay: 0.05s; }
-  .stagger-2 { animation-delay: 0.1s; }
-  .stagger-3 { animation-delay: 0.15s; }
-  .stagger-4 { animation-delay: 0.2s; }
-  .stagger-5 { animation-delay: 0.25s; }
+  /* Sparkle effect */
+  @keyframes sparkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .animate-sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
 
   /* Fade-in-up animation for data reveals */
   @keyframes fade-in-up {
     from {
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(16px);
     }
     to {
       opacity: 1;
@@ -257,9 +397,36 @@
   }
 
   .animate-fade-in-up {
-    animation: fade-in-up 0.4s ease-out forwards;
+    animation: fade-in-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     opacity: 0;
   }
+
+  /* Slide in from left */
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    opacity: 0;
+  }
+
+  /* Staggered animation delays */
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+  .stagger-6 { animation-delay: 0.3s; }
+  .stagger-7 { animation-delay: 0.35s; }
+  .stagger-8 { animation-delay: 0.4s; }
 
   /* Subtle pulse for emphasis */
   @keyframes subtle-pulse {
@@ -272,40 +439,242 @@
   }
 }
 
-/* Selection styling */
-::selection {
-  background-color: oklch(0.65 0.2 25 / 0.25);
+/* ============================================
+   PLAYFUL PRO - Gradient Utilities
+   ============================================ */
+
+@layer utilities {
+  /* Primary gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg,
+      oklch(0.72 0.2 320) 0%,
+      oklch(0.65 0.22 280) 40%,
+      oklch(0.7 0.18 190) 100%
+    );
+  }
+
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg,
+      oklch(0.85 0.15 90) 0%,
+      oklch(0.72 0.2 320) 100%
+    );
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-card {
+    background: linear-gradient(
+      135deg,
+      oklch(1 0 0) 0%,
+      oklch(0.98 0.01 320 / 0.3) 100%
+    );
+  }
+
+  .dark .bg-gradient-card {
+    background: linear-gradient(
+      135deg,
+      oklch(0.16 0.025 280) 0%,
+      oklch(0.2 0.03 320 / 0.3) 100%
+    );
+  }
+
+  /* Gradient borders */
+  .border-gradient {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--background), var(--background)) padding-box,
+      var(--gradient-primary) border-box;
+  }
 }
 
-/* Focus visible styling */
+/* ============================================
+   PLAYFUL PRO - Visual Effects
+   ============================================ */
+
+@layer utilities {
+  /* Subtle grain texture overlay */
+  .texture-noise {
+    position: relative;
+  }
+  .texture-noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* Blur blob decorations */
+  .blob-magenta {
+    background: radial-gradient(
+      circle at center,
+      oklch(0.72 0.2 320 / 0.3) 0%,
+      transparent 70%
+    );
+    filter: blur(60px);
+  }
+
+  .blob-cyan {
+    background: radial-gradient(
+      circle at center,
+      oklch(0.7 0.18 190 / 0.3) 0%,
+      transparent 70%
+    );
+    filter: blur(60px);
+  }
+
+  .blob-yellow {
+    background: radial-gradient(
+      circle at center,
+      oklch(0.85 0.15 90 / 0.3) 0%,
+      transparent 70%
+    );
+    filter: blur(60px);
+  }
+
+  /* Color-tinted shadows (not gray) */
+  .shadow-playful {
+    box-shadow:
+      0 4px 6px -1px oklch(0.72 0.2 320 / 0.1),
+      0 2px 4px -2px oklch(0.72 0.2 320 / 0.1);
+  }
+
+  .shadow-playful-lg {
+    box-shadow:
+      0 10px 15px -3px oklch(0.72 0.2 320 / 0.15),
+      0 4px 6px -4px oklch(0.72 0.2 320 / 0.1);
+  }
+
+  .shadow-playful-xl {
+    box-shadow:
+      0 20px 25px -5px oklch(0.72 0.2 320 / 0.15),
+      0 8px 10px -6px oklch(0.72 0.2 320 / 0.1);
+  }
+
+  /* 3D tilt hover effect */
+  .hover-tilt {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+  }
+
+  .hover-tilt:hover {
+    transform: perspective(1000px) rotateX(-2deg) rotateY(2deg) translateY(-4px);
+  }
+
+  /* Scale hover */
+  .hover-scale {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* Glow effect on hover */
+  .hover-glow {
+    transition: box-shadow 0.3s ease;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 24px oklch(0.72 0.2 320 / 0.3);
+  }
+}
+
+/* ============================================
+   PLAYFUL PRO - Semantic Score & Credit Badges
+   ============================================ */
+
+@layer utilities {
+  /* Score badge variants - candy-like */
+  .score-easy {
+    @apply bg-score-easy/20 text-score-easy border-2 border-score-easy/40;
+  }
+  .score-medium {
+    @apply bg-score-medium/20 text-score-medium border-2 border-score-medium/40;
+  }
+  .score-hard {
+    @apply bg-score-hard/20 text-score-hard border-2 border-score-hard/40;
+  }
+
+  /* Credit display styling */
+  .credit-badge {
+    @apply bg-credit/15 text-credit border-2 border-credit/30;
+  }
+}
+
+/* ============================================
+   PLAYFUL PRO - Interactive States
+   ============================================ */
+
+/* Selection styling */
+::selection {
+  background-color: oklch(0.72 0.2 320 / 0.3);
+}
+
+/* Focus visible styling - thick and colorful */
 :focus-visible {
-  outline: 2px solid oklch(0.65 0.2 25);
+  outline: 3px solid oklch(0.72 0.2 320);
   outline-offset: 2px;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - chunky and colorful */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: oklch(0.96 0.01 280);
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.7 0.01 90);
-  border-radius: 4px;
+  background: linear-gradient(
+    180deg,
+    oklch(0.72 0.2 320) 0%,
+    oklch(0.65 0.22 280) 100%
+  );
+  border-radius: 5px;
+  border: 2px solid oklch(0.96 0.01 280);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.6 0.01 90);
+  background: linear-gradient(
+    180deg,
+    oklch(0.78 0.2 320) 0%,
+    oklch(0.7 0.22 280) 100%
+  );
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: oklch(0.16 0.025 280);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: oklch(0.35 0.015 280);
+  background: linear-gradient(
+    180deg,
+    oklch(0.78 0.2 320) 0%,
+    oklch(0.7 0.22 280) 100%
+  );
+  border-color: oklch(0.16 0.025 280);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.45 0.015 280);
+  background: linear-gradient(
+    180deg,
+    oklch(0.82 0.2 320) 0%,
+    oklch(0.75 0.22 280) 100%
+  );
 }

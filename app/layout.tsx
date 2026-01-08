@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { DM_Sans, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Outfit, Manrope, Fira_Code } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const manrope = Manrope({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const outfit = Outfit({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const firaCode = Fira_Code({
   variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${dmSans.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${manrope.variable} ${outfit.variable} ${firaCode.variable} antialiased`}
       >
         {children}
         <Toaster position="bottom-right" richColors />

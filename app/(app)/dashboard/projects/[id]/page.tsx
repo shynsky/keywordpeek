@@ -11,6 +11,8 @@ import {
   Trash2,
   Loader2,
   Search,
+  FolderOpen,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -199,8 +201,13 @@ export default function ProjectDetailPage({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-20">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-playful animate-pulse-glow">
+            <FolderOpen className="h-8 w-8 text-white" />
+          </div>
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
       </div>
     );
   }
@@ -212,38 +219,46 @@ export default function ProjectDetailPage({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between animate-fade-in-up">
         <div>
           <Link
             href="/dashboard/projects"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-2"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-4 group"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             Back to projects
           </Link>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-display font-semibold">{project.name}</h1>
-            {project.domain && (
-              <a
-                href={`https://${project.domain}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-              >
-                {project.domain}
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            )}
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-14 h-14 rounded-xl bg-gradient-primary flex items-center justify-center shadow-playful">
+              <FolderOpen className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">{project.name}</h1>
+              {project.domain && (
+                <a
+                  href={`https://${project.domain}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
+                >
+                  {project.domain}
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              )}
+            </div>
           </div>
-          <p className="text-muted-foreground mt-1">
-            {keywords.length} saved keyword{keywords.length !== 1 ? "s" : ""}
+          <p className="text-muted-foreground text-lg mt-3">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
+              <span>🔑</span>
+              {keywords.length} saved keyword{keywords.length !== 1 ? "s" : ""}
+            </span>
           </p>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
-              <MoreHorizontal className="h-4 w-4" />
+            <Button variant="outline" size="icon" className="rounded-xl h-11 w-11">
+              <MoreHorizontal className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -279,18 +294,18 @@ export default function ProjectDetailPage({
 
       {/* Filters */}
       {keywords.length > 0 && (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border-2 border-border animate-fade-in-up stagger-1">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="Search keywords..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-12"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -309,21 +324,26 @@ export default function ProjectDetailPage({
 
       {/* Keywords table */}
       {keywords.length > 0 ? (
-        <KeywordTable keywords={keywordData} />
+        <div className="animate-fade-in-up stagger-2">
+          <KeywordTable keywords={keywordData} />
+        </div>
       ) : (
-        <div className="text-center py-16 border rounded-lg bg-card">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-muted mb-6">
-            <Search className="h-8 w-8 text-muted-foreground" />
+        <div className="text-center py-20 border-2 border-border rounded-2xl bg-card animate-fade-in-up stagger-2">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-primary mb-8 shadow-playful-lg animate-float">
+            <Search className="h-10 w-10 text-white" />
           </div>
-          <h2 className="text-xl font-display font-semibold mb-2">
+          <h2 className="text-2xl font-bold mb-3">
             No keywords saved yet
           </h2>
-          <p className="text-muted-foreground max-w-md mx-auto mb-6">
+          <p className="text-muted-foreground text-lg max-w-md mx-auto mb-8">
             Search for keywords and save them to this project to track your
             research.
           </p>
-          <Button asChild>
-            <Link href="/dashboard">Start researching</Link>
+          <Button variant="gradient" size="lg" asChild className="gap-2">
+            <Link href="/dashboard">
+              <Sparkles className="h-5 w-5" />
+              Start researching
+            </Link>
           </Button>
         </div>
       )}

@@ -9,7 +9,8 @@ import { ProjectSelector, type Project } from "@/components/project-selector";
 import { LowCreditWarning } from "@/components/credit-display";
 import { createClient } from "@/lib/supabase/client";
 import type { Json } from "@/lib/supabase/types";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Target, TrendingUp, Coins, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const [keywords, setKeywords] = useState<KeywordData[]>([]);
@@ -174,10 +175,13 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-display font-semibold">Keyword Research</h1>
-        <p className="text-muted-foreground mt-1">
-          Enter keywords to get search volume, difficulty, and CPC data.
+      <div className="animate-fade-in-up">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-3xl">🔍</span>
+          <h1 className="text-3xl font-bold">Keyword Research</h1>
+        </div>
+        <p className="text-muted-foreground text-lg">
+          Enter keywords to discover search volume, difficulty, and CPC data.
         </p>
       </div>
 
@@ -185,30 +189,41 @@ export default function DashboardPage() {
       {credits !== null && <LowCreditWarning credits={credits} />}
 
       {/* Search */}
-      <KeywordSearch
-        onSearch={handleSearch}
-        isLoading={isLoading}
-        placeholder="Enter keywords (e.g., seo tools, keyword research, content marketing)"
-      />
+      <div className="animate-fade-in-up stagger-1">
+        <KeywordSearch
+          onSearch={handleSearch}
+          isLoading={isLoading}
+          placeholder="Enter keywords (e.g., seo tools, keyword research, content marketing)"
+        />
+      </div>
 
       {/* Error display */}
       {error && (
-        <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive">
-          {error}
+        <div className="p-5 rounded-2xl bg-destructive/10 border-2 border-destructive/30 text-destructive flex items-start gap-4 animate-bounce-in">
+          <div className="p-2 rounded-xl bg-destructive/20">
+            <AlertCircle className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="font-bold">Oops! Something went wrong</p>
+            <p className="text-sm opacity-90">{error}</p>
+          </div>
         </div>
       )}
 
       {/* Results section */}
       {(keywords.length > 0 || isLoading) && (
-        <div className="space-y-4">
+        <div className="space-y-6 animate-fade-in-up stagger-2">
           {/* Toolbar */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h2 className="text-lg font-medium">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-muted/50 border-2 border-border">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-primary/15">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              <h2 className="text-lg font-bold">
                 {isLoading ? "Searching..." : `${keywords.length} keywords found`}
               </h2>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <ProjectSelector
                 projects={projects}
                 selectedProjectId={selectedProjectId}
@@ -232,39 +247,60 @@ export default function DashboardPage() {
 
       {/* Empty state */}
       {!isLoading && keywords.length === 0 && (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/20 mb-6">
-            <Sparkles className="h-8 w-8 text-accent" />
+        <div className="text-center py-20 animate-fade-in-up stagger-2">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-primary mb-8 shadow-playful-lg animate-float">
+            <Sparkles className="h-10 w-10 text-white" />
           </div>
-          <h2 className="text-xl font-display font-semibold mb-2">
+          <h2 className="text-2xl font-bold mb-3">
             Start your research
           </h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
+          <p className="text-muted-foreground text-lg max-w-md mx-auto mb-10">
             Enter one or more keywords above to get search volume, difficulty scores,
             and CPC data. Separate multiple keywords with commas.
           </p>
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto text-left">
-            <div className="p-4 rounded-lg bg-card border">
-              <div className="text-2xl mb-2">🎯</div>
-              <h3 className="font-medium mb-1">Keyword Score</h3>
-              <p className="text-sm text-muted-foreground">
-                Our 0-100 score helps you quickly identify the best opportunities.
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-card border">
-              <div className="text-2xl mb-2">📊</div>
-              <h3 className="font-medium mb-1">Trend Data</h3>
-              <p className="text-sm text-muted-foreground">
-                See 12-month search trends to spot seasonal patterns.
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-card border">
-              <div className="text-2xl mb-2">💰</div>
-              <h3 className="font-medium mb-1">Pay-as-you-go</h3>
-              <p className="text-sm text-muted-foreground">
-                Only pay for what you use. No monthly subscriptions.
-              </p>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            {[
+              {
+                emoji: "🎯",
+                icon: Target,
+                title: "Keyword Score",
+                description: "Our 0-100 score helps you quickly identify the best opportunities.",
+                color: "bg-primary/15 text-primary border-primary/30",
+              },
+              {
+                emoji: "📈",
+                icon: TrendingUp,
+                title: "Trend Data",
+                description: "See 12-month search trends to spot seasonal patterns.",
+                color: "bg-score-easy/15 text-score-easy border-score-easy/30",
+              },
+              {
+                emoji: "💰",
+                icon: Coins,
+                title: "Pay-as-you-go",
+                description: "Only pay for what you use. No monthly subscriptions.",
+                color: "bg-accent/20 text-accent-foreground border-accent/40",
+              },
+            ].map((feature, i) => (
+              <div
+                key={feature.title}
+                className={cn(
+                  "p-6 rounded-2xl bg-card border-2 text-left transition-all duration-300 hover:shadow-playful-lg hover:-translate-y-1 animate-bounce-in",
+                )}
+                style={{ animationDelay: `${0.3 + i * 0.1}s` }}
+              >
+                <div
+                  className={cn(
+                    "w-12 h-12 rounded-xl border-2 flex items-center justify-center mb-4",
+                    feature.color
+                  )}
+                >
+                  <feature.icon className="h-6 w-6" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}

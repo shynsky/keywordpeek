@@ -40,8 +40,8 @@ function calculateTrend(data: TrendData[]): "up" | "down" | "stable" {
 
 export function TrendSparkline({
   data,
-  width = 80,
-  height = 24,
+  width = 100,
+  height = 32,
   showTrendIndicator = true,
   className,
 }: TrendSparklineProps) {
@@ -63,7 +63,7 @@ export function TrendSparkline({
   const range = maxVolume - minVolume || 1;
 
   // Generate SVG path
-  const padding = 2;
+  const padding = 3;
   const chartWidth = width - padding * 2;
   const chartHeight = height - padding * 2;
 
@@ -76,14 +76,27 @@ export function TrendSparkline({
 
   const pathD = `M ${points.join(" L ")}`;
 
-  // Gradient colors based on trend
+  // Gradient IDs
   const gradientId = `gradient-${Math.random().toString(36).slice(2)}`;
-  const strokeColor =
-    trend === "up"
-      ? "var(--score-easy)"
-      : trend === "down"
-        ? "var(--score-hard)"
-        : "var(--muted-foreground)";
+  const lineGradientId = `line-gradient-${Math.random().toString(36).slice(2)}`;
+
+  // Dynamic colors based on trend
+  const colors = {
+    up: {
+      start: "oklch(0.72 0.2 155)",
+      end: "oklch(0.7 0.18 190)",
+    },
+    down: {
+      start: "oklch(0.68 0.22 20)",
+      end: "oklch(0.72 0.2 320)",
+    },
+    stable: {
+      start: "oklch(0.72 0.2 320)",
+      end: "oklch(0.7 0.18 190)",
+    },
+  };
+
+  const { start, end } = colors[trend];
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
@@ -94,9 +107,15 @@ export function TrendSparkline({
         aria-label="Search volume trend"
       >
         <defs>
+          {/* Area gradient */}
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={strokeColor} stopOpacity="0.3" />
-            <stop offset="100%" stopColor={strokeColor} stopOpacity="0" />
+            <stop offset="0%" stopColor={start} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={end} stopOpacity="0.05" />
+          </linearGradient>
+          {/* Line gradient */}
+          <linearGradient id={lineGradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={start} />
+            <stop offset="100%" stopColor={end} />
           </linearGradient>
         </defs>
 
@@ -104,19 +123,32 @@ export function TrendSparkline({
         <path
           d={`${pathD} L ${width - padding},${height - padding} L ${padding},${height - padding} Z`}
           fill={`url(#${gradientId})`}
+          className="transition-all duration-500"
         />
 
-        {/* Line */}
+        {/* Line with gradient */}
         <path
           d={pathD}
           fill="none"
-          stroke={strokeColor}
-          strokeWidth="1.5"
+          stroke={`url(#${lineGradientId})`}
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
+          className="transition-all duration-500"
         />
 
-        {/* End dot */}
+        {/* End dot with glow */}
+        <circle
+          cx={width - padding}
+          cy={
+            padding +
+            chartHeight -
+            ((volumes[volumes.length - 1] - minVolume) / range) * chartHeight
+          }
+          r="4"
+          fill={end}
+          className="animate-pulse-glow"
+        />
         <circle
           cx={width - padding}
           cy={
@@ -125,7 +157,7 @@ export function TrendSparkline({
             ((volumes[volumes.length - 1] - minVolume) / range) * chartHeight
           }
           r="2"
-          fill={strokeColor}
+          fill="white"
         />
       </svg>
 
@@ -150,12 +182,17 @@ export function TrendIndicator({
   size = "md",
   className,
 }: TrendIndicatorProps) {
-  const iconSize = size === "sm" ? "h-3 w-3" : "h-4 w-4";
+  const iconSize = size === "sm" ? "h-4 w-4" : "h-5 w-5";
+  const wrapperSize = size === "sm" ? "p-1" : "p-1.5";
 
   if (trend === "up") {
     return (
       <div
-        className={cn("text-score-easy", className)}
+        className={cn(
+          "rounded-lg bg-score-easy/20 text-score-easy transition-all duration-200 hover:scale-110",
+          wrapperSize,
+          className
+        )}
         title="Trending up"
       >
         <TrendingUp className={iconSize} />
@@ -166,7 +203,11 @@ export function TrendIndicator({
   if (trend === "down") {
     return (
       <div
-        className={cn("text-score-hard", className)}
+        className={cn(
+          "rounded-lg bg-score-hard/20 text-score-hard transition-all duration-200 hover:scale-110",
+          wrapperSize,
+          className
+        )}
         title="Trending down"
       >
         <TrendingDown className={iconSize} />
@@ -176,7 +217,11 @@ export function TrendIndicator({
 
   return (
     <div
-      className={cn("text-muted-foreground", className)}
+      className={cn(
+        "rounded-lg bg-muted text-muted-foreground transition-all duration-200 hover:scale-110",
+        wrapperSize,
+        className
+      )}
       title="Stable"
     >
       <Minus className={iconSize} />
@@ -211,17 +256,17 @@ export function TrendChange({ data, className }: TrendChangeProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-1 text-sm font-medium",
-        isPositive && "text-score-easy",
-        isNegative && "text-score-hard",
-        !isPositive && !isNegative && "text-muted-foreground",
+        "flex items-center gap-1.5 text-sm font-bold px-2 py-1 rounded-lg transition-all duration-200 hover:scale-105",
+        isPositive && "text-score-easy bg-score-easy/15",
+        isNegative && "text-score-hard bg-score-hard/15",
+        !isPositive && !isNegative && "text-muted-foreground bg-muted",
         className
       )}
     >
-      {isPositive && <TrendingUp className="h-3 w-3" />}
-      {isNegative && <TrendingDown className="h-3 w-3" />}
-      {!isPositive && !isNegative && <Minus className="h-3 w-3" />}
-      <span className="tabular-nums">
+      {isPositive && <TrendingUp className="h-3.5 w-3.5" />}
+      {isNegative && <TrendingDown className="h-3.5 w-3.5" />}
+      {!isPositive && !isNegative && <Minus className="h-3.5 w-3.5" />}
+      <span className="tabular-nums font-mono">
         {isPositive && "+"}
         {change.toFixed(0)}%
       </span>
