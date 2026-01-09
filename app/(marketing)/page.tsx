@@ -338,20 +338,20 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
-          <hr className="section-divider mb-12 max-w-md mx-auto" />
-
+      <section className="bg-card">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <RevealOnScroll>
-            <p className="text-xl mb-8">
-              Ready? 50 free credits. No credit card.
-            </p>
+            <div className="text-center">
+              <p className="text-2xl sm:text-3xl font-bold mb-8">
+                Ready? 50 free credits. No credit card.
+              </p>
 
-            <Button size="lg" variant="primary" asChild className="group">
-              <Link href="/auth/signup">
-                Start Free <span className="arrow-shift">→</span>
-              </Link>
-            </Button>
+              <Button size="lg" variant="primary" asChild className="group">
+                <Link href="/auth/signup">
+                  Start Free <span className="arrow-shift">→</span>
+                </Link>
+              </Button>
+            </div>
           </RevealOnScroll>
         </div>
       </section>

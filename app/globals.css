@@ -520,7 +520,8 @@
 }
 
 .faq-item:first-child {
-  border-top: 1px solid var(--border);
+  /* No border-top - section-divider handles this */
+  padding-top: 0;
 }
 
 .faq-question {
