@@ -21,24 +21,30 @@ export const CREDIT_PACKAGES = {
     priceDisplay: "$9",
     perKeyword: "$0.009",
     popular: false,
+    tagline: "Test the waters",
+    savings: null,
   },
   growth: {
     id: "growth",
     name: "Growth",
-    credits: 3000,
-    price: 1900, // $19.00 in cents
-    priceDisplay: "$19",
-    perKeyword: "$0.006",
+    credits: 5000,
+    price: 2400, // $24.00 in cents
+    priceDisplay: "$24",
+    perKeyword: "$0.0048",
     popular: true,
+    tagline: "Most users choose this",
+    savings: "Save 47%",
   },
   pro: {
     id: "pro",
     name: "Pro",
-    credits: 10000,
-    price: 4900, // $49.00 in cents
-    priceDisplay: "$49",
-    perKeyword: "$0.005",
+    credits: 12000,
+    price: 7900, // $79.00 in cents
+    priceDisplay: "$79",
+    perKeyword: "$0.0066",
     popular: false,
+    tagline: "For agencies",
+    savings: null,
   },
 } as const;
 

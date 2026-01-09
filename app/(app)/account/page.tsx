@@ -23,22 +23,28 @@ const PACKAGES = [
     price: "$9",
     perKeyword: "$0.009",
     popular: false,
+    tagline: "Test the waters",
+    savings: null,
   },
   {
     id: "growth",
     name: "Growth",
-    credits: 3000,
-    price: "$19",
-    perKeyword: "$0.006",
+    credits: 5000,
+    price: "$24",
+    perKeyword: "$0.0048",
     popular: true,
+    tagline: "Most users choose this",
+    savings: "Save 47%",
   },
   {
     id: "pro",
     name: "Pro",
-    credits: 10000,
-    price: "$49",
-    perKeyword: "$0.005",
+    credits: 12000,
+    price: "$79",
+    perKeyword: "$0.0066",
     popular: false,
+    tagline: "For agencies",
+    savings: null,
   },
 ];
 
@@ -234,51 +240,88 @@ export default function AccountPage() {
       {/* Pricing section */}
       <div className="space-y-4">
         <h2 className="text-lg font-display font-semibold">Buy Credits</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:items-center">
           {PACKAGES.map((pkg) => (
             <div
               key={pkg.id}
               className={cn(
-                "relative p-6 rounded-xl border bg-card",
-                pkg.popular && "border-accent ring-2 ring-accent/20"
+                "relative p-6 border-2 bg-card",
+                pkg.popular
+                  ? "border-foreground bg-foreground text-background md:scale-105 md:z-10 md:py-8"
+                  : "border-border"
               )}
             >
               {pkg.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-medium">
-                    Most Popular
-                  </span>
+                <div className="absolute -top-px left-0 right-0 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-1.5 text-center">
+                  Best Value
                 </div>
               )}
 
               <div className="text-center mb-6">
-                <h3 className="font-display font-semibold text-lg">{pkg.name}</h3>
-                <div className="mt-2">
-                  <span className="text-4xl font-display font-bold">{pkg.price}</span>
+                <h3 className="font-bold text-lg uppercase tracking-wide">{pkg.name}</h3>
+                <p className={cn(
+                  "text-sm mt-1",
+                  pkg.popular ? "text-background/70" : "text-muted-foreground"
+                )}>
+                  {pkg.tagline}
+                </p>
+                <div className="mt-4">
+                  <span className={cn(
+                    "font-mono font-bold",
+                    pkg.popular ? "text-5xl" : "text-4xl"
+                  )}>
+                    {pkg.price}
+                  </span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className={cn(
+                  "text-sm mt-2",
+                  pkg.popular ? "text-background/70" : "text-muted-foreground"
+                )}>
                   {pkg.perKeyword} per keyword
                 </p>
+                {pkg.savings && (
+                  <p className="mt-2 text-sm font-bold bg-primary text-primary-foreground py-1 px-3 inline-block">
+                    {pkg.savings}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-score-easy" />
+                <div className={cn(
+                  "flex items-center gap-2 text-sm",
+                  pkg.popular && "text-background"
+                )}>
+                  <Check className={cn(
+                    "h-4 w-4",
+                    pkg.popular ? "text-primary" : "text-score-easy"
+                  )} />
                   <span>{pkg.credits.toLocaleString()} credits</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-score-easy" />
+                <div className={cn(
+                  "flex items-center gap-2 text-sm",
+                  pkg.popular && "text-background"
+                )}>
+                  <Check className={cn(
+                    "h-4 w-4",
+                    pkg.popular ? "text-primary" : "text-score-easy"
+                  )} />
                   <span>Never expires</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-score-easy" />
+                <div className={cn(
+                  "flex items-center gap-2 text-sm",
+                  pkg.popular && "text-background"
+                )}>
+                  <Check className={cn(
+                    "h-4 w-4",
+                    pkg.popular ? "text-primary" : "text-score-easy"
+                  )} />
                   <span>Full keyword data</span>
                 </div>
               </div>
 
               <Button
                 className="w-full"
-                variant={pkg.popular ? "default" : "outline"}
+                variant={pkg.popular ? "primary" : "outline"}
                 onClick={() => handlePurchase(pkg.id)}
                 disabled={purchasingPackage !== null}
               >
@@ -287,6 +330,8 @@ export default function AccountPage() {
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Redirecting...
                   </>
+                ) : pkg.popular ? (
+                  "Get Best Value"
                 ) : (
                   `Buy ${pkg.name}`
                 )}

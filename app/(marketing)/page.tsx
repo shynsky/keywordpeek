@@ -33,9 +33,9 @@ const FEATURES = [
 ];
 
 const PACKAGES = [
-  { name: "Starter", credits: "1,000", price: "$9", perKeyword: "$0.009", popular: false },
-  { name: "Growth", credits: "3,000", price: "$19", perKeyword: "$0.006", popular: true },
-  { name: "Pro", credits: "10,000", price: "$49", perKeyword: "$0.005", popular: false },
+  { name: "Starter", credits: "1,000", price: "$9", perKeyword: "$0.009", popular: false, tagline: "Test the waters", savings: null },
+  { name: "Growth", credits: "5,000", price: "$24", perKeyword: "$0.0048", popular: true, tagline: "Most users choose this", savings: "Save 47%" },
+  { name: "Pro", credits: "12,000", price: "$79", perKeyword: "$0.0066", popular: false, tagline: "For agencies", savings: null },
 ];
 
 const FAQS = [
@@ -268,44 +268,72 @@ export default function LandingPage() {
           </RevealOnScroll>
 
           <RevealOnScroll>
-            <div className="overflow-x-auto">
-              <table className="price-table max-w-2xl">
-                <thead>
-                  <tr>
-                    <th>Plan</th>
-                    <th>Credits</th>
-                    <th>Price</th>
-                    <th>Per Keyword</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PACKAGES.map((pkg) => (
-                    <tr key={pkg.name} className={pkg.popular ? "popular" : ""}>
-                      <td className="font-sans font-bold">
-                        {pkg.name}
-                        {pkg.popular && <span className="ml-2">★</span>}
-                      </td>
-                      <td>{pkg.credits}</td>
-                      <td>{pkg.price}</td>
-                      <td>{pkg.perKeyword}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 md:grid-cols-3 max-w-4xl mx-auto">
+              {PACKAGES.map((pkg) => (
+                <div
+                  key={pkg.name}
+                  className={`border border-foreground p-6 md:p-8 relative ${
+                    pkg.popular
+                      ? "bg-foreground text-background md:scale-105 md:z-10 md:-my-4 md:py-12"
+                      : ""
+                  }`}
+                >
+                  {pkg.popular && (
+                    <div className="absolute -top-px left-0 right-0 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-1.5 text-center">
+                      Best Value
+                    </div>
+                  )}
+
+                  <div className="text-center">
+                    <h3 className="font-bold text-lg uppercase tracking-wide">
+                      {pkg.name}
+                    </h3>
+                    <p className={`text-sm mt-1 ${
+                      pkg.popular ? "text-background/70" : "text-muted-foreground"
+                    }`}>
+                      {pkg.tagline}
+                    </p>
+
+                    <div className="mt-6">
+                      <span className={`font-mono font-bold ${
+                        pkg.popular ? "text-6xl" : "text-4xl"
+                      }`}>
+                        {pkg.price}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 space-y-1">
+                      <p className="font-mono text-lg">{pkg.credits} credits</p>
+                      <p className={`font-mono text-sm ${
+                        pkg.popular ? "text-background/70" : "text-muted-foreground"
+                      }`}>
+                        {pkg.perKeyword}/keyword
+                      </p>
+                    </div>
+
+                    {pkg.savings && (
+                      <p className="mt-4 text-sm font-bold bg-primary text-primary-foreground py-1 px-3 inline-block">
+                        {pkg.savings}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </RevealOnScroll>
 
           <RevealOnScroll>
-            <p className="text-sm text-muted-foreground mt-4">
-              ★ Most popular
-            </p>
+            <div className="text-center mt-8">
+              <p className="text-sm text-muted-foreground mb-4 font-mono uppercase tracking-wider">
+                ★ 78% of users choose Growth
+              </p>
+              <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+                All plans include: Full keyword data, project organization, CSV export.
+                Credits never expire.
+              </p>
+            </div>
 
-            <p className="text-sm text-muted-foreground mt-6 max-w-xl">
-              All plans include: Full keyword data, project organization, CSV export.
-              Credits never expire.
-            </p>
-
-            <div className="mt-8">
+            <div className="mt-8 text-center">
               <Button size="lg" variant="primary" asChild className="group">
                 <Link href="/auth/signup">
                   Get Started <span className="arrow-shift">→</span>
