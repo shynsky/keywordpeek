@@ -45,7 +45,7 @@ const FAQS = [
   },
   {
     q: "Where does the data come from?",
-    a: "DataForSEO — same source as enterprise tools.",
+    a: "Same source as enterprise tools like Ahrefs and SEMrush.",
   },
   {
     q: "Do credits expire?",
@@ -315,7 +315,7 @@ export default function LandingPage() {
               {/* Footer */}
               <div className="border-t-2 border-foreground px-4 py-2 text-xs text-muted-foreground flex justify-between">
                 <span>4 keywords | 4 credits used</span>
-                <span>Data: DataForSEO</span>
+                <span>Live data</span>
               </div>
             </div>
 
