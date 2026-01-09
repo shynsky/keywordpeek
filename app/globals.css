@@ -196,17 +196,34 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Typography - utilitarian */
+  /* Typography - utilitarian + bold */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-family-sans);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     text-transform: uppercase;
   }
 
-  h1 { font-size: 3rem; line-height: 1.1; }
-  h2 { font-size: 1.5rem; line-height: 1.2; }
-  h3 { font-size: 1.125rem; line-height: 1.3; }
+  h1 {
+    font-size: 3rem;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
 
   /* Monospace for data */
   .font-mono, code, kbd, pre {
@@ -539,11 +556,11 @@
    Motion = feedback, not decoration
    ============================================ */
 
-/* Scroll-triggered reveal animation */
+/* Scroll-triggered reveal animation - INSTANT */
 .reveal {
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 400ms ease-out, transform 400ms ease-out;
+  transform: translateY(8px);
+  transition: opacity 150ms linear, transform 150ms linear;
 }
 
 .reveal.visible {
@@ -551,27 +568,37 @@
   transform: translateY(0);
 }
 
-/* Stagger delays for children */
+/* Stagger delays for children - faster */
 .stagger > *:nth-child(1) { transition-delay: 0ms; }
-.stagger > *:nth-child(2) { transition-delay: 50ms; }
-.stagger > *:nth-child(3) { transition-delay: 100ms; }
-.stagger > *:nth-child(4) { transition-delay: 150ms; }
-.stagger > *:nth-child(5) { transition-delay: 200ms; }
-.stagger > *:nth-child(6) { transition-delay: 250ms; }
+.stagger > *:nth-child(2) { transition-delay: 30ms; }
+.stagger > *:nth-child(3) { transition-delay: 60ms; }
+.stagger > *:nth-child(4) { transition-delay: 90ms; }
+.stagger > *:nth-child(5) { transition-delay: 120ms; }
+.stagger > *:nth-child(6) { transition-delay: 150ms; }
 
-/* Arrow shift on hover (for CTAs) */
+/* Arrow shift on hover (for CTAs) - more pronounced */
 .arrow-shift {
   display: inline-block;
-  transition: transform 150ms ease-out;
+  transition: transform 100ms linear;
 }
 
 .group:hover .arrow-shift {
-  transform: translateX(4px);
+  transform: translateX(6px);
 }
 
 /* Smooth table row transitions */
 .price-table tr {
-  transition: background-color 150ms ease-out;
+  transition: background-color 100ms linear;
+}
+
+/* Hover inversion utility */
+.hover-invert {
+  transition: background-color 100ms linear, color 100ms linear;
+}
+
+.hover-invert:hover {
+  background-color: var(--foreground);
+  color: var(--background);
 }
 
 /* Reduced motion support */
