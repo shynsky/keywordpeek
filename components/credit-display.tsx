@@ -95,7 +95,7 @@ export function CreditDisplay({
         </div>
 
         {showBuyButton && (
-          <Button asChild variant="gradient" size="lg" className="mt-6 gap-2">
+          <Button asChild variant="primary" size="lg" className="mt-6 gap-2">
             <Link href="/account">
               <Sparkles className="h-5 w-5" />
               Buy More Credits
@@ -212,7 +212,7 @@ export function LowCreditWarning({ credits, className }: LowCreditWarningProps) 
         </div>
       </div>
       <Button
-        variant={isEmpty ? "gradient" : "outline"}
+        variant={isEmpty ? "primary" : "outline"}
         size="lg"
         asChild
         className={cn(

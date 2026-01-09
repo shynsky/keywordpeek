@@ -152,7 +152,7 @@ export function KeywordSearch({
             )}
             <Button
               type="submit"
-              variant="gradient"
+              variant="primary"
               disabled={keywords.length === 0 || isLoading}
               className="h-11 px-6 gap-2"
             >

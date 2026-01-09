@@ -195,7 +195,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             )}
             <Button
               asChild
-              variant="gradient"
+              variant="primary"
               className="w-full mt-4 gap-2"
             >
               <Link href="/account">

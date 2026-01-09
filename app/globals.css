@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -43,713 +42,414 @@
   --color-score-medium: var(--score-medium);
   --color-score-hard: var(--score-hard);
   --color-credit: var(--credit);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
 
-  /* Radii - chunky for Playful Pro */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  /* Radii - ZERO for brutalist */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
 
-  /* Typography - next/font injects CSS variables at runtime */
-  --font-family-sans: var(--font-sans, system-ui), sans-serif;
-  --font-family-display: var(--font-display, system-ui), sans-serif;
-  --font-family-mono: var(--font-mono, ui-monospace), monospace;
+  /* Typography */
+  --font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: var(--font-mono, ui-monospace, "SF Mono", "Cascadia Code", "Segoe UI Mono", monospace);
 }
 
 :root {
-  --radius: 1rem;  /* 16px base */
+  --radius: 0;  /* ZERO - no rounded corners */
 
   /* ============================================
-     FRIENDLY YET SOLID
-     Warm, approachable, professional
+     BRUTALIST DATA
+     Anti-design. Dense. Honest.
      ============================================ */
 
-  --background: oklch(0.985 0.008 85);          /* Warm cream #FDFBF7 */
-  --foreground: oklch(0.22 0.02 50);            /* Warm charcoal #2D2A26 */
+  --background: #F5F5F5;                        /* Off-white, almost gray */
+  --foreground: #000000;                        /* Pure black */
 
-  --card: oklch(0.995 0.003 85);                /* Near-white with warmth */
-  --card-foreground: oklch(0.22 0.02 50);
+  --card: #FFFFFF;
+  --card-foreground: #000000;
 
-  --popover: oklch(0.995 0.003 85);
-  --popover-foreground: oklch(0.22 0.02 50);
+  --popover: #FFFFFF;
+  --popover-foreground: #000000;
 
-  --primary: oklch(0.65 0.14 25);               /* Warm coral-rose #E07B6A */
-  --primary-foreground: oklch(0.98 0.005 85);   /* Warm white text */
+  --primary: #0066FF;                           /* Electric blue - accent */
+  --primary-foreground: #FFFFFF;
 
-  --secondary: oklch(0.96 0.008 75);            /* Warm cream */
-  --secondary-foreground: oklch(0.28 0.02 50);
+  --secondary: #E8E8E8;
+  --secondary-foreground: #000000;
 
-  --muted: oklch(0.95 0.01 75);                 /* Soft warm gray */
-  --muted-foreground: oklch(0.48 0.015 50);
+  --muted: #E0E0E0;
+  --muted-foreground: #666666;
 
-  --accent: oklch(0.7 0.08 150);                /* Muted sage green #7AB98F */
-  --accent-foreground: oklch(0.22 0.02 50);
+  --accent: #0066FF;
+  --accent-foreground: #FFFFFF;
 
-  --accent-secondary: oklch(0.78 0.12 70);      /* Soft amber #E5B86B */
+  --accent-secondary: #0066FF;
 
-  --destructive: oklch(0.55 0.18 25);           /* Deeper coral red */
+  --destructive: #CC0000;                       /* Red - problems */
 
-  --border: oklch(0.92 0.01 75);                /* Subtle warm border */
-  --input: oklch(0.96 0.008 75);
-  --ring: oklch(0.65 0.14 25);                  /* Coral ring */
+  --border: #000000;                            /* Black borders */
+  --input: #FFFFFF;
+  --ring: #0066FF;
 
-  /* Score colors - softened */
-  --score-easy: oklch(0.68 0.12 155);           /* Softer green */
-  --score-medium: oklch(0.75 0.1 75);           /* Softer amber */
-  --score-hard: oklch(0.62 0.14 20);            /* Softer coral */
-  --credit: oklch(0.65 0.14 25);                /* Matches primary coral */
+  /* Semantic colors */
+  --positive: #006600;                          /* Green - solutions */
+  --negative: #CC0000;                          /* Red - problems */
 
-  /* Chart colors - warm, muted palette */
-  --chart-1: oklch(0.65 0.14 25);               /* Coral */
-  --chart-2: oklch(0.7 0.08 150);               /* Sage */
-  --chart-3: oklch(0.78 0.12 70);               /* Amber */
-  --chart-4: oklch(0.68 0.12 155);              /* Soft green */
-  --chart-5: oklch(0.6 0.08 250);               /* Slate blue */
+  --score-easy: #006600;
+  --score-medium: #996600;
+  --score-hard: #CC0000;
+  --credit: #0066FF;
 
-  /* Sidebar - subtle warm tint */
-  --sidebar: oklch(0.98 0.008 75);
-  --sidebar-foreground: oklch(0.22 0.02 50);
-  --sidebar-primary: oklch(0.65 0.14 25);
-  --sidebar-primary-foreground: oklch(0.98 0.005 85);
-  --sidebar-accent: oklch(0.95 0.01 75);
-  --sidebar-accent-foreground: oklch(0.25 0.02 50);
-  --sidebar-border: oklch(0.92 0.01 75);
-  --sidebar-ring: oklch(0.65 0.14 25);
+  /* Chart colors - monochrome with accent */
+  --chart-1: #000000;
+  --chart-2: #333333;
+  --chart-3: #666666;
+  --chart-4: #999999;
+  --chart-5: #0066FF;
 
-  /* Gradient definitions - subtle and warm */
-  --gradient-primary: linear-gradient(135deg,
-    oklch(0.65 0.14 25) 0%,
-    oklch(0.6 0.12 35) 100%
-  );
-  --gradient-accent: linear-gradient(135deg,
-    oklch(0.78 0.12 70) 0%,
-    oklch(0.65 0.14 25) 100%
-  );
-  --gradient-hero: linear-gradient(135deg,
-    oklch(0.65 0.14 25 / 0.06) 0%,
-    oklch(0.7 0.08 150 / 0.04) 50%,
-    oklch(0.78 0.12 70 / 0.06) 100%
-  );
+  /* Sidebar */
+  --sidebar: #F5F5F5;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #0066FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E8E8E8;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #000000;
+  --sidebar-ring: #0066FF;
 }
 
 .dark {
   /* ============================================
-     FRIENDLY YET SOLID - Dark Mode
-     Deep warm charcoal with soft accents
+     BRUTALIST DATA - Dark Mode
      ============================================ */
 
-  --background: oklch(0.14 0.015 50);           /* Deep warm charcoal */
-  --foreground: oklch(0.94 0.008 85);           /* Warm off-white */
+  --background: #0A0A0A;
+  --foreground: #F5F5F5;
 
-  --card: oklch(0.18 0.015 50);
-  --card-foreground: oklch(0.94 0.008 85);
+  --card: #141414;
+  --card-foreground: #F5F5F5;
 
-  --popover: oklch(0.18 0.015 50);
-  --popover-foreground: oklch(0.94 0.008 85);
+  --popover: #141414;
+  --popover-foreground: #F5F5F5;
 
-  --primary: oklch(0.72 0.14 25);               /* Brighter coral */
-  --primary-foreground: oklch(0.14 0.015 50);
+  --primary: #3388FF;
+  --primary-foreground: #000000;
 
-  --secondary: oklch(0.22 0.015 50);
-  --secondary-foreground: oklch(0.92 0.008 85);
+  --secondary: #1A1A1A;
+  --secondary-foreground: #F5F5F5;
 
-  --muted: oklch(0.24 0.015 50);
-  --muted-foreground: oklch(0.62 0.015 50);
+  --muted: #1A1A1A;
+  --muted-foreground: #999999;
 
-  --accent: oklch(0.75 0.08 150);               /* Brighter sage */
-  --accent-foreground: oklch(0.14 0.015 50);
+  --accent: #3388FF;
+  --accent-foreground: #000000;
 
-  --accent-secondary: oklch(0.82 0.12 70);      /* Brighter amber */
+  --accent-secondary: #3388FF;
 
-  --destructive: oklch(0.62 0.18 25);
+  --destructive: #FF3333;
 
-  --border: oklch(0.28 0.015 50);
-  --input: oklch(0.22 0.015 50);
-  --ring: oklch(0.72 0.14 25);
+  --border: #F5F5F5;
+  --input: #1A1A1A;
+  --ring: #3388FF;
 
-  /* Score colors - brighter for dark mode */
-  --score-easy: oklch(0.75 0.12 155);
-  --score-medium: oklch(0.8 0.1 75);
-  --score-hard: oklch(0.68 0.14 20);
-  --credit: oklch(0.72 0.14 25);
+  --positive: #00CC00;
+  --negative: #FF3333;
 
-  /* Chart colors */
-  --chart-1: oklch(0.72 0.14 25);
-  --chart-2: oklch(0.75 0.08 150);
-  --chart-3: oklch(0.82 0.12 70);
-  --chart-4: oklch(0.75 0.12 155);
-  --chart-5: oklch(0.65 0.08 250);
+  --score-easy: #00CC00;
+  --score-medium: #FFCC00;
+  --score-hard: #FF3333;
+  --credit: #3388FF;
 
-  /* Sidebar */
-  --sidebar: oklch(0.16 0.015 50);
-  --sidebar-foreground: oklch(0.94 0.008 85);
-  --sidebar-primary: oklch(0.72 0.14 25);
-  --sidebar-primary-foreground: oklch(0.14 0.015 50);
-  --sidebar-accent: oklch(0.22 0.015 50);
-  --sidebar-accent-foreground: oklch(0.92 0.008 85);
-  --sidebar-border: oklch(0.28 0.015 50);
-  --sidebar-ring: oklch(0.72 0.14 25);
+  --chart-1: #F5F5F5;
+  --chart-2: #CCCCCC;
+  --chart-3: #999999;
+  --chart-4: #666666;
+  --chart-5: #3388FF;
 
-  --gradient-primary: linear-gradient(135deg,
-    oklch(0.72 0.14 25) 0%,
-    oklch(0.65 0.12 35) 100%
-  );
-  --gradient-hero: linear-gradient(135deg,
-    oklch(0.72 0.14 25 / 0.15) 0%,
-    oklch(0.75 0.08 150 / 0.1) 50%,
-    oklch(0.82 0.12 70 / 0.15) 100%
-  );
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #3388FF;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #1A1A1A;
+  --sidebar-accent-foreground: #F5F5F5;
+  --sidebar-border: #F5F5F5;
+  --sidebar-ring: #3388FF;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+    border-radius: 0 !important;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground;
     font-family: var(--font-family-sans);
-    font-feature-settings: "cv11", "ss01", "ss03";
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Display typography for headings - Outfit */
+  /* Typography - utilitarian */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-family-display);
+    font-family: var(--font-family-sans);
     font-weight: 700;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
   }
 
-  /* Monospace for data/numbers - Fira Code */
+  h1 { font-size: 3rem; line-height: 1.1; }
+  h2 { font-size: 1.5rem; line-height: 1.2; }
+  h3 { font-size: 1.125rem; line-height: 1.3; }
+
+  /* Monospace for data */
   .font-mono, code, kbd, pre {
     font-family: var(--font-family-mono);
-    font-feature-settings: "liga" on, "calt" on;
   }
 
-  /* Data numbers should be tabular */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
-}
 
-/* ============================================
-   FRIENDLY YET SOLID - Animation System
-   Smooth, polished, professional
-   ============================================ */
-
-@layer utilities {
-  /* Smooth easing - professional, not bouncy */
-  .ease-smooth {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Links - underlined by default */
+  a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
-  .ease-out-soft {
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  /* Keep for backwards compatibility but prefer smooth */
-  .ease-bounce {
-    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .ease-out-back {
-    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-
-  /* Squish effect for button clicks */
-  @keyframes squish {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(0.95); }
-  }
-
-  .animate-squish {
-    animation: squish 0.15s ease-out;
-  }
-
-  /* Float animation for decorative elements - gentle movement */
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-
-  @keyframes float-gentle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-  }
-
-  .animate-float {
-    animation: float 5s ease-in-out infinite;
-  }
-
-  .animate-float-gentle {
-    animation: float-gentle 6s ease-in-out infinite;
-  }
-
-  .animate-float-delayed {
-    animation: float 5s ease-in-out infinite;
-    animation-delay: 1s;
-  }
-
-  .animate-float-slow {
-    animation: float-gentle 8s ease-in-out infinite;
-    animation-delay: 2s;
-  }
-
-  /* Bounce in animation - softened */
-  @keyframes bounce-in {
-    0% {
-      opacity: 0;
-      transform: scale(0.9) translateY(12px);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-
-  /* Soft fade in - preferred for friendly aesthetic */
-  @keyframes fade-in-soft {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-bounce-in {
-    animation: bounce-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    opacity: 0;
-  }
-
-  .animate-fade-in-soft {
-    animation: fade-in-soft 0.5s ease-out forwards;
-    opacity: 0;
-  }
-
-  /* Pop animation for new items */
-  @keyframes pop {
-    0% { transform: scale(0); opacity: 0; }
-    70% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  .animate-pop {
-    animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  /* Wiggle animation for attention */
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-3deg); }
-    75% { transform: rotate(3deg); }
-  }
-
-  .animate-wiggle {
-    animation: wiggle 0.3s ease-in-out;
-  }
-
-  /* Pulse glow for emphasis - warm coral */
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 0 0 oklch(0.65 0.14 25 / 0.3);
-    }
-    50% {
-      box-shadow: 0 0 16px 3px oklch(0.65 0.14 25 / 0.15);
-    }
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2.5s ease-in-out infinite;
-  }
-
-  /* Shimmer loading effect - warm tones */
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
-  .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      oklch(0.95 0.01 75) 0%,
-      oklch(0.98 0.005 75) 50%,
-      oklch(0.95 0.01 75) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-
-  .dark .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      oklch(0.22 0.015 50) 0%,
-      oklch(0.28 0.015 50) 50%,
-      oklch(0.22 0.015 50) 100%
-    );
-    background-size: 200% 100%;
-  }
-
-  /* Gradient shift animation */
-  @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradient-shift 4s ease infinite;
-  }
-
-  /* Sparkle effect */
-  @keyframes sparkle {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  .animate-sparkle {
-    animation: sparkle 1.5s ease-in-out infinite;
-  }
-
-  /* Fade-in-up animation for data reveals - smooth */
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    opacity: 0;
-  }
-
-  /* Slide in from left - smooth */
-  @keyframes slide-in-left {
-    from {
-      opacity: 0;
-      transform: translateX(-16px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  .animate-slide-in-left {
-    animation: slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    opacity: 0;
-  }
-
-  /* Staggered animation delays */
-  .stagger-1 { animation-delay: 0.05s; }
-  .stagger-2 { animation-delay: 0.1s; }
-  .stagger-3 { animation-delay: 0.15s; }
-  .stagger-4 { animation-delay: 0.2s; }
-  .stagger-5 { animation-delay: 0.25s; }
-  .stagger-6 { animation-delay: 0.3s; }
-  .stagger-7 { animation-delay: 0.35s; }
-  .stagger-8 { animation-delay: 0.4s; }
-
-  /* Subtle pulse for emphasis */
-  @keyframes subtle-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-
-  .animate-subtle-pulse {
-    animation: subtle-pulse 2s ease-in-out infinite;
+  a:hover {
+    text-decoration-thickness: 2px;
   }
 }
 
 /* ============================================
-   FRIENDLY YET SOLID - Gradient Utilities
+   BRUTALIST - No animations, no effects
    ============================================ */
 
 @layer utilities {
-  /* Primary gradient text - warm coral */
-  .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(
-      135deg,
-      oklch(0.65 0.14 25) 0%,
-      oklch(0.6 0.12 35) 100%
-    );
+  /* Override any rounded corners */
+  .rounded, .rounded-sm, .rounded-md, .rounded-lg,
+  .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-full {
+    border-radius: 0 !important;
   }
 
-  .text-gradient-accent {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(
-      135deg,
-      oklch(0.78 0.12 70) 0%,
-      oklch(0.65 0.14 25) 100%
-    );
-  }
-
-  /* Gradient backgrounds */
-  .bg-gradient-primary {
-    background: var(--gradient-primary);
-  }
-
-  .bg-gradient-hero {
-    background: var(--gradient-hero);
-  }
-
-  .bg-gradient-card {
-    background: linear-gradient(
-      135deg,
-      oklch(0.995 0.003 85) 0%,
-      oklch(0.98 0.01 75 / 0.5) 100%
-    );
-  }
-
-  .dark .bg-gradient-card {
-    background: linear-gradient(
-      135deg,
-      oklch(0.18 0.015 50) 0%,
-      oklch(0.22 0.02 50 / 0.5) 100%
-    );
-  }
-
-  /* Gradient borders - subtle */
-  .border-gradient {
-    border: 1px solid transparent;
-    background:
-      linear-gradient(var(--background), var(--background)) padding-box,
-      var(--gradient-primary) border-box;
-  }
-}
-
-/* ============================================
-   FRIENDLY YET SOLID - Visual Effects
-   ============================================ */
-
-@layer utilities {
-  /* Subtle grain texture overlay */
-  .texture-noise {
-    position: relative;
-  }
-  .texture-noise::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    opacity: 0.03;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  }
-
-  /* Blur blob decorations - warm tones */
-  .blob-coral {
-    background: radial-gradient(
-      circle at center,
-      oklch(0.65 0.14 25 / 0.15) 0%,
-      transparent 70%
-    );
-    filter: blur(80px);
-  }
-
-  .blob-sage {
-    background: radial-gradient(
-      circle at center,
-      oklch(0.7 0.08 150 / 0.12) 0%,
-      transparent 70%
-    );
-    filter: blur(80px);
-  }
-
-  .blob-amber {
-    background: radial-gradient(
-      circle at center,
-      oklch(0.78 0.12 70 / 0.15) 0%,
-      transparent 70%
-    );
-    filter: blur(80px);
-  }
-
-  /* Legacy blob names mapped to new colors */
-  .blob-magenta {
-    background: radial-gradient(
-      circle at center,
-      oklch(0.65 0.14 25 / 0.12) 0%,
-      transparent 70%
-    );
-    filter: blur(80px);
-  }
-
-  .blob-cyan {
-    background: radial-gradient(
-      circle at center,
-      oklch(0.7 0.08 150 / 0.1) 0%,
-      transparent 70%
-    );
-    filter: blur(80px);
-  }
-
-  .blob-yellow {
-    background: radial-gradient(
-      circle at center,
-      oklch(0.78 0.12 70 / 0.12) 0%,
-      transparent 70%
-    );
-    filter: blur(80px);
-  }
-
-  /* Warm neutral shadows (not tinted) */
-  .shadow-warm {
-    box-shadow:
-      0 4px 6px -1px oklch(0.3 0.02 50 / 0.08),
-      0 2px 4px -2px oklch(0.3 0.02 50 / 0.06);
-  }
-
-  .shadow-warm-lg {
-    box-shadow:
-      0 10px 15px -3px oklch(0.3 0.02 50 / 0.1),
-      0 4px 6px -4px oklch(0.3 0.02 50 / 0.08);
-  }
-
-  .shadow-warm-xl {
-    box-shadow:
-      0 20px 25px -5px oklch(0.3 0.02 50 / 0.1),
-      0 8px 10px -6px oklch(0.3 0.02 50 / 0.08);
-  }
-
-  /* Legacy shadow names mapped to warm shadows */
-  .shadow-playful {
-    box-shadow:
-      0 4px 6px -1px oklch(0.3 0.02 50 / 0.08),
-      0 2px 4px -2px oklch(0.3 0.02 50 / 0.06);
-  }
-
-  .shadow-playful-lg {
-    box-shadow:
-      0 10px 15px -3px oklch(0.3 0.02 50 / 0.1),
-      0 4px 6px -4px oklch(0.3 0.02 50 / 0.08);
-  }
-
+  /* Override shadows - none allowed */
+  .shadow, .shadow-sm, .shadow-md, .shadow-lg,
+  .shadow-xl, .shadow-2xl, .shadow-warm, .shadow-warm-lg,
+  .shadow-warm-xl, .shadow-playful, .shadow-playful-lg,
   .shadow-playful-xl {
-    box-shadow:
-      0 20px 25px -5px oklch(0.3 0.02 50 / 0.1),
-      0 8px 10px -6px oklch(0.3 0.02 50 / 0.08);
+    box-shadow: none !important;
   }
 
-  /* Subtle lift hover effect */
-  .hover-lift {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Dense text */
+  .text-dense {
+    line-height: 1.4;
   }
 
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 10px 15px -3px oklch(0.3 0.02 50 / 0.1),
-      0 4px 6px -4px oklch(0.3 0.02 50 / 0.08);
+  /* Uppercase utility */
+  .uppercase-tracking {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
-  /* Legacy tilt - now simpler lift */
-  .hover-tilt {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Dotted leader (for menu-style layouts) */
+  .dotted-leader {
+    flex: 1;
+    border-bottom: 1px dotted currentColor;
+    margin: 0 0.5rem;
+    opacity: 0.3;
   }
 
-  .hover-tilt:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 10px 15px -3px oklch(0.3 0.02 50 / 0.1),
-      0 4px 6px -4px oklch(0.3 0.02 50 / 0.08);
+  /* Table borders - visible grid */
+  .table-brutalist {
+    border-collapse: collapse;
+    width: 100%;
   }
 
-  /* Scale hover - softer */
-  .hover-scale {
-    transition: transform 0.25s ease;
+  .table-brutalist th,
+  .table-brutalist td {
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    text-align: left;
   }
 
-  .hover-scale:hover {
-    transform: scale(1.02);
+  .table-brutalist th {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
   }
 
-  /* Subtle glow effect on hover */
-  .hover-glow {
-    transition: box-shadow 0.3s ease;
+  .table-brutalist td {
+    font-family: var(--font-family-mono);
   }
 
-  .hover-glow:hover {
-    box-shadow: 0 0 20px oklch(0.65 0.14 25 / 0.15);
+  /* Section divider */
+  .section-divider {
+    border: none;
+    border-top: 2px solid var(--foreground);
+    margin: 0;
+  }
+
+  /* Minimal animations - only what's necessary */
+  .transition-colors-only {
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
   }
 }
 
 /* ============================================
-   FRIENDLY YET SOLID - Semantic Score & Credit Badges
+   BRUTALIST - Score badges (functional only)
    ============================================ */
 
 @layer utilities {
-  /* Score badge variants - refined */
   .score-easy {
-    @apply bg-score-easy/15 text-score-easy border border-score-easy/30;
+    color: var(--positive);
   }
   .score-medium {
-    @apply bg-score-medium/15 text-score-medium border border-score-medium/30;
+    color: var(--score-medium);
   }
   .score-hard {
-    @apply bg-score-hard/15 text-score-hard border border-score-hard/30;
+    color: var(--negative);
   }
-
-  /* Credit display styling */
   .credit-badge {
-    @apply bg-credit/12 text-credit border border-credit/25;
+    color: var(--primary);
   }
 }
 
 /* ============================================
-   FRIENDLY YET SOLID - Interactive States
+   BRUTALIST - Interactive States
    ============================================ */
 
-/* Selection styling - warm coral */
 ::selection {
-  background-color: oklch(0.65 0.14 25 / 0.25);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
 }
 
-/* Focus visible styling - refined */
 :focus-visible {
-  outline: 2px solid oklch(0.65 0.14 25);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
-/* Scrollbar styling - subtle and warm */
+/* Scrollbar - minimal */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: oklch(0.95 0.01 75);
-  border-radius: 4px;
+  background: var(--muted);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.7 0.08 50);
-  border-radius: 4px;
-  border: 2px solid oklch(0.95 0.01 75);
+  background: var(--foreground);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.6 0.1 50);
+  background: var(--primary);
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: oklch(0.18 0.015 50);
+/* ============================================
+   MARKETING PAGE OVERRIDES
+   Even more brutalist for the landing page
+   ============================================ */
+
+.marketing-page {
+  /* Tighter line height for dense feel */
+  line-height: 1.4;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: oklch(0.4 0.02 50);
-  border-color: oklch(0.18 0.015 50);
+.marketing-page h1 {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.5 0.02 50);
+.marketing-page h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Stats table */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+}
+
+.stats-grid > div {
+  padding: 1.5rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.stats-grid > div:last-child {
+  border-right: none;
+}
+
+/* Feature list - definition style */
+.feature-list dt {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.feature-list dd {
+  color: var(--muted-foreground);
+  margin-bottom: 1.5rem;
+  margin-left: 0;
+}
+
+/* Price table */
+.price-table {
+  border: 1px solid var(--border);
+  width: 100%;
+}
+
+.price-table th,
+.price-table td {
+  border: 1px solid var(--border);
+  padding: 1rem;
+  text-align: left;
+}
+
+.price-table th {
+  background: var(--foreground);
+  color: var(--background);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.price-table td {
+  font-family: var(--font-family-mono);
+}
+
+.price-table tr:hover td {
+  background: var(--muted);
+}
+
+/* FAQ */
+.faq-item {
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 0;
+}
+
+.faq-item:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.faq-question {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.faq-answer {
+  color: var(--muted-foreground);
 }

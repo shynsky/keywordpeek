@@ -176,7 +176,7 @@ export default function ProjectsPage() {
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="gradient" size="lg" className="gap-2">
+            <Button variant="primary" size="lg" className="gap-2">
               <Plus className="h-5 w-5" />
               New Project
             </Button>
@@ -346,7 +346,7 @@ export default function ProjectsPage() {
               : "Projects help you organize keywords for different websites or campaigns."}
           </p>
           {!searchQuery && (
-            <Button variant="gradient" size="lg" onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+            <Button variant="primary" size="lg" onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
               <Sparkles className="h-5 w-5" />
               Create your first project
             </Button>

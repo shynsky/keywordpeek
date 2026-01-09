@@ -339,7 +339,7 @@ export default function ProjectDetailPage({
             Search for keywords and save them to this project to track your
             research.
           </p>
-          <Button variant="gradient" size="lg" asChild className="gap-2">
+          <Button variant="primary" size="lg" asChild className="gap-2">
             <Link href="/dashboard">
               <Sparkles className="h-5 w-5" />
               Start researching
