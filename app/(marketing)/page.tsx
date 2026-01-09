@@ -1,5 +1,9 @@
+'use client';
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AnimatedCounter } from "@/components/animated-counter";
+import { RevealOnScroll } from "@/lib/hooks/use-reveal";
 
 const FEATURES = [
   {
@@ -68,197 +72,235 @@ export default function LandingPage() {
       <section className="border-b border-foreground">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           {/* Headline */}
-          <h1 className="mb-8">
-            Keyword Research
-            <br />
-            Without The Subscription
-          </h1>
+          <RevealOnScroll>
+            <h1 className="mb-8">
+              Keyword Research
+              <br />
+              Without The Subscription
+            </h1>
+          </RevealOnScroll>
 
           <hr className="section-divider mb-8" />
 
           {/* Subtitle */}
-          <p className="text-lg sm:text-xl max-w-2xl mb-8 text-muted-foreground">
-            Professional keyword data. Pay-as-you-go pricing.
-            <br />
-            No{" "}
-            <span className="line-through text-destructive">$99/month</span>{" "}
-            bullshit.
-          </p>
+          <RevealOnScroll>
+            <p className="text-lg sm:text-xl max-w-2xl mb-8 text-muted-foreground">
+              Professional keyword data. Pay-as-you-go pricing.
+              <br />
+              No{" "}
+              <span className="line-through text-destructive">$99/month</span>{" "}
+              bullshit.
+            </p>
+          </RevealOnScroll>
 
           {/* CTA */}
-          <div className="mb-16">
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/auth/signup">
-                Start Free — 50 Credits →
-              </Link>
-            </Button>
-          </div>
+          <RevealOnScroll>
+            <div className="mb-16">
+              <Button size="lg" variant="outline" asChild className="group">
+                <Link href="/auth/signup">
+                  Start Free — 50 Credits <span className="arrow-shift">→</span>
+                </Link>
+              </Button>
+            </div>
+          </RevealOnScroll>
 
           {/* Stats Grid */}
-          <div className="stats-grid max-w-2xl">
-            <div>
-              <div className="font-mono text-2xl sm:text-3xl font-bold">$0.009</div>
-              <div className="text-sm text-muted-foreground mt-1">per keyword</div>
+          <RevealOnScroll>
+            <div className="stats-grid max-w-2xl stagger">
+              <div>
+                <div className="font-mono text-2xl sm:text-3xl font-bold">
+                  <AnimatedCounter end={0.009} prefix="$" decimals={3} duration={800} />
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">per keyword</div>
+              </div>
+              <div>
+                <div className="font-mono text-2xl sm:text-3xl font-bold">
+                  <AnimatedCounter end={100} suffix="%" duration={600} />
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">accuracy</div>
+              </div>
+              <div>
+                <div className="font-mono text-2xl sm:text-3xl font-bold">0</div>
+                <div className="text-sm text-muted-foreground mt-1">subscriptions</div>
+              </div>
             </div>
-            <div>
-              <div className="font-mono text-2xl sm:text-3xl font-bold">100%</div>
-              <div className="text-sm text-muted-foreground mt-1">accuracy</div>
-            </div>
-            <div>
-              <div className="font-mono text-2xl sm:text-3xl font-bold">0</div>
-              <div className="text-sm text-muted-foreground mt-1">subscriptions</div>
-            </div>
-          </div>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* Problem */}
       <section className="border-b border-foreground">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <h2>The Problem</h2>
-          <hr className="section-divider mb-8" />
+          <RevealOnScroll>
+            <h2>The Problem</h2>
+            <hr className="section-divider mb-8" />
+          </RevealOnScroll>
 
-          <p className="text-lg mb-8 max-w-2xl">
-            You don&apos;t need enterprise software. Most keyword tools are built for agencies.
-            You&apos;re not an agency.
-          </p>
+          <RevealOnScroll>
+            <p className="text-lg mb-8 max-w-2xl">
+              You don&apos;t need enterprise software. Most keyword tools are built for agencies.
+              You&apos;re not an agency.
+            </p>
+          </RevealOnScroll>
 
-          <div className="space-y-3 max-w-md font-mono">
-            <div className="flex items-center text-destructive">
-              <span>✗</span>
-              <span className="ml-3">Ahrefs</span>
-              <span className="dotted-leader" />
-              <span className="line-through">$99/mo</span>
+          <RevealOnScroll stagger>
+            <div className="space-y-3 max-w-md font-mono">
+              <div className="flex items-center text-destructive">
+                <span>✗</span>
+                <span className="ml-3">Ahrefs</span>
+                <span className="dotted-leader" />
+                <span className="line-through">$99/mo</span>
+              </div>
+              <div className="flex items-center text-destructive">
+                <span>✗</span>
+                <span className="ml-3">SEMrush</span>
+                <span className="dotted-leader" />
+                <span className="line-through">$129/mo</span>
+              </div>
+              <div className="flex items-center text-destructive">
+                <span>✗</span>
+                <span className="ml-3">Moz Pro</span>
+                <span className="dotted-leader" />
+                <span className="line-through">$99/mo</span>
+              </div>
             </div>
-            <div className="flex items-center text-destructive">
-              <span>✗</span>
-              <span className="ml-3">SEMrush</span>
-              <span className="dotted-leader" />
-              <span className="line-through">$129/mo</span>
-            </div>
-            <div className="flex items-center text-destructive">
-              <span>✗</span>
-              <span className="ml-3">Moz Pro</span>
-              <span className="dotted-leader" />
-              <span className="line-through">$99/mo</span>
-            </div>
-          </div>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* Solution */}
       <section className="border-b border-foreground bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <h2>The Solution</h2>
-          <hr className="section-divider mb-8" />
+          <RevealOnScroll>
+            <h2>The Solution</h2>
+            <hr className="section-divider mb-8" />
+          </RevealOnScroll>
 
-          <p className="text-lg mb-8 max-w-2xl">
-            KeywordPeek: same data, pay-as-you-go.
-          </p>
+          <RevealOnScroll>
+            <p className="text-lg mb-8 max-w-2xl">
+              KeywordPeek: same data, pay-as-you-go.
+            </p>
+          </RevealOnScroll>
 
-          <div className="space-y-3 max-w-md">
-            <div className="flex items-center" style={{ color: "var(--positive)" }}>
-              <span className="font-mono">✓</span>
-              <span className="ml-3">Pay only for what you use</span>
+          <RevealOnScroll stagger>
+            <div className="space-y-3 max-w-md">
+              <div className="flex items-center" style={{ color: "var(--positive)" }}>
+                <span className="font-mono">✓</span>
+                <span className="ml-3">Pay only for what you use</span>
+              </div>
+              <div className="flex items-center" style={{ color: "var(--positive)" }}>
+                <span className="font-mono">✓</span>
+                <span className="ml-3">Credits never expire</span>
+              </div>
+              <div className="flex items-center" style={{ color: "var(--positive)" }}>
+                <span className="font-mono">✓</span>
+                <span className="ml-3">Same data sources as enterprise tools</span>
+              </div>
+              <div className="flex items-center" style={{ color: "var(--positive)" }}>
+                <span className="font-mono">✓</span>
+                <span className="ml-3">Start free with 50 credits</span>
+              </div>
             </div>
-            <div className="flex items-center" style={{ color: "var(--positive)" }}>
-              <span className="font-mono">✓</span>
-              <span className="ml-3">Credits never expire</span>
-            </div>
-            <div className="flex items-center" style={{ color: "var(--positive)" }}>
-              <span className="font-mono">✓</span>
-              <span className="ml-3">Same data sources as enterprise tools</span>
-            </div>
-            <div className="flex items-center" style={{ color: "var(--positive)" }}>
-              <span className="font-mono">✓</span>
-              <span className="ml-3">Start free with 50 credits</span>
-            </div>
-          </div>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* Features */}
       <section id="features" className="border-b border-foreground scroll-mt-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <h2>Features</h2>
-          <hr className="section-divider mb-8" />
+          <RevealOnScroll>
+            <h2>Features</h2>
+            <hr className="section-divider mb-8" />
+          </RevealOnScroll>
 
-          <dl className="feature-list grid grid-cols-1 md:grid-cols-2 gap-x-16 max-w-4xl">
-            {FEATURES.map((feature) => (
-              <div key={feature.title}>
-                <dt>{feature.title}</dt>
-                <dd>{feature.description}</dd>
-              </div>
-            ))}
-          </dl>
+          <RevealOnScroll stagger>
+            <dl className="feature-list grid grid-cols-1 md:grid-cols-2 gap-x-16 max-w-4xl">
+              {FEATURES.map((feature) => (
+                <div key={feature.title}>
+                  <dt>{feature.title}</dt>
+                  <dd>{feature.description}</dd>
+                </div>
+              ))}
+            </dl>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* Pricing */}
       <section id="pricing" className="border-b border-foreground scroll-mt-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <h2>Pricing</h2>
-          <hr className="section-divider mb-8" />
+          <RevealOnScroll>
+            <h2>Pricing</h2>
+            <hr className="section-divider mb-8" />
+          </RevealOnScroll>
 
-          <div className="overflow-x-auto">
-            <table className="price-table max-w-2xl">
-              <thead>
-                <tr>
-                  <th>Plan</th>
-                  <th>Credits</th>
-                  <th>Price</th>
-                  <th>Per Keyword</th>
-                </tr>
-              </thead>
-              <tbody>
-                {PACKAGES.map((pkg) => (
-                  <tr key={pkg.name}>
-                    <td className="font-sans font-bold">
-                      {pkg.name}
-                      {pkg.popular && <span className="text-primary ml-2">*</span>}
-                    </td>
-                    <td>{pkg.credits}</td>
-                    <td>{pkg.price}</td>
-                    <td>{pkg.perKeyword}</td>
+          <RevealOnScroll>
+            <div className="overflow-x-auto">
+              <table className="price-table max-w-2xl">
+                <thead>
+                  <tr>
+                    <th>Plan</th>
+                    <th>Credits</th>
+                    <th>Price</th>
+                    <th>Per Keyword</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {PACKAGES.map((pkg) => (
+                    <tr key={pkg.name}>
+                      <td className="font-sans font-bold">
+                        {pkg.name}
+                        {pkg.popular && <span className="text-primary ml-2">*</span>}
+                      </td>
+                      <td>{pkg.credits}</td>
+                      <td>{pkg.price}</td>
+                      <td>{pkg.perKeyword}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </RevealOnScroll>
 
-          <p className="text-sm text-muted-foreground mt-4">
-            <span className="text-primary">*</span> Most popular
-          </p>
+          <RevealOnScroll>
+            <p className="text-sm text-muted-foreground mt-4">
+              <span className="text-primary">*</span> Most popular
+            </p>
 
-          <p className="text-sm text-muted-foreground mt-6 max-w-xl">
-            All plans include: Full keyword data, project organization, CSV export.
-            Credits never expire.
-          </p>
+            <p className="text-sm text-muted-foreground mt-6 max-w-xl">
+              All plans include: Full keyword data, project organization, CSV export.
+              Credits never expire.
+            </p>
 
-          <div className="mt-8">
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/auth/signup">
-                Get Started →
-              </Link>
-            </Button>
-          </div>
+            <div className="mt-8">
+              <Button size="lg" variant="outline" asChild className="group">
+                <Link href="/auth/signup">
+                  Get Started <span className="arrow-shift">→</span>
+                </Link>
+              </Button>
+            </div>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* FAQ */}
       <section id="faq" className="border-b border-foreground scroll-mt-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <h2>FAQ</h2>
-          <hr className="section-divider mb-8" />
+          <RevealOnScroll>
+            <h2>FAQ</h2>
+            <hr className="section-divider mb-8" />
+          </RevealOnScroll>
 
-          <div className="max-w-2xl">
-            {FAQS.map((faq, i) => (
-              <div key={i} className="faq-item">
-                <div className="faq-question">Q: {faq.q}</div>
-                <div className="faq-answer">A: {faq.a}</div>
-              </div>
-            ))}
-          </div>
+          <RevealOnScroll>
+            <div className="max-w-2xl">
+              {FAQS.map((faq, i) => (
+                <div key={i} className="faq-item">
+                  <div className="faq-question">Q: {faq.q}</div>
+                  <div className="faq-answer">A: {faq.a}</div>
+                </div>
+              ))}
+            </div>
+          </RevealOnScroll>
         </div>
       </section>
 
@@ -267,15 +309,17 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
           <hr className="section-divider mb-12 max-w-md mx-auto" />
 
-          <p className="text-xl mb-8">
-            Ready? 50 free credits. No credit card.
-          </p>
+          <RevealOnScroll>
+            <p className="text-xl mb-8">
+              Ready? 50 free credits. No credit card.
+            </p>
 
-          <Button size="lg" variant="outline" asChild>
-            <Link href="/auth/signup">
-              Start Free →
-            </Link>
-          </Button>
+            <Button size="lg" variant="outline" asChild className="group">
+              <Link href="/auth/signup">
+                Start Free <span className="arrow-shift">→</span>
+              </Link>
+            </Button>
+          </RevealOnScroll>
         </div>
       </section>
     </div>
