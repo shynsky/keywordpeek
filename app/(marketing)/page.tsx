@@ -9,7 +9,9 @@ import {
   Check,
   ArrowRight,
   Sparkles,
-  Star,
+  X,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,42 +22,36 @@ const FEATURES = [
     title: "Instant Search Volume",
     description:
       "Get accurate monthly search volumes for any keyword. No guessing, no estimates—real data.",
-    color: "bg-primary/15 text-primary border-primary/30",
   },
   {
     icon: Target,
     title: "Keyword Score",
     description:
       "Our 0-100 score factors volume, competition, and CPC to show you the best opportunities at a glance.",
-    color: "bg-accent-secondary/15 text-accent-secondary border-accent-secondary/30",
   },
   {
     icon: TrendingUp,
     title: "12-Month Trends",
     description:
       "Spot seasonal patterns and rising topics with historical trend data for every keyword.",
-    color: "bg-score-easy/15 text-score-easy border-score-easy/30",
   },
   {
     icon: BarChart3,
     title: "Difficulty Analysis",
     description:
       "Know exactly how hard it is to rank. Make informed decisions about which keywords to target.",
-    color: "bg-accent/20 text-accent-foreground border-accent/40",
   },
   {
     icon: DollarSign,
     title: "CPC Data",
     description:
       "See what advertisers pay. High CPC keywords often indicate commercial intent worth targeting.",
-    color: "bg-score-medium/15 text-score-medium border-score-medium/30",
   },
   {
     icon: Zap,
     title: "Bulk Research",
     description:
       "Research up to 100 keywords at once. Save time and get comprehensive data in seconds.",
-    color: "bg-score-hard/15 text-score-hard border-score-hard/30",
   },
 ];
 
@@ -67,7 +63,6 @@ const PACKAGES = [
     price: "$9",
     perKeyword: "$0.009",
     popular: false,
-    emoji: "🌱",
   },
   {
     id: "growth",
@@ -76,7 +71,6 @@ const PACKAGES = [
     price: "$19",
     perKeyword: "$0.006",
     popular: true,
-    emoji: "🚀",
   },
   {
     id: "pro",
@@ -85,7 +79,6 @@ const PACKAGES = [
     price: "$49",
     perKeyword: "$0.005",
     popular: false,
-    emoji: "⚡",
   },
 ];
 
@@ -127,43 +120,42 @@ export default function LandingPage() {
     <div className="overflow-hidden">
       {/* Hero */}
       <section className="relative">
-        {/* Floating background blobs */}
+        {/* Subtle organic background shape */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="blob-magenta absolute -top-40 -right-40 w-[600px] h-[600px] animate-float" />
-          <div className="blob-cyan absolute top-20 -left-20 w-[400px] h-[400px] animate-float-delayed" />
-          <div className="blob-yellow absolute bottom-0 right-1/4 w-[300px] h-[300px] animate-float-slow" />
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] -translate-y-1/4 translate-x-1/4 opacity-60">
+            <div className="w-full h-full blob-coral animate-float-gentle" />
+          </div>
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] translate-y-1/4 -translate-x-1/4 opacity-40">
+            <div className="w-full h-full blob-sage animate-float-slow" />
+          </div>
         </div>
-
-        {/* Grain texture overlay */}
-        <div className="absolute inset-0 -z-10 texture-noise" />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
           <div className="text-center max-w-4xl mx-auto">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/15 border-2 border-primary/30 text-primary text-sm font-bold mb-8 animate-bounce-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8 animate-fade-in-soft">
               <Sparkles className="h-4 w-4" />
               50 free credits to start
-              <span className="text-xs">🎉</span>
             </div>
 
             {/* Main headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-8 animate-fade-in-up">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-8 animate-fade-in-soft stagger-1">
               Keyword research
               <br />
-              <span className="text-gradient">without the subscription</span>
+              <span className="text-primary">without the subscription</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xl sm:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto animate-fade-in-up stagger-1">
+            <p className="text-xl sm:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto animate-fade-in-soft stagger-2">
               Professional keyword data at pay-as-you-go prices. Perfect for
               bootstrappers, indie hackers, and anyone tired of{" "}
-              <span className="line-through text-score-hard/70">$99/month</span>{" "}
+              <span className="line-through text-muted-foreground/60">$99/month</span>{" "}
               SEO tools.
             </p>
 
             {/* CTA buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up stagger-2">
-              <Button size="xl" variant="gradient" asChild className="gap-2 text-base">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-soft stagger-3">
+              <Button size="xl" asChild className="gap-2 text-base">
                 <Link href="/auth/signup">
                   Start Free
                   <ArrowRight className="h-5 w-5" />
@@ -174,7 +166,7 @@ export default function LandingPage() {
               </Button>
             </div>
 
-            <p className="mt-6 text-sm text-muted-foreground animate-fade-in-up stagger-3">
+            <p className="mt-6 text-sm text-muted-foreground animate-fade-in-soft stagger-4">
               No credit card required • 50 free credits included
             </p>
           </div>
@@ -182,20 +174,20 @@ export default function LandingPage() {
           {/* Stats */}
           <div className="mt-20 grid grid-cols-3 gap-6 max-w-3xl mx-auto">
             {[
-              { value: "$0.009", label: "per keyword", emoji: "💰" },
-              { value: "100%", label: "data accuracy", emoji: "🎯" },
-              { value: "0", label: "subscriptions", emoji: "🙅" },
+              { value: "$0.009", label: "per keyword", icon: DollarSign },
+              { value: "100%", label: "data accuracy", icon: CheckCircle },
+              { value: "0", label: "subscriptions", icon: XCircle },
             ].map((stat, i) => (
               <div
                 key={stat.label}
                 className={cn(
-                  "text-center p-6 rounded-2xl bg-card border-2 border-border hover:border-primary/30 hover:shadow-playful-lg transition-all duration-300 hover-tilt animate-bounce-in",
+                  "text-center p-6 rounded-xl bg-card border border-border hover:border-primary/20 hover:shadow-warm-lg transition-all duration-300 animate-fade-in-soft",
                 )}
-                style={{ animationDelay: `${0.3 + i * 0.1}s` }}
+                style={{ animationDelay: `${0.4 + i * 0.1}s` }}
               >
-                <div className="text-2xl mb-2">{stat.emoji}</div>
-                <div className="text-3xl sm:text-4xl font-bold text-gradient">{stat.value}</div>
-                <div className="text-sm text-muted-foreground mt-1 font-medium">{stat.label}</div>
+                <stat.icon className="h-5 w-5 mx-auto mb-3 text-muted-foreground" />
+                <div className="text-3xl sm:text-4xl font-bold text-foreground">{stat.value}</div>
+                <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -203,19 +195,18 @@ export default function LandingPage() {
       </section>
 
       {/* Problem/Solution */}
-      <section className="border-y-2 border-border bg-muted/30 relative">
-        <div className="absolute inset-0 texture-noise" />
+      <section className="border-y border-border bg-muted/20 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="inline-block px-3 py-1 rounded-full bg-score-hard/15 text-score-hard text-sm font-bold mb-6">
-                The Problem 😤
+              <span className="inline-block px-3 py-1.5 rounded-full bg-destructive/10 text-destructive text-sm font-medium mb-6">
+                The Problem
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">
                 You don&apos;t need another{" "}
-                <span className="text-score-hard">$99/month</span> tool
+                <span className="text-destructive">$99/month</span> tool
               </h2>
-              <p className="text-muted-foreground text-lg mb-8">
+              <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
                 Most keyword tools are built for agencies running dozens of
                 campaigns. But if you&apos;re building a blog, launching a product, or
                 doing occasional research—why pay enterprise prices?
@@ -227,8 +218,8 @@ export default function LandingPage() {
                   { tool: "Moz Pro", price: "$99/month" },
                 ].map((item) => (
                   <li key={item.tool} className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-score-hard/15 flex items-center justify-center">
-                      <span className="text-score-hard text-lg">✕</span>
+                    <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
+                      <X className="h-5 w-5 text-destructive" />
                     </div>
                     <span className="text-muted-foreground text-lg">
                       {item.tool} starts at{" "}
@@ -239,9 +230,9 @@ export default function LandingPage() {
               </ul>
             </div>
             <div className="lg:pl-8">
-              <div className="p-8 sm:p-10 rounded-3xl bg-card border-2 border-score-easy/30 shadow-playful-xl hover-tilt">
-                <span className="inline-block px-3 py-1 rounded-full bg-score-easy/15 text-score-easy text-sm font-bold mb-6">
-                  The Solution ✨
+              <div className="p-8 sm:p-10 rounded-2xl bg-card border border-score-easy/30 shadow-warm-lg">
+                <span className="inline-block px-3 py-1.5 rounded-full bg-score-easy/10 text-score-easy text-sm font-medium mb-6">
+                  The Solution
                 </span>
                 <h3 className="text-2xl font-bold mb-6 text-score-easy">
                   KeywordPeek is different
@@ -254,7 +245,7 @@ export default function LandingPage() {
                     "Start free with 50 credits",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-4">
-                      <div className="w-8 h-8 rounded-xl bg-score-easy/20 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-score-easy/15 flex items-center justify-center">
                         <Check className="h-5 w-5 text-score-easy" />
                       </div>
                       <span className="text-lg font-medium">{item}</span>
@@ -269,18 +260,14 @@ export default function LandingPage() {
 
       {/* Features */}
       <section id="features" className="scroll-mt-20 relative">
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="blob-cyan absolute top-1/2 -right-20 w-[400px] h-[400px] animate-float-slow" />
-        </div>
-
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block px-3 py-1 rounded-full bg-primary/15 text-primary text-sm font-bold mb-6">
-              Features 🛠️
+            <span className="inline-block px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+              Features
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold mb-6">
               Everything you need for{" "}
-              <span className="text-gradient">keyword research</span>
+              <span className="text-primary">keyword research</span>
             </h2>
             <p className="text-muted-foreground text-lg">
               Professional-grade data without the professional-grade price tag.
@@ -292,21 +279,21 @@ export default function LandingPage() {
               <div
                 key={feature.title}
                 className={cn(
-                  "group p-8 rounded-2xl border-2 bg-card transition-all duration-300 hover:shadow-playful-lg hover:-translate-y-1",
-                  "animate-fade-in-up"
+                  "group p-8 rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-warm-lg hover:border-primary/20",
+                  "animate-fade-in-soft"
                 )}
-                style={{ animationDelay: `${i * 0.1}s` }}
+                style={{ animationDelay: `${i * 0.08}s` }}
               >
                 <div
                   className={cn(
-                    "w-14 h-14 rounded-2xl border-2 flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",
-                    feature.color
+                    "w-12 h-12 rounded-lg flex items-center justify-center mb-5 transition-all duration-300",
+                    "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
                   )}
                 >
-                  <feature.icon className="h-7 w-7" />
+                  <feature.icon className="h-6 w-6" />
                 </div>
-                <h3 className="font-bold text-xl mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -314,20 +301,14 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="scroll-mt-20 border-y-2 border-border bg-muted/30 relative">
-        <div className="absolute inset-0 texture-noise" />
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="blob-magenta absolute -bottom-40 -left-40 w-[500px] h-[500px] animate-float-delayed" />
-          <div className="blob-yellow absolute top-20 right-0 w-[300px] h-[300px] animate-float" />
-        </div>
-
+      <section id="pricing" className="scroll-mt-20 border-y border-border bg-gradient-to-b from-muted/30 to-background relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block px-3 py-1 rounded-full bg-accent/20 text-accent-foreground text-sm font-bold mb-6">
-              Pricing 💸
+            <span className="inline-block px-3 py-1.5 rounded-full bg-accent/15 text-accent-foreground text-sm font-medium mb-6">
+              Pricing
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-              Simple, <span className="text-gradient">transparent</span> pricing
+              Simple, <span className="text-primary">transparent</span> pricing
             </h2>
             <p className="text-muted-foreground text-lg">
               No subscriptions. No hidden fees. Just credits that never expire.
@@ -339,41 +320,39 @@ export default function LandingPage() {
               <div
                 key={pkg.id}
                 className={cn(
-                  "relative p-8 sm:p-10 rounded-3xl border-2 bg-card transition-all duration-300 hover-tilt animate-bounce-in",
+                  "relative p-8 sm:p-10 rounded-2xl border bg-card transition-all duration-300 animate-fade-in-soft",
                   pkg.popular
-                    ? "border-primary shadow-playful-xl scale-105 z-10"
-                    : "border-border hover:border-primary/30 hover:shadow-playful-lg"
+                    ? "border-primary shadow-warm-xl scale-105 z-10"
+                    : "border-border hover:border-primary/20 hover:shadow-warm-lg"
                 )}
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
                 {pkg.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="px-4 py-2 rounded-full bg-gradient-primary text-white text-sm font-bold flex items-center gap-1.5 shadow-playful">
-                      <Star className="h-4 w-4" fill="currentColor" />
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
                       Most Popular
                     </span>
                   </div>
                 )}
 
                 <div className="text-center mb-8">
-                  <span className="text-4xl mb-4 block">{pkg.emoji}</span>
-                  <h3 className="font-bold text-2xl mb-4">
+                  <h3 className="font-semibold text-xl mb-4">
                     {pkg.name}
                   </h3>
                   <div className="flex items-baseline justify-center gap-1">
                     <span className={cn(
-                      "text-6xl font-bold",
-                      pkg.popular ? "text-gradient" : ""
+                      "text-5xl font-bold",
+                      pkg.popular && "text-primary"
                     )}>
                       {pkg.price}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-3 font-medium">
+                  <p className="text-sm text-muted-foreground mt-2">
                     {pkg.perKeyword} per keyword
                   </p>
                 </div>
 
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-3 mb-8">
                   {[
                     `${pkg.credits.toLocaleString()} credits`,
                     "Never expires",
@@ -382,10 +361,10 @@ export default function LandingPage() {
                     "CSV export",
                   ].map((feature) => (
                     <li key={feature} className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-lg bg-score-easy/20 flex items-center justify-center">
-                        <Check className="h-4 w-4 text-score-easy" />
+                      <div className="w-5 h-5 rounded-md bg-score-easy/15 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3.5 w-3.5 text-score-easy" />
                       </div>
-                      <span className="font-medium">{feature}</span>
+                      <span className="text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -393,7 +372,7 @@ export default function LandingPage() {
                 <Button
                   className="w-full"
                   size="lg"
-                  variant={pkg.popular ? "gradient" : "outline"}
+                  variant={pkg.popular ? "default" : "outline"}
                   asChild
                 >
                   <Link href="/auth/signup">Get Started</Link>
@@ -402,8 +381,8 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <p className="text-center text-muted-foreground mt-12 font-medium">
-            Start with 50 free credits. No credit card required. 🎁
+          <p className="text-center text-muted-foreground mt-12 text-sm">
+            Start with 50 free credits. No credit card required.
           </p>
         </div>
       </section>
@@ -412,8 +391,8 @@ export default function LandingPage() {
       <section id="faq" className="scroll-mt-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <div className="text-center mb-16">
-            <span className="inline-block px-3 py-1 rounded-full bg-accent-secondary/15 text-accent-secondary text-sm font-bold mb-6">
-              FAQ 🤔
+            <span className="inline-block px-3 py-1.5 rounded-full bg-accent-secondary/10 text-accent-secondary text-sm font-medium mb-6">
+              FAQ
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold">
               Frequently asked questions
@@ -424,16 +403,16 @@ export default function LandingPage() {
             {FAQS.map((faq, index) => (
               <div
                 key={index}
-                className="p-6 sm:p-8 rounded-2xl border-2 border-border bg-card hover:border-primary/30 hover:shadow-playful transition-all duration-300 animate-fade-in-up"
+                className="p-6 rounded-xl border border-border bg-card hover:border-primary/20 hover:shadow-warm transition-all duration-300 animate-fade-in-soft"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <h3 className="font-bold text-lg mb-3 flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-sm font-bold">
+                <h3 className="font-semibold text-lg mb-3 flex items-center gap-3">
+                  <span className="w-7 h-7 rounded-md bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold">
                     Q
                   </span>
                   {faq.question}
                 </h3>
-                <p className="text-muted-foreground pl-11">{faq.answer}</p>
+                <p className="text-muted-foreground pl-10 leading-relaxed">{faq.answer}</p>
               </div>
             ))}
           </div>
@@ -441,23 +420,22 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="border-t-2 border-border bg-gradient-hero relative overflow-hidden">
-        <div className="absolute inset-0 texture-noise" />
+      <section className="border-t border-border bg-gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="blob-magenta absolute top-0 left-1/4 w-[400px] h-[400px] animate-float" />
-          <div className="blob-cyan absolute bottom-0 right-1/4 w-[300px] h-[300px] animate-float-delayed" />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px]">
+            <div className="w-full h-full bg-gradient-radial from-primary/8 via-transparent to-transparent blur-3xl" />
+          </div>
         </div>
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center relative">
-          <span className="text-6xl mb-6 block">🚀</span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            Ready to find your <span className="text-gradient">keywords</span>?
+            Ready to find your <span className="text-primary">perfect keywords</span>?
           </h2>
           <p className="text-muted-foreground text-xl mb-10 max-w-xl mx-auto">
             Start with 50 free credits. No credit card required. Find the
             keywords that will drive traffic to your site.
           </p>
-          <Button size="xl" variant="gradient" asChild className="gap-2 text-lg">
+          <Button size="xl" asChild className="gap-2 text-lg">
             <Link href="/auth/signup">
               Get Started Free
               <ArrowRight className="h-5 w-5" />
