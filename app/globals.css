@@ -295,7 +295,8 @@
   .section-divider {
     border: none;
     border-top: 2px solid var(--foreground);
-    margin: 0;
+    margin-top: 0;
+    /* margin-bottom controlled by Tailwind classes */
   }
 
   /* Minimal animations - only what's necessary */
