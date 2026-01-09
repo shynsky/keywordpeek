@@ -93,10 +93,10 @@ export default function LandingPage() {
             </p>
           </RevealOnScroll>
 
-          {/* CTA */}
+          {/* CTA - Now filled/primary for high contrast */}
           <RevealOnScroll>
-            <div className="mb-16">
-              <Button size="lg" variant="outline" asChild className="group">
+            <div className="mb-8">
+              <Button size="lg" variant="primary" asChild className="group">
                 <Link href="/auth/signup">
                   Start Free — 50 Credits <span className="arrow-shift">→</span>
                 </Link>
@@ -104,26 +104,38 @@ export default function LandingPage() {
             </div>
           </RevealOnScroll>
 
-          {/* Stats Grid */}
+          {/* GIANT Stats */}
           <RevealOnScroll>
-            <div className="stats-grid max-w-2xl stagger">
-              <div>
-                <div className="font-mono text-2xl sm:text-3xl font-bold">
+            <div className="hero-stats">
+              <div className="stat-giant">
+                <span className="stat-value">
                   <AnimatedCounter end={0.009} prefix="$" decimals={3} duration={800} />
-                </div>
-                <div className="text-sm text-muted-foreground mt-1">per keyword</div>
+                </span>
+                <span className="stat-label">per keyword</span>
               </div>
-              <div>
-                <div className="font-mono text-2xl sm:text-3xl font-bold">
+              <div className="stat-giant">
+                <span className="stat-value">
                   <AnimatedCounter end={100} suffix="%" duration={600} />
-                </div>
-                <div className="text-sm text-muted-foreground mt-1">accuracy</div>
+                </span>
+                <span className="stat-label">accuracy</span>
               </div>
-              <div>
-                <div className="font-mono text-2xl sm:text-3xl font-bold">0</div>
-                <div className="text-sm text-muted-foreground mt-1">subscriptions</div>
+              <div className="stat-giant">
+                <span className="stat-value">0</span>
+                <span className="stat-label">subscriptions</span>
               </div>
             </div>
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* Social Proof */}
+      <section className="social-proof">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <RevealOnScroll>
+            <div className="social-proof-number">
+              <AnimatedCounter end={47293} duration={1200} /> keywords searched
+            </div>
+            <div className="social-proof-label">this month</div>
           </RevealOnScroll>
         </div>
       </section>
@@ -205,6 +217,27 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Product Preview */}
+      <section className="border-b border-foreground">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <RevealOnScroll>
+            <h2>The Product</h2>
+            <hr className="section-divider mb-8" />
+          </RevealOnScroll>
+
+          <RevealOnScroll>
+            <div className="screenshot-placeholder">
+              <div className="screenshot-placeholder-text">
+                [ Product screenshot coming soon ]
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mt-4 text-center">
+              Real interface. Real data. No mockups.
+            </p>
+          </RevealOnScroll>
+        </div>
+      </section>
+
       {/* Features */}
       <section id="features" className="border-b border-foreground scroll-mt-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
@@ -247,10 +280,10 @@ export default function LandingPage() {
                 </thead>
                 <tbody>
                   {PACKAGES.map((pkg) => (
-                    <tr key={pkg.name}>
+                    <tr key={pkg.name} className={pkg.popular ? "popular" : ""}>
                       <td className="font-sans font-bold">
                         {pkg.name}
-                        {pkg.popular && <span className="text-primary ml-2">*</span>}
+                        {pkg.popular && <span className="ml-2">★</span>}
                       </td>
                       <td>{pkg.credits}</td>
                       <td>{pkg.price}</td>
@@ -264,7 +297,7 @@ export default function LandingPage() {
 
           <RevealOnScroll>
             <p className="text-sm text-muted-foreground mt-4">
-              <span className="text-primary">*</span> Most popular
+              ★ Most popular
             </p>
 
             <p className="text-sm text-muted-foreground mt-6 max-w-xl">
@@ -273,7 +306,7 @@ export default function LandingPage() {
             </p>
 
             <div className="mt-8">
-              <Button size="lg" variant="outline" asChild className="group">
+              <Button size="lg" variant="primary" asChild className="group">
                 <Link href="/auth/signup">
                   Get Started <span className="arrow-shift">→</span>
                 </Link>
@@ -314,7 +347,7 @@ export default function LandingPage() {
               Ready? 50 free credits. No credit card.
             </p>
 
-            <Button size="lg" variant="outline" asChild className="group">
+            <Button size="lg" variant="primary" asChild className="group">
               <Link href="/auth/signup">
                 Start Free <span className="arrow-shift">→</span>
               </Link>

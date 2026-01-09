@@ -435,6 +435,84 @@
   background: var(--muted);
 }
 
+/* Popular tier highlight - inverted row */
+.price-table tr.popular td {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.price-table tr.popular:hover td {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Hero stats - GIANT numbers */
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  margin-top: 3rem;
+}
+
+.stat-giant {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-giant .stat-value {
+  font-family: var(--font-family-mono);
+  font-size: clamp(3rem, 10vw, 5rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--primary);
+}
+
+.stat-giant .stat-label {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Social proof section */
+.social-proof {
+  text-align: center;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.social-proof-number {
+  font-family: var(--font-family-mono);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.social-proof-label {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.25rem;
+}
+
+/* Screenshot placeholder */
+.screenshot-placeholder {
+  border: 2px dashed var(--border);
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--muted);
+}
+
+.screenshot-placeholder-text {
+  font-family: var(--font-family-mono);
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /* FAQ */
 .faq-item {
   border-bottom: 1px solid var(--border);
