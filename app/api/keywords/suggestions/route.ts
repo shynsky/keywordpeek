@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import {
-  getRelatedKeywords,
-  getAutocompleteSuggestions,
-} from "@/lib/dataforseo/keywords";
+import { getRelatedKeywords } from "@/lib/dataforseo/keywords";
 import { hasCredits, deductCredits, CREDIT_COSTS } from "@/lib/credits";
 
 export async function POST(request: Request) {
@@ -25,7 +22,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const {
       keyword,
-      type = "both", // "related", "autocomplete", or "both"
       locationCode,
       languageCode,
       limit = 20,
@@ -39,7 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Calculate credits needed
+    // 1 credit for suggestions (uses Labs Related Keywords - cheap)
     const creditsNeeded = CREDIT_COSTS.SUGGESTIONS;
 
     // Check if user has enough credits
@@ -55,36 +51,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch suggestions based on type
-    const results: {
-      related?: string[];
-      autocomplete?: string[];
-    } = {};
-
-    const promises: Promise<void>[] = [];
-
-    if (type === "related" || type === "both") {
-      promises.push(
-        getRelatedKeywords(keyword, { locationCode, languageCode, limit }).then(
-          (data) => {
-            results.related = data;
-          }
-        )
-      );
-    }
-
-    if (type === "autocomplete" || type === "both") {
-      promises.push(
-        getAutocompleteSuggestions(keyword, {
-          locationCode,
-          languageCode,
-        }).then((data) => {
-          results.autocomplete = data;
-        })
-      );
-    }
-
-    await Promise.allSettled(promises);
+    // Fetch related keywords using Labs API
+    const related = await getRelatedKeywords(keyword, {
+      locationCode,
+      languageCode,
+      limit,
+    });
 
     // Deduct credits
     await deductCredits(
@@ -103,7 +75,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({
-      data: results,
+      data: { related },
       creditsUsed: creditsNeeded,
     });
   } catch (error) {

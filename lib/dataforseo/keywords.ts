@@ -8,8 +8,8 @@ import { getClient, DataForSEOApiError } from "./client";
 import { createServiceClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/types";
 import type {
-  KeywordSearchVolumeResult,
-  KeywordsForKeywordsResult,
+  LabsHistoricalSearchVolumeResult,
+  LabsRelatedKeywordsResult,
   GoogleSuggestResult,
   SerpResult,
   PeopleAlsoAskItem,
@@ -193,20 +193,21 @@ async function getCachedKeywords(
 // =============================================================================
 
 /**
- * Transform API response to normalized KeywordResult
+ * Transform Labs API response to normalized KeywordResult
+ * Uses DataForSEO Labs Historical Search Volume endpoint (cheaper than Google Ads API)
  */
-function transformSearchVolumeResult(
-  result: KeywordSearchVolumeResult
+function transformLabsSearchVolumeResult(
+  result: LabsHistoricalSearchVolumeResult
 ): KeywordResult {
-  const { keyword_info, search_intent_info } = result;
+  const { keyword_info, search_intent_info, keyword_properties } = result;
 
-  const competition = keyword_info.competition ?? 0;
-  const searchVolume = keyword_info.search_volume ?? 0;
-  const cpc = keyword_info.cpc ?? 0;
+  const competition = keyword_info?.competition ?? 0;
+  const searchVolume = keyword_info?.search_volume ?? 0;
+  const cpc = keyword_info?.cpc ?? 0;
 
   // Map competition level
   const competitionLevel =
-    keyword_info.competition_level?.toLowerCase() as
+    keyword_info?.competition_level?.toLowerCase() as
       | "low"
       | "medium"
       | "high";
@@ -215,7 +216,7 @@ function transformSearchVolumeResult(
   const intent = search_intent_info?.main_intent ?? null;
 
   // Transform monthly searches to trend
-  const trend: MonthlyTrend[] = (keyword_info.monthly_searches ?? []).map(
+  const trend: MonthlyTrend[] = (keyword_info?.monthly_searches ?? []).map(
     (m) => ({
       year: m.year,
       month: m.month,
@@ -223,13 +224,18 @@ function transformSearchVolumeResult(
     })
   );
 
+  // Use Labs keyword_difficulty if available, otherwise estimate
+  const difficulty =
+    keyword_properties?.keyword_difficulty ??
+    estimateDifficulty(competition, searchVolume);
+
   return {
     keyword: result.keyword,
     searchVolume,
     cpc,
     competition: competitionLevel ?? "medium",
     competitionScore: competition,
-    difficulty: estimateDifficulty(competition, searchVolume),
+    difficulty: Math.round(difficulty),
     keywordScore: calculateKeywordScore(searchVolume, competition, cpc),
     intent,
     trend,
@@ -240,6 +246,8 @@ function transformSearchVolumeResult(
 
 /**
  * Search for keyword data (volume, CPC, competition)
+ * Uses DataForSEO Labs Historical Search Volume API (7x cheaper than Google Ads API)
+ * Max 700 keywords per request
  * Uses cache when available
  */
 export async function searchKeywords(
@@ -276,38 +284,44 @@ export async function searchKeywords(
     );
   }
 
-  // Fetch remaining keywords from API
+  // Fetch remaining keywords from Labs API (max 700 per request)
   if (keywordsToFetch.length > 0) {
     const client = getClient();
+    const MAX_KEYWORDS_PER_REQUEST = 700;
 
-    const response = await client.post<KeywordSearchVolumeResult>(
-      "/v3/keywords_data/google_ads/search_volume/live",
-      [
-        {
-          keywords: keywordsToFetch,
-          location_code: locationCode,
-          language_code: languageCode,
-          include_serp_info: false,
-          include_clickstream_data: false,
-        },
-      ]
-    );
+    // Split into batches if needed
+    for (let i = 0; i < keywordsToFetch.length; i += MAX_KEYWORDS_PER_REQUEST) {
+      const batch = keywordsToFetch.slice(i, i + MAX_KEYWORDS_PER_REQUEST);
 
-    // Process results
-    for (const task of response.tasks) {
-      if (task.result) {
-        for (const item of task.result) {
-          const transformed = transformSearchVolumeResult(item);
-          results.push(transformed);
+      const response = await client.post<LabsHistoricalSearchVolumeResult>(
+        "/v3/dataforseo_labs/google/historical_search_volume/live",
+        [
+          {
+            keywords: batch,
+            location_code: locationCode,
+            language_code: languageCode,
+            include_serp_info: false,
+            include_clickstream_data: false,
+          },
+        ]
+      );
 
-          // Cache the result
-          if (!skipCache) {
-            await cacheKeyword(
-              item.keyword,
-              transformed,
-              locationCode,
-              languageCode
-            );
+      // Process results
+      for (const task of response.tasks) {
+        if (task.result) {
+          for (const item of task.result) {
+            const transformed = transformLabsSearchVolumeResult(item);
+            results.push(transformed);
+
+            // Cache the result
+            if (!skipCache) {
+              await cacheKeyword(
+                item.keyword,
+                transformed,
+                locationCode,
+                languageCode
+              );
+            }
           }
         }
       }
@@ -343,7 +357,8 @@ export async function searchKeyword(
 }
 
 /**
- * Get related keywords (keywords for keywords)
+ * Get related keywords using DataForSEO Labs Related Keywords API
+ * 15x cheaper than Keywords for Keywords + Google Suggest
  */
 export async function getRelatedKeywords(
   keyword: string,
@@ -362,8 +377,8 @@ export async function getRelatedKeywords(
   try {
     const client = getClient();
 
-    const response = await client.post<KeywordsForKeywordsResult>(
-      "/v3/keywords_data/google_ads/keywords_for_keywords/live",
+    const response = await client.post<LabsRelatedKeywordsResult>(
+      "/v3/dataforseo_labs/google/related_keywords/live",
       [
         {
           keyword,
@@ -371,6 +386,7 @@ export async function getRelatedKeywords(
           language_code: languageCode,
           include_seed_keyword: false,
           limit,
+          depth: 1, // Single level depth for speed and cost
         },
       ]
     );
@@ -379,13 +395,18 @@ export async function getRelatedKeywords(
 
     for (const task of response.tasks) {
       if (task.result) {
-        for (const item of task.result) {
-          suggestions.push(item.keyword);
+        for (const result of task.result) {
+          // Get keywords from items array
+          for (const item of result.items ?? []) {
+            if (item.keyword_data?.keyword) {
+              suggestions.push(item.keyword_data.keyword);
+            }
+          }
         }
       }
     }
 
-    return suggestions;
+    return suggestions.slice(0, limit);
   } catch (error) {
     console.error("Failed to get related keywords:", error);
     return [];

@@ -95,46 +95,40 @@ export async function addCredits(
 
 /**
  * Credit costs for different operations
+ * Simplified: 1 credit = 1 search (up to 10 keywords)
+ * Designed for 300-400% margins with DataForSEO Labs API
  */
 export const CREDIT_COSTS = {
-  KEYWORD_SEARCH: 1, // Full keyword lookup
-  BULK_CHECK: 0.2, // Volume-only check per keyword
-  SUGGESTIONS: 0.5, // Autocomplete/related
-  QUESTIONS: 0.5, // People Also Ask
+  // Base cost for keyword search (covers up to 10 keywords)
+  KEYWORD_SEARCH_BASE: 1,
+  // Cost per additional keyword above 10
+  KEYWORD_SEARCH_EXTRA: 0.1,
+  // Bulk check (covers up to 25 keywords)
+  BULK_CHECK: 1,
+  // Related keywords / suggestions
+  SUGGESTIONS: 1,
+  // People Also Ask questions
+  QUESTIONS: 1,
 } as const;
 
 /**
- * Credit packages available for purchase
+ * Calculate credits needed for keyword search
+ * 1-10 keywords: 1 credit
+ * 11+ keywords: 1 + 0.1 per extra keyword
  */
-export const CREDIT_PACKAGES = {
-  starter: {
-    id: "starter",
-    name: "Starter",
-    credits: 1000,
-    price: 9,
-    priceId: process.env.STRIPE_PRICE_STARTER,
-  },
-  growth: {
-    id: "growth",
-    name: "Growth",
-    credits: 3000,
-    price: 19,
-    priceId: process.env.STRIPE_PRICE_GROWTH,
-  },
-  pro: {
-    id: "pro",
-    name: "Pro",
-    credits: 10000,
-    price: 49,
-    priceId: process.env.STRIPE_PRICE_PRO,
-  },
-} as const;
-
-export type CreditPackageId = keyof typeof CREDIT_PACKAGES;
+export function calculateSearchCredits(keywordCount: number): number {
+  if (keywordCount <= 10) {
+    return CREDIT_COSTS.KEYWORD_SEARCH_BASE;
+  }
+  const extraKeywords = keywordCount - 10;
+  return CREDIT_COSTS.KEYWORD_SEARCH_BASE + extraKeywords * CREDIT_COSTS.KEYWORD_SEARCH_EXTRA;
+}
 
 /**
- * Get credit package by Stripe price ID
+ * Calculate credits needed for bulk check
+ * 1-25 keywords: 1 credit
+ * 26+ keywords: 1 credit per 25 keywords (rounded up)
  */
-export function getPackageByPriceId(priceId: string) {
-  return Object.values(CREDIT_PACKAGES).find((pkg) => pkg.priceId === priceId);
+export function calculateBulkCredits(keywordCount: number): number {
+  return Math.ceil(keywordCount / 25) * CREDIT_COSTS.BULK_CHECK;
 }

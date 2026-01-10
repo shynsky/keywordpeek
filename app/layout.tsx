@@ -24,7 +24,7 @@ const firaCode = Fira_Code({
 export const metadata: Metadata = {
   title: "KeywordPeek - Keyword Research Without the Subscription",
   description:
-    "Pay-as-you-go keyword research for bootstrappers. Get volume, difficulty, and CPC data. 50 free lookups, no credit card required.",
+    "Pay-as-you-go keyword research for bootstrappers. Get volume, difficulty, and CPC data. 10 free searches, no credit card required.",
   keywords: [
     "keyword research",
     "seo tool",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "KeywordPeek - Keyword Research Without the Subscription",
     description:
-      "Pay-as-you-go keyword research for bootstrappers. 50 free lookups, no subscription.",
+      "Pay-as-you-go keyword research for bootstrappers. 10 free searches, no subscription.",
     url: "https://keywordpeek.com",
     siteName: "KeywordPeek",
     type: "website",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "KeywordPeek - Keyword Research Without the Subscription",
     description:
-      "Pay-as-you-go keyword research for bootstrappers. 50 free lookups, no subscription.",
+      "Pay-as-you-go keyword research for bootstrappers. 10 free searches, no subscription.",
   },
 };
 

@@ -33,15 +33,15 @@ const FEATURES = [
 ];
 
 const PACKAGES = [
-  { name: "Starter", credits: "1,000", price: "$9", perKeyword: "$0.009", popular: false, tagline: "Test the waters", savings: null },
-  { name: "Growth", credits: "5,000", price: "$24", perKeyword: "$0.0048", popular: true, tagline: "Most users choose this", savings: "Save 47%" },
-  { name: "Pro", credits: "12,000", price: "$79", perKeyword: "$0.0066", popular: false, tagline: "For agencies", savings: null },
+  { name: "Starter", credits: "200", price: "$9", perSearch: "$0.045", popular: false, tagline: "200 searches", savings: null },
+  { name: "Growth", credits: "500", price: "$24", perSearch: "$0.048", popular: true, tagline: "Most popular", savings: "Best value" },
+  { name: "Pro", credits: "1,600", price: "$79", perSearch: "$0.049", popular: false, tagline: "For power users", savings: null },
 ];
 
 const FAQS = [
   {
     q: "How does pay-as-you-go work?",
-    a: "Buy credits. Use credits. 1 keyword = 1 credit. No subscriptions.",
+    a: "Buy credits. Use credits. 1 credit = 1 search (up to 10 keywords). No subscriptions.",
   },
   {
     q: "Where does the data come from?",
@@ -49,15 +49,15 @@ const FAQS = [
   },
   {
     q: "Do credits expire?",
-    a: "No.",
+    a: "Yes, credits are valid for 12 months from purchase. Plenty of time to use them.",
   },
   {
     q: "Can I get a refund?",
-    a: "Credits are non-refundable but never expire. Try free first with 50 credits.",
+    a: "Credits are non-refundable. Try free first with 10 searches.",
   },
   {
     q: "What counts as 1 credit?",
-    a: "1 keyword search = 1 credit. Viewing saved keywords is free.",
+    a: "1 credit = 1 search covering up to 10 keywords. Viewing saved keywords is free.",
   },
   {
     q: "Is there an API?",
@@ -106,7 +106,7 @@ export default function LandingPage() {
             <div className="mb-12">
               <Button size="xl" variant="primary" asChild className="group">
                 <Link href="/auth/signup">
-                  START FREE [50 CREDITS] <span className="arrow-shift ml-2">→</span>
+                  START FREE [10 SEARCHES] <span className="arrow-shift ml-2">→</span>
                 </Link>
               </Button>
             </div>
@@ -232,7 +232,7 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center text-positive">
                 <span>[+]</span>
-                <span className="ml-3">Credits never expire</span>
+                <span className="ml-3">Credits valid for 12 months</span>
               </div>
               <div className="flex items-center text-positive">
                 <span>[+]</span>
@@ -240,7 +240,7 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center text-positive">
                 <span>[+]</span>
-                <span className="ml-3">Start free with 50 credits</span>
+                <span className="ml-3">Start free with 10 searches</span>
               </div>
             </div>
           </RevealOnScroll>

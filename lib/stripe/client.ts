@@ -11,39 +11,41 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 /**
  * Credit packages available for purchase
+ * 1 credit = 1 search (up to 10 keywords)
+ * Optimized for 300-400% margins with DataForSEO Labs API
  */
 export const CREDIT_PACKAGES = {
   starter: {
     id: "starter",
     name: "Starter",
-    credits: 1000,
+    credits: 200,
     price: 900, // $9.00 in cents
     priceDisplay: "$9",
-    perKeyword: "$0.009",
+    perSearch: "$0.045",
     popular: false,
-    tagline: "Test the waters",
+    tagline: "200 searches",
     savings: null,
   },
   growth: {
     id: "growth",
     name: "Growth",
-    credits: 5000,
+    credits: 500,
     price: 2400, // $24.00 in cents
     priceDisplay: "$24",
-    perKeyword: "$0.0048",
+    perSearch: "$0.048",
     popular: true,
-    tagline: "Most users choose this",
-    savings: "Save 47%",
+    tagline: "Most popular",
+    savings: "Best value",
   },
   pro: {
     id: "pro",
     name: "Pro",
-    credits: 12000,
+    credits: 1600,
     price: 7900, // $79.00 in cents
     priceDisplay: "$79",
-    perKeyword: "$0.0066",
+    perSearch: "$0.049",
     popular: false,
-    tagline: "For agencies",
+    tagline: "For power users",
     savings: null,
   },
 } as const;

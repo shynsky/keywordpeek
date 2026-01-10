@@ -30,15 +30,15 @@ export async function GET(request: Request) {
           await supabase.from("profiles").insert({
             id: user.id,
             email: user.email,
-            credits: 50, // 50 free credits for new users
+            credits: 10, // 10 free credits (10 searches) for new users
           });
 
           // Log the free credits as a transaction
           await supabase.from("transactions").insert({
             user_id: user.id,
-            amount: 50,
+            amount: 10,
             type: "bonus",
-            description: "Welcome bonus - 50 free credits",
+            description: "Welcome bonus - 10 free searches",
           });
         }
       }

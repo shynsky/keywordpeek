@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const BENEFITS = [
-  "50 free credits to start",
+  "10 free searches to start",
   "No credit card required",
   "Pay-as-you-go pricing",
   "Accurate keyword data",
@@ -141,7 +141,7 @@ export default function SignupPage() {
             Create your account
           </h1>
           <p className="text-muted-foreground mb-8">
-            Get started with 50 free credits. No credit card required.
+            Get started with 10 free searches. No credit card required.
           </p>
 
           {error && (

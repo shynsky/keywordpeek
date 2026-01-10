@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { searchKeywords, searchKeywordExtended } from "@/lib/dataforseo/keywords";
-import { hasCredits, deductCredits, CREDIT_COSTS } from "@/lib/credits";
+import { hasCredits, deductCredits, calculateSearchCredits, CREDIT_COSTS } from "@/lib/credits";
 
 export async function POST(request: Request) {
   try {
@@ -48,7 +48,8 @@ export async function POST(request: Request) {
     }
 
     // Calculate credits needed
-    const creditsNeeded = keywordList.length * CREDIT_COSTS.KEYWORD_SEARCH;
+    // 1-10 keywords: 1 credit, 11+ keywords: 1 + 0.1 per extra
+    const creditsNeeded = calculateSearchCredits(keywordList.length);
 
     // Check if user has enough credits
     const hasEnough = await hasCredits(user.id, creditsNeeded);

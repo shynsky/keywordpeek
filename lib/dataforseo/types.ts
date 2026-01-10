@@ -304,6 +304,93 @@ export interface RelatedSearchItem {
 }
 
 // =============================================================================
+// DataForSEO Labs API Types
+// =============================================================================
+
+export interface LabsHistoricalSearchVolumeRequest {
+  keywords: string[];
+  location_code?: number;
+  language_code?: string;
+  include_serp_info?: boolean;
+  include_clickstream_data?: boolean;
+}
+
+export interface LabsHistoricalSearchVolumeResult {
+  keyword: string;
+  location_code: number;
+  language_code: string;
+  keyword_info: LabsKeywordInfo;
+  keyword_info_normalized_with_bing?: LabsKeywordInfo;
+  keyword_info_normalized_with_clickstream?: LabsKeywordInfo;
+  serp_info?: SerpInfo;
+  avg_backlinks_info?: AvgBacklinksInfo;
+  search_intent_info?: SearchIntentInfo;
+  keyword_properties?: KeywordProperties;
+}
+
+export interface LabsKeywordInfo {
+  se_type: string;
+  last_updated_time: string;
+  competition: number;
+  competition_level: "LOW" | "MEDIUM" | "HIGH";
+  cpc: number;
+  search_volume: number;
+  low_top_of_page_bid: number;
+  high_top_of_page_bid: number;
+  categories: number[] | null;
+  monthly_searches: MonthlySearch[];
+}
+
+export interface KeywordProperties {
+  se_type: string;
+  core_keyword: string | null;
+  synonym_clustering_algorithm: string | null;
+  keyword_difficulty: number;
+  detected_language: string;
+  is_another_language: boolean;
+}
+
+export interface LabsRelatedKeywordsRequest {
+  keyword: string;
+  location_code?: number;
+  language_code?: string;
+  include_serp_info?: boolean;
+  include_clickstream_data?: boolean;
+  include_seed_keyword?: boolean;
+  limit?: number;
+  depth?: number;
+}
+
+export interface LabsRelatedKeywordsResult {
+  se_type: string;
+  seed_keyword: string;
+  seed_keyword_data: LabsKeywordData | null;
+  location_code: number;
+  language_code: string;
+  total_count: number;
+  items_count: number;
+  items: LabsRelatedKeywordItem[];
+}
+
+export interface LabsKeywordData {
+  keyword: string;
+  keyword_info: LabsKeywordInfo;
+  keyword_info_normalized_with_bing?: LabsKeywordInfo;
+  keyword_info_normalized_with_clickstream?: LabsKeywordInfo;
+  serp_info?: SerpInfo;
+  avg_backlinks_info?: AvgBacklinksInfo;
+  search_intent_info?: SearchIntentInfo;
+  keyword_properties?: KeywordProperties;
+}
+
+export interface LabsRelatedKeywordItem {
+  se_type: string;
+  keyword_data: LabsKeywordData;
+  depth: number;
+  related_keywords: string[] | null;
+}
+
+// =============================================================================
 // KeywordPeek Internal Types
 // =============================================================================
 

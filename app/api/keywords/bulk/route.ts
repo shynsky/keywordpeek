@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { searchKeywords } from "@/lib/dataforseo/keywords";
-import { hasCredits, deductCredits, CREDIT_COSTS } from "@/lib/credits";
+import { hasCredits, deductCredits, calculateBulkCredits } from "@/lib/credits";
 import type { KeywordBulkResult } from "@/lib/dataforseo/types";
 
 export async function POST(request: Request) {
@@ -45,8 +45,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Calculate credits needed (bulk rate: 0.2 credits per keyword)
-    const creditsNeeded = Math.ceil(keywords.length * CREDIT_COSTS.BULK_CHECK);
+    // Calculate credits needed (1 credit per 25 keywords)
+    const creditsNeeded = calculateBulkCredits(keywords.length);
 
     // Check if user has enough credits
     const hasEnough = await hasCredits(user.id, creditsNeeded);
