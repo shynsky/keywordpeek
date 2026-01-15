@@ -85,7 +85,7 @@ export default function DashboardPage() {
       }
 
       // Transform API response to KeywordData format
-      const keywordData: KeywordData[] = data.keywords.map((kw: {
+      const keywordData: KeywordData[] = data.data.map((kw: {
         keyword: string;
         searchVolume: number;
         difficulty: number;
