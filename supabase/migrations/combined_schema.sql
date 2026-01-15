@@ -10,13 +10,13 @@
 create table public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text,
-  credits int default 10 not null,  -- Start with 10 free credits
+  credits int default 50 not null,  -- Start with 50 free credits
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );
 
 comment on table public.profiles is 'User profiles with credit balance';
-comment on column public.profiles.credits is 'Current credit balance, starts at 10';
+comment on column public.profiles.credits is 'Current credit balance, starts at 50';
 
 -- Projects (workspaces for organizing keywords)
 create table public.projects (
