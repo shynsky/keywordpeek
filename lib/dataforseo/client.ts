@@ -13,16 +13,24 @@ class DataForSEOClient {
   private authHeader: string;
 
   constructor() {
+    // Option 1: Use pre-encoded base64 string (recommended)
+    const authBase64 = process.env.DATAFORSEO_AUTH;
+
+    if (authBase64) {
+      this.authHeader = `Basic ${authBase64}`;
+      return;
+    }
+
+    // Option 2: Encode login:password ourselves (fallback)
     const login = process.env.DATAFORSEO_LOGIN;
     const password = process.env.DATAFORSEO_PASSWORD;
 
     if (!login || !password) {
       throw new Error(
-        "DataForSEO credentials not configured. Set DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD."
+        "DataForSEO credentials not configured. Set DATAFORSEO_AUTH (base64) or DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD."
       );
     }
 
-    // Basic Auth: base64 encode "login:password"
     this.authHeader = `Basic ${Buffer.from(`${login}:${password}`).toString("base64")}`;
   }
 
