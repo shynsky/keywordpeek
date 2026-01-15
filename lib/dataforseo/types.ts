@@ -315,6 +315,18 @@ export interface LabsHistoricalSearchVolumeRequest {
   include_clickstream_data?: boolean;
 }
 
+/**
+ * Container for Labs Historical Search Volume results
+ * API returns: tasks[].result[].items[]
+ */
+export interface LabsHistoricalSearchVolumeResultContainer {
+  se_type: string;
+  location_code: number;
+  language_code: string;
+  items_count: number;
+  items: LabsHistoricalSearchVolumeResult[] | null;
+}
+
 export interface LabsHistoricalSearchVolumeResult {
   keyword: string;
   location_code: number;

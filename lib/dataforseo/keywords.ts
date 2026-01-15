@@ -9,6 +9,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/types";
 import type {
   LabsHistoricalSearchVolumeResult,
+  LabsHistoricalSearchVolumeResultContainer,
   LabsRelatedKeywordsResult,
   GoogleSuggestResult,
   SerpResult,
@@ -293,7 +294,7 @@ export async function searchKeywords(
     for (let i = 0; i < keywordsToFetch.length; i += MAX_KEYWORDS_PER_REQUEST) {
       const batch = keywordsToFetch.slice(i, i + MAX_KEYWORDS_PER_REQUEST);
 
-      const response = await client.post<LabsHistoricalSearchVolumeResult>(
+      const response = await client.post<LabsHistoricalSearchVolumeResultContainer>(
         "/v3/dataforseo_labs/google/historical_search_volume/live",
         [
           {
@@ -307,20 +308,26 @@ export async function searchKeywords(
       );
 
       // Process results
+      // API structure: tasks[].result[].items[] where items contains keyword data
       for (const task of response.tasks) {
         if (task.result) {
-          for (const item of task.result) {
-            const transformed = transformLabsSearchVolumeResult(item);
-            results.push(transformed);
+          for (const resultContainer of task.result) {
+            // Handle case when items is null (no data for keyword)
+            if (resultContainer.items) {
+              for (const item of resultContainer.items) {
+                const transformed = transformLabsSearchVolumeResult(item);
+                results.push(transformed);
 
-            // Cache the result
-            if (!skipCache) {
-              await cacheKeyword(
-                item.keyword,
-                transformed,
-                locationCode,
-                languageCode
-              );
+                // Cache the result
+                if (!skipCache) {
+                  await cacheKeyword(
+                    item.keyword,
+                    transformed,
+                    locationCode,
+                    languageCode
+                  );
+                }
+              }
             }
           }
         }
