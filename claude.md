@@ -74,3 +74,9 @@ STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
 NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ```
+
+### Supabase URL Configuration
+- **Site URL**: `https://keywordpeek.com`
+- **Redirect URLs**:
+  - `https://keywordpeek.com/**`
+  - `http://localhost:3000/**` (for local dev)

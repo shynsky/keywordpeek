@@ -34,6 +34,20 @@ export async function createClient() {
  * Use this for admin operations that bypass RLS.
  * NEVER expose this client to the browser.
  */
+/**
+ * Get authenticated user (or mock user in dev mode).
+ * Use this in API routes instead of supabase.auth.getUser().
+ */
+export async function getAuthUser() {
+  const DEV_USER_ID = process.env.DEV_USER_ID;
+  if (DEV_USER_ID) {
+    return { id: DEV_USER_ID, email: "dev@localhost" };
+  }
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+}
+
 export async function createServiceClient() {
   const cookieStore = await cookies();
 

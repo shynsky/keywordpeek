@@ -374,7 +374,7 @@ export default function LandingPage() {
                     <th className="p-4 text-left uppercase tracking-wider">Plan</th>
                     <th className="p-4 text-right uppercase tracking-wider">Credits</th>
                     <th className="p-4 text-right uppercase tracking-wider">Price</th>
-                    <th className="p-4 text-right uppercase tracking-wider">Per Keyword</th>
+                    <th className="p-4 text-right uppercase tracking-wider">Per Search</th>
                     <th className="p-4 text-right uppercase tracking-wider"></th>
                   </tr>
                 </thead>
@@ -392,7 +392,7 @@ export default function LandingPage() {
                       <td className="p-4 text-right">
                         <span className="text-2xl font-bold">{pkg.price}</span>
                       </td>
-                      <td className="p-4 text-right tabular-nums text-muted-foreground">{pkg.perKeyword}</td>
+                      <td className="p-4 text-right tabular-nums text-muted-foreground">{pkg.perSearch}</td>
                       <td className="p-4 text-right">
                         {pkg.savings && (
                           <span className="bg-primary text-primary-foreground px-2 py-1 text-xs font-bold uppercase">

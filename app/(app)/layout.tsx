@@ -44,6 +44,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchCredits = async () => {
       const supabase = createClient();
+
+      // Dev mode: use mock user ID
+      const devUserId = process.env.NEXT_PUBLIC_DEV_USER_ID;
+      if (devUserId) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("credits")
+          .eq("id", devUserId)
+          .single();
+
+        if (profile) {
+          setCredits(profile.credits);
+        }
+        return;
+      }
+
+      // Production: use real auth
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -65,6 +82,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleSignOut = async () => {
+    // Dev mode: just redirect
+    if (process.env.NEXT_PUBLIC_DEV_USER_ID) {
+      window.location.href = "/";
+      return;
+    }
     const supabase = createClient();
     await supabase.auth.signOut();
     window.location.href = "/";
