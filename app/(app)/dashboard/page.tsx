@@ -12,8 +12,26 @@ import type { Json } from "@/lib/supabase/types";
 import { Sparkles, Target, TrendingUp, Coins, AlertCircle, History, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import {
+  OnboardingProvider,
+  useOnboarding,
+  WelcomeModal,
+  SuggestionCards,
+  ResultsEducationCard,
+  DiscoverMorePrompt,
+  ProjectPrompt,
+} from "@/components/onboarding";
 
 export default function DashboardPage() {
+  return (
+    <OnboardingProvider>
+      <WelcomeModal />
+      <DashboardContent />
+    </OnboardingProvider>
+  );
+}
+
+function DashboardContent() {
   const [keywords, setKeywords] = useState<KeywordData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +43,7 @@ export default function DashboardPage() {
     query_keywords: string[];
     created_at: string;
   }[]>([]);
+  const { state: onboardingState, incrementSearchCount } = useOnboarding();
 
   // Fetch initial data
   useEffect(() => {
@@ -122,13 +141,16 @@ export default function DashboardPage() {
       if (data.creditsRemaining !== undefined) {
         setCredits(data.creditsRemaining);
       }
+
+      // Track for onboarding
+      incrementSearchCount();
     } catch (err) {
       setError("An error occurred while searching. Please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [incrementSearchCount]);
 
   const handleCreateProject = async (name: string, domain?: string): Promise<Project> => {
     const supabase = createClient();
@@ -255,6 +277,15 @@ export default function DashboardPage() {
 
           {/* Results table */}
           <KeywordTable keywords={keywords} isLoading={isLoading} />
+
+          {/* Onboarding: Education card after first search */}
+          {!isLoading && keywords.length > 0 && <ResultsEducationCard />}
+
+          {/* Onboarding: Feature discovery prompts */}
+          {!isLoading && keywords.length > 0 && <DiscoverMorePrompt />}
+
+          {/* Onboarding: Soft project creation prompt */}
+          {!isLoading && keywords.length > 0 && <ProjectPrompt />}
         </div>
       )}
 
@@ -309,8 +340,15 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Empty state */}
-      {!isLoading && keywords.length === 0 && (
+      {/* Onboarding: Suggestion cards when user selected intent but hasn't searched yet */}
+      {!isLoading && keywords.length === 0 && onboardingState.intent && !onboardingState.completedSteps.firstSearch && (
+        <div className="animate-fade-in-up stagger-2">
+          <SuggestionCards onSearch={handleSearch} isLoading={isLoading} />
+        </div>
+      )}
+
+      {/* Empty state - show when not in onboarding suggestion flow */}
+      {!isLoading && keywords.length === 0 && (!onboardingState.intent || onboardingState.completedSteps.firstSearch) && (
         <div className="text-center py-20 animate-fade-in-up stagger-2">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-primary mb-8 shadow-playful-lg animate-float">
             <Sparkles className="h-10 w-10 text-white" />

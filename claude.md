@@ -75,6 +75,8 @@ NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ```
 
+**Note**: The dev server (`npm run dev`) requires all Supabase environment variables in `.env.local`. Without them, middleware fails with "Your project's URL and Key are required". Use `npm run build` to verify compilation without running the server.
+
 ### Supabase URL Configuration
 - **Site URL**: `https://keywordpeek.com`
 - **Redirect URLs**:
