@@ -227,6 +227,50 @@ export type Database = {
         };
         Relationships: [];
       };
+      search_history: {
+        Row: {
+          id: string;
+          user_id: string;
+          query_keywords: string[];
+          results_count: number;
+          credits_used: number;
+          results: Json;
+          location_code: number | null;
+          language_code: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          query_keywords: string[];
+          results_count: number;
+          credits_used: number;
+          results: Json;
+          location_code?: number | null;
+          language_code?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          query_keywords?: string[];
+          results_count?: number;
+          credits_used?: number;
+          results?: Json;
+          location_code?: number | null;
+          language_code?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "search_history_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -263,6 +307,20 @@ export type Database = {
         };
         Returns: number;
       };
+      reserve_credits: {
+        Args: {
+          p_user_id: string;
+          p_amount: number;
+          p_description?: string | null;
+        };
+        Returns: string;
+      };
+      rollback_credits: {
+        Args: {
+          p_transaction_id: string;
+        };
+        Returns: number;
+      };
     };
     Enums: {
       [_ in never]: never;
@@ -280,6 +338,7 @@ export type Keyword = Database["public"]["Tables"]["keywords"]["Row"];
 export type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 export type ApiUsage = Database["public"]["Tables"]["api_usage"]["Row"];
 export type KeywordCache = Database["public"]["Tables"]["keyword_cache"]["Row"];
+export type SearchHistory = Database["public"]["Tables"]["search_history"]["Row"];
 
 // Insert types
 export type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
@@ -288,6 +347,7 @@ export type KeywordInsert = Database["public"]["Tables"]["keywords"]["Insert"];
 export type TransactionInsert = Database["public"]["Tables"]["transactions"]["Insert"];
 export type ApiUsageInsert = Database["public"]["Tables"]["api_usage"]["Insert"];
 export type KeywordCacheInsert = Database["public"]["Tables"]["keyword_cache"]["Insert"];
+export type SearchHistoryInsert = Database["public"]["Tables"]["search_history"]["Insert"];
 
 // Update types
 export type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];

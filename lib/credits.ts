@@ -94,6 +94,50 @@ export async function addCredits(
 }
 
 /**
+ * Reserve credits atomically before an API call
+ * Returns transaction ID for potential rollback on failure
+ */
+export async function reserveCredits(
+  userId: string,
+  amount: number,
+  description?: string
+): Promise<string> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("reserve_credits", {
+    p_user_id: userId,
+    p_amount: amount,
+    p_description: description ?? null,
+  });
+
+  if (error) {
+    console.error("Error reserving credits:", error);
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+/**
+ * Rollback reserved credits on API failure
+ * Returns new balance after refund
+ */
+export async function rollbackCredits(transactionId: string): Promise<number> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("rollback_credits", {
+    p_transaction_id: transactionId,
+  });
+
+  if (error) {
+    console.error("Error rolling back credits:", error);
+    throw new Error(error.message);
+  }
+
+  return data ?? 0;
+}
+
+/**
  * Credit costs for different operations
  * Simplified: 1 credit = 1 search (up to 10 keywords)
  * Designed for 300-400% margins with DataForSEO Labs API

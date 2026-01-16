@@ -9,7 +9,8 @@ import { ProjectSelector, type Project } from "@/components/project-selector";
 import { LowCreditWarning } from "@/components/credit-display";
 import { createClient } from "@/lib/supabase/client";
 import type { Json } from "@/lib/supabase/types";
-import { Sparkles, Target, TrendingUp, Coins, AlertCircle } from "lucide-react";
+import { Sparkles, Target, TrendingUp, Coins, AlertCircle, History, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -19,6 +20,11 @@ export default function DashboardPage() {
   const [credits, setCredits] = useState<number | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [recentSearches, setRecentSearches] = useState<{
+    id: string;
+    query_keywords: string[];
+    created_at: string;
+  }[]>([]);
 
   // Fetch initial data
   useEffect(() => {
@@ -55,6 +61,13 @@ export default function DashboardPage() {
               domain: p.domain,
             }))
           );
+        }
+
+        // Fetch recent searches
+        const historyResponse = await fetch("/api/keywords/history?limit=5");
+        if (historyResponse.ok) {
+          const historyData = await historyResponse.json();
+          setRecentSearches(historyData.data || []);
         }
       }
     };
@@ -242,6 +255,57 @@ export default function DashboardPage() {
 
           {/* Results table */}
           <KeywordTable keywords={keywords} isLoading={isLoading} />
+        </div>
+      )}
+
+      {/* Recent searches quick access */}
+      {!isLoading && keywords.length === 0 && recentSearches.length > 0 && (
+        <div className="animate-fade-in-up stagger-2">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <History className="h-5 w-5 text-muted-foreground" />
+              <h2 className="font-bold text-lg">Recent Searches</h2>
+            </div>
+            <Link
+              href="/dashboard/history"
+              className="text-sm text-primary hover:underline flex items-center gap-1"
+            >
+              View all
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {recentSearches.slice(0, 6).map((search) => (
+              <div
+                key={search.id}
+                className="p-4 rounded-xl border-2 border-border bg-card hover:border-primary/30 transition-colors"
+              >
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {search.query_keywords.slice(0, 2).map((kw, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2 py-0.5 rounded-md bg-muted text-xs font-medium truncate max-w-[100px]"
+                    >
+                      {kw}
+                    </span>
+                  ))}
+                  {search.query_keywords.length > 2 && (
+                    <span className="text-xs text-muted-foreground">
+                      +{search.query_keywords.length - 2}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {new Date(search.created_at).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

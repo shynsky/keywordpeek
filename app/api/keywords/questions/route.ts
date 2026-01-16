@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getPeopleAlsoAsk } from "@/lib/dataforseo/keywords";
-import { hasCredits, deductCredits, CREDIT_COSTS } from "@/lib/credits";
+import { reserveCredits, rollbackCredits, getBalance, CREDIT_COSTS } from "@/lib/credits";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try {
@@ -12,6 +13,12 @@ export async function POST(request: Request) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Check rate limit (100 requests per minute per user)
+    const rateLimit = checkRateLimit(user.id, 100, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -31,9 +38,15 @@ export async function POST(request: Request) {
     // Calculate credits needed
     const creditsNeeded = CREDIT_COSTS.QUESTIONS;
 
-    // Check if user has enough credits
-    const hasEnough = await hasCredits(user.id, creditsNeeded);
-    if (!hasEnough) {
+    // Reserve credits BEFORE API call (atomic with rollback capability)
+    let transactionId: string;
+    try {
+      transactionId = await reserveCredits(
+        user.id,
+        creditsNeeded,
+        `People Also Ask: "${keyword}"`
+      );
+    } catch (err) {
       return NextResponse.json(
         {
           error: "Insufficient credits",
@@ -44,18 +57,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch People Also Ask questions
-    const questions = await getPeopleAlsoAsk(keyword, {
-      locationCode,
-      languageCode,
-    });
+    // Fetch People Also Ask questions - rollback on failure
+    let questions;
+    try {
+      questions = await getPeopleAlsoAsk(keyword, {
+        locationCode,
+        languageCode,
+      });
+    } catch (apiError) {
+      await rollbackCredits(transactionId);
+      throw apiError;
+    }
 
-    // Deduct credits
-    await deductCredits(
-      user.id,
-      creditsNeeded,
-      `People Also Ask: "${keyword}"`
-    );
+    // Get current balance after successful deduction
+    const newBalance = await getBalance(user.id);
 
     // Log API usage
     await supabase.from("api_usage").insert({
@@ -69,6 +84,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       data: { questions },
       creditsUsed: creditsNeeded,
+      creditsRemaining: newBalance,
     });
   } catch (error) {
     console.error("Questions error:", error);

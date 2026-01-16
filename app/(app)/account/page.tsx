@@ -13,40 +13,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { CreditDisplay } from "@/components/credit-display";
 import { createClient } from "@/lib/supabase/client";
+import { CREDIT_PACKAGES } from "@/lib/stripe/client";
 import { cn } from "@/lib/utils";
 
-const PACKAGES = [
-  {
-    id: "starter",
-    name: "Starter",
-    credits: 1000,
-    price: "$9",
-    perKeyword: "$0.009",
-    popular: false,
-    tagline: "Test the waters",
-    savings: null,
-  },
-  {
-    id: "growth",
-    name: "Growth",
-    credits: 5000,
-    price: "$24",
-    perKeyword: "$0.0048",
-    popular: true,
-    tagline: "Most users choose this",
-    savings: "Save 47%",
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    credits: 12000,
-    price: "$79",
-    perKeyword: "$0.0066",
-    popular: false,
-    tagline: "For agencies",
-    savings: null,
-  },
-];
+// Convert CREDIT_PACKAGES to array for mapping
+const PACKAGES = Object.values(CREDIT_PACKAGES);
 
 interface Transaction {
   id: string;
@@ -270,14 +241,14 @@ export default function AccountPage() {
                     "font-mono font-bold",
                     pkg.popular ? "text-5xl" : "text-4xl"
                   )}>
-                    {pkg.price}
+                    {pkg.priceDisplay}
                   </span>
                 </div>
                 <p className={cn(
                   "text-sm mt-2",
                   pkg.popular ? "text-background/70" : "text-muted-foreground"
                 )}>
-                  {pkg.perKeyword} per keyword
+                  {pkg.perSearch} per search
                 </p>
                 {pkg.savings && (
                   <p className="mt-2 text-sm font-bold bg-primary text-primary-foreground py-1 px-3 inline-block">

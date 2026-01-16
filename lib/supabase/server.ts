@@ -39,8 +39,9 @@ export async function createClient() {
  * Use this in API routes instead of supabase.auth.getUser().
  */
 export async function getAuthUser() {
+  // Dev mode: return mock user (only in development)
   const DEV_USER_ID = process.env.DEV_USER_ID;
-  if (DEV_USER_ID) {
+  if (DEV_USER_ID && process.env.NODE_ENV === "development") {
     return { id: DEV_USER_ID, email: "dev@localhost" };
   }
   const supabase = await createClient();

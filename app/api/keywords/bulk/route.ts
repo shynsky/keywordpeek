@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { searchKeywords } from "@/lib/dataforseo/keywords";
-import { hasCredits, deductCredits, calculateBulkCredits } from "@/lib/credits";
+import { reserveCredits, rollbackCredits, getBalance, calculateBulkCredits } from "@/lib/credits";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import type { KeywordBulkResult } from "@/lib/dataforseo/types";
 
 export async function POST(request: Request) {
@@ -13,6 +14,12 @@ export async function POST(request: Request) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Check rate limit (100 requests per minute per user)
+    const rateLimit = checkRateLimit(user.id, 100, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -46,9 +53,15 @@ export async function POST(request: Request) {
     // Calculate credits needed (1 credit per 25 keywords)
     const creditsNeeded = calculateBulkCredits(keywords.length);
 
-    // Check if user has enough credits
-    const hasEnough = await hasCredits(user.id, creditsNeeded);
-    if (!hasEnough) {
+    // Reserve credits BEFORE API call (atomic with rollback capability)
+    let transactionId: string;
+    try {
+      transactionId = await reserveCredits(
+        user.id,
+        creditsNeeded,
+        `Bulk keyword check: ${keywords.length} keywords`
+      );
+    } catch (err) {
       return NextResponse.json(
         {
           error: "Insufficient credits",
@@ -59,11 +72,17 @@ export async function POST(request: Request) {
       );
     }
 
-    // Perform search
-    const results = await searchKeywords(keywords, {
-      locationCode,
-      languageCode,
-    });
+    // Perform search - rollback credits if this fails
+    let results;
+    try {
+      results = await searchKeywords(keywords, {
+        locationCode,
+        languageCode,
+      });
+    } catch (apiError) {
+      await rollbackCredits(transactionId);
+      throw apiError;
+    }
 
     // Transform to bulk result format (lighter weight)
     const bulkResults: KeywordBulkResult[] = results.map((r) => ({
@@ -73,12 +92,8 @@ export async function POST(request: Request) {
       keywordScore: r.keywordScore,
     }));
 
-    // Deduct credits
-    await deductCredits(
-      user.id,
-      creditsNeeded,
-      `Bulk keyword check: ${keywords.length} keywords`
-    );
+    // Get current balance after successful deduction
+    const newBalance = await getBalance(user.id);
 
     // Log API usage
     await supabase.from("api_usage").insert({
@@ -92,6 +107,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       data: bulkResults,
       creditsUsed: creditsNeeded,
+      creditsRemaining: newBalance,
       keywordsProcessed: results.length,
     });
   } catch (error) {

@@ -8,6 +8,7 @@ import {
   FolderOpen,
   Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -81,6 +82,7 @@ export function ProjectSelector({
       setNewProjectDomain("");
     } catch (error) {
       console.error("Failed to create project:", error);
+      toast.error("Failed to create project. Please try again.");
     } finally {
       setIsCreating(false);
     }

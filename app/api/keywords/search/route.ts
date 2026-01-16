@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { searchKeywords, searchKeywordExtended } from "@/lib/dataforseo/keywords";
-import { hasCredits, deductCredits, calculateSearchCredits, CREDIT_COSTS } from "@/lib/credits";
+import { reserveCredits, rollbackCredits, getBalance, calculateSearchCredits } from "@/lib/credits";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import type { Json } from "@/lib/supabase/types";
 
 export async function POST(request: Request) {
   try {
@@ -12,6 +14,12 @@ export async function POST(request: Request) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Check rate limit (100 requests per minute per user)
+    const rateLimit = checkRateLimit(user.id, 100, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -49,9 +57,16 @@ export async function POST(request: Request) {
     // 1-10 keywords: 1 credit, 11+ keywords: 1 + 0.1 per extra
     const creditsNeeded = calculateSearchCredits(keywordList.length);
 
-    // Check if user has enough credits
-    const hasEnough = await hasCredits(user.id, creditsNeeded);
-    if (!hasEnough) {
+    // Reserve credits BEFORE API call (atomic with rollback capability)
+    let transactionId: string;
+    try {
+      transactionId = await reserveCredits(
+        user.id,
+        creditsNeeded,
+        `Keyword search: ${keywordList.length} keyword(s)`
+      );
+    } catch (err) {
+      // Insufficient credits or user not found
       return NextResponse.json(
         {
           error: "Insufficient credits",
@@ -62,32 +77,34 @@ export async function POST(request: Request) {
       );
     }
 
-    // Perform search
+    // Perform search - rollback credits if this fails
     let results;
-    if (extended && keywordList.length === 1) {
-      // Extended search for single keyword
-      const result = await searchKeywordExtended(keywordList[0], {
-        locationCode,
-        languageCode,
-        includeRelated: true,
-        includeAutocomplete: true,
-        includeQuestions: true,
-      });
-      results = result ? [result] : [];
-    } else {
-      // Basic search for multiple keywords
-      results = await searchKeywords(keywordList, {
-        locationCode,
-        languageCode,
-      });
+    try {
+      if (extended && keywordList.length === 1) {
+        // Extended search for single keyword
+        const result = await searchKeywordExtended(keywordList[0], {
+          locationCode,
+          languageCode,
+          includeRelated: true,
+          includeAutocomplete: true,
+          includeQuestions: true,
+        });
+        results = result ? [result] : [];
+      } else {
+        // Basic search for multiple keywords
+        results = await searchKeywords(keywordList, {
+          locationCode,
+          languageCode,
+        });
+      }
+    } catch (apiError) {
+      // Rollback credits on API failure
+      await rollbackCredits(transactionId);
+      throw apiError;
     }
 
-    // Deduct credits
-    await deductCredits(
-      user.id,
-      creditsNeeded,
-      `Keyword search: ${keywordList.length} keyword(s)`
-    );
+    // Get current balance after successful deduction
+    const newBalance = await getBalance(user.id);
 
     // Log API usage
     await supabase.from("api_usage").insert({
@@ -98,9 +115,21 @@ export async function POST(request: Request) {
       response_status: 200,
     });
 
+    // Save to search history for user to view later
+    await supabase.from("search_history").insert({
+      user_id: user.id,
+      query_keywords: keywordList,
+      results_count: results.length,
+      credits_used: creditsNeeded,
+      results: results as unknown as Json,
+      location_code: locationCode || 2840,
+      language_code: languageCode || "en",
+    });
+
     return NextResponse.json({
       data: results,
       creditsUsed: creditsNeeded,
+      creditsRemaining: newBalance,
     });
   } catch (error) {
     console.error("Keyword search error:", error);

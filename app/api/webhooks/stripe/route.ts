@@ -29,24 +29,33 @@ export async function POST(request: Request) {
   }
 
   // Handle the event
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await handleCheckoutCompleted(session);
-      break;
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutCompleted(session);
+        break;
+      }
+
+      case "payment_intent.succeeded": {
+        // Log for debugging, but main logic is in checkout.session.completed
+        console.log("Payment succeeded:", event.data.object);
+        break;
+      }
+
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
     }
 
-    case "payment_intent.succeeded": {
-      // Log for debugging, but main logic is in checkout.session.completed
-      console.log("Payment succeeded:", event.data.object);
-      break;
-    }
-
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
+    return NextResponse.json({ received: true });
+  } catch (error) {
+    // Return 500 to trigger Stripe retry
+    console.error("Webhook processing failed:", error);
+    return NextResponse.json(
+      { error: "Webhook processing failed" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({ received: true });
 }
 
 /**
@@ -57,12 +66,33 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const credits = parseInt(session.metadata?.credits || "0", 10);
   const packageId = session.metadata?.packageId;
 
+  // Validate required metadata
   if (!userId || !credits) {
-    console.error("Missing metadata in checkout session:", session.id);
-    return;
+    console.error("WEBHOOK_ERROR: Missing metadata", {
+      sessionId: session.id,
+      userId,
+      credits,
+      packageId,
+      timestamp: new Date().toISOString(),
+    });
+    // Throw to trigger Stripe retry - this is a configuration error
+    throw new Error(`Missing metadata in checkout session: ${session.id}`);
   }
 
   const supabase = await createServiceClient();
+
+  // Check for duplicate processing (idempotency)
+  const { data: existingTx } = await supabase
+    .from("transactions")
+    .select("id")
+    .eq("stripe_session_id", session.id)
+    .single();
+
+  if (existingTx) {
+    // Already processed - this is fine, just acknowledge
+    console.log(`Webhook already processed for session: ${session.id}`);
+    return;
+  }
 
   // Add credits to user
   const { data: newBalance, error: creditError } = await supabase.rpc(
@@ -77,11 +107,22 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   );
 
   if (creditError) {
-    console.error("Error adding credits:", creditError);
-    return;
+    console.error("WEBHOOK_ERROR: Credit add failed", {
+      sessionId: session.id,
+      userId,
+      credits,
+      error: creditError,
+      timestamp: new Date().toISOString(),
+    });
+    // Throw to trigger Stripe retry
+    throw new Error(`Failed to add credits: ${creditError.message}`);
   }
 
-  console.log(
-    `Added ${credits} credits to user ${userId}. New balance: ${newBalance}`
-  );
+  console.log("WEBHOOK_SUCCESS: Credits added", {
+    sessionId: session.id,
+    userId,
+    credits,
+    newBalance,
+    timestamp: new Date().toISOString(),
+  });
 }

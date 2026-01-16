@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getRelatedKeywords } from "@/lib/dataforseo/keywords";
-import { hasCredits, deductCredits, CREDIT_COSTS } from "@/lib/credits";
+import { reserveCredits, rollbackCredits, getBalance, CREDIT_COSTS } from "@/lib/credits";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try {
@@ -12,6 +13,12 @@ export async function POST(request: Request) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Check rate limit (100 requests per minute per user)
+    const rateLimit = checkRateLimit(user.id, 100, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -36,9 +43,15 @@ export async function POST(request: Request) {
     // 1 credit for suggestions (uses Labs Related Keywords - cheap)
     const creditsNeeded = CREDIT_COSTS.SUGGESTIONS;
 
-    // Check if user has enough credits
-    const hasEnough = await hasCredits(user.id, creditsNeeded);
-    if (!hasEnough) {
+    // Reserve credits BEFORE API call (atomic with rollback capability)
+    let transactionId: string;
+    try {
+      transactionId = await reserveCredits(
+        user.id,
+        creditsNeeded,
+        `Keyword suggestions: "${keyword}"`
+      );
+    } catch (err) {
       return NextResponse.json(
         {
           error: "Insufficient credits",
@@ -49,19 +62,21 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch related keywords using Labs API
-    const related = await getRelatedKeywords(keyword, {
-      locationCode,
-      languageCode,
-      limit,
-    });
+    // Fetch related keywords using Labs API - rollback on failure
+    let related;
+    try {
+      related = await getRelatedKeywords(keyword, {
+        locationCode,
+        languageCode,
+        limit,
+      });
+    } catch (apiError) {
+      await rollbackCredits(transactionId);
+      throw apiError;
+    }
 
-    // Deduct credits
-    await deductCredits(
-      user.id,
-      creditsNeeded,
-      `Keyword suggestions: "${keyword}"`
-    );
+    // Get current balance after successful deduction
+    const newBalance = await getBalance(user.id);
 
     // Log API usage
     await supabase.from("api_usage").insert({
@@ -75,6 +90,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       data: { related },
       creditsUsed: creditsNeeded,
+      creditsRemaining: newBalance,
     });
   } catch (error) {
     console.error("Suggestions error:", error);

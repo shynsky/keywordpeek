@@ -2,9 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
-  // Dev mode: bypass auth entirely
+  // Dev mode: bypass auth entirely (only in development)
   const DEV_USER_ID = process.env.DEV_USER_ID;
-  if (DEV_USER_ID) {
+  if (DEV_USER_ID && process.env.NODE_ENV === "development") {
     return NextResponse.next({ request });
   }
 

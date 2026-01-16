@@ -15,7 +15,7 @@ npm run test:run -- tests/unit/lib/credits.test.ts  # Run single test file
 
 ## Deployment
 
-- **Frontend**: Vercel connected to GitHub. Push to `main` to deploy.
+- **Frontend**: Push to `main` on GitHub to deploy (Vercel auto-deploys from GitHub).
 - **Database**: Supabase. Run migrations manually via SQL Editor in dashboard.
 - **Migrations**: Located in `supabase/migrations/`. Copy SQL to Supabase SQL Editor.
 

@@ -34,6 +34,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Project {
   id: string;
@@ -117,7 +118,9 @@ export default function ProjectsPage() {
       domain: newProjectDomain.trim() || null,
     });
 
-    if (!error) {
+    if (error) {
+      toast.error("Failed to create project. Please try again.");
+    } else {
       setNewProjectName("");
       setNewProjectDomain("");
       setIsCreateDialogOpen(false);
@@ -138,7 +141,9 @@ export default function ProjectsPage() {
       })
       .eq("id", editingProject.id);
 
-    if (!error) {
+    if (error) {
+      toast.error("Failed to update project. Please try again.");
+    } else {
       setEditingProject(null);
       fetchProjects();
     }
@@ -149,7 +154,9 @@ export default function ProjectsPage() {
     const supabase = createClient();
     const { error } = await supabase.from("projects").delete().eq("id", projectId);
 
-    if (!error) {
+    if (error) {
+      toast.error("Failed to delete project. Please try again.");
+    } else {
       setProjects((prev) => prev.filter((p) => p.id !== projectId));
     }
     setDeletingProjectId(null);

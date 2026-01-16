@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Search,
   FolderOpen,
+  History,
   Coins,
   Settings,
   LogOut,
@@ -29,6 +30,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Research", href: "/dashboard", icon: Search, emoji: "🔍" },
   { label: "Projects", href: "/dashboard/projects", icon: FolderOpen, emoji: "📁" },
+  { label: "History", href: "/dashboard/history", icon: History, emoji: "📋" },
 ];
 
 const bottomNavItems: NavItem[] = [
