@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Lightbulb, Loader2, MapPin, Globe, Search } from "lucide-react";
+import { Lightbulb, Loader2, Globe, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LocationSelector } from "@/components/ui/location-selector";
 import { cn } from "@/lib/utils";
+import { DEFAULT_LOCATION_CODE } from "@/lib/constants/locations";
 
 export type InputMode = "ai" | "manual";
 
@@ -23,20 +25,6 @@ interface ResearchInputProps {
   defaultMode?: InputMode;
 }
 
-// Common locations with their DataForSEO codes
-const LOCATIONS = [
-  { code: 2840, name: "United States", language: "en", flag: "US" },
-  { code: 2826, name: "United Kingdom", language: "en", flag: "GB" },
-  { code: 2124, name: "Canada", language: "en", flag: "CA" },
-  { code: 2036, name: "Australia", language: "en", flag: "AU" },
-  { code: 2276, name: "Germany", language: "de", flag: "DE" },
-  { code: 2250, name: "France", language: "fr", flag: "FR" },
-  { code: 2724, name: "Spain", language: "es", flag: "ES" },
-  { code: 2484, name: "Mexico", language: "es", flag: "MX" },
-  { code: 2076, name: "Brazil", language: "pt", flag: "BR" },
-  { code: 2356, name: "India", language: "en", flag: "IN" },
-  { code: 2320, name: "Guatemala", language: "es", flag: "GT" },
-];
 
 export function ResearchInput({
   onSubmit,
@@ -48,11 +36,10 @@ export function ResearchInput({
   const [mode, setMode] = useState<InputMode>(defaultMode);
   const [description, setDescription] = useState(defaultDescription);
   const [manualKeywords, setManualKeywords] = useState("");
-  const [locationCode, setLocationCode] = useState(2840);
+  const [locationCode, setLocationCode] = useState(DEFAULT_LOCATION_CODE);
+  const [languageCode, setLanguageCode] = useState("en");
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const selectedLocation = LOCATIONS.find((l) => l.code === locationCode) || LOCATIONS[0];
 
   // Parse manual keywords from textarea (comma or newline separated)
   const parseKeywords = (input: string): string[] => {
@@ -76,7 +63,7 @@ export function ResearchInput({
         mode: "ai",
         description: description.trim(),
         locationCode,
-        languageCode: selectedLocation.language,
+        languageCode,
       });
     } else {
       if (!isValidManual) return;
@@ -84,7 +71,7 @@ export function ResearchInput({
         mode: "manual",
         keywords: parsedKeywords,
         locationCode,
-        languageCode: selectedLocation.language,
+        languageCode,
       });
     }
   };
@@ -208,32 +195,20 @@ export function ResearchInput({
 
           {/* Footer with location selector and submit */}
           <div className="flex items-center justify-between px-5 py-3 border-t border-border/50 bg-muted/30 rounded-b-2xl">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               {/* Location selector */}
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <select
-                  value={locationCode}
-                  onChange={(e) => setLocationCode(Number(e.target.value))}
-                  disabled={isLoading}
-                  className={cn(
-                    "bg-transparent text-sm font-medium cursor-pointer",
-                    "outline-none border-none",
-                    "disabled:opacity-50 disabled:cursor-not-allowed"
-                  )}
-                >
-                  {LOCATIONS.map((loc) => (
-                    <option key={loc.code} value={loc.code}>
-                      {loc.flag} {loc.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
+              <LocationSelector
+                value={locationCode}
+                onValueChange={(code, lang) => {
+                  setLocationCode(code);
+                  setLanguageCode(lang);
+                }}
+                disabled={isLoading}
+              />
               {/* Language indicator */}
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <Globe className="h-4 w-4" />
-                <span className="uppercase">{selectedLocation.language}</span>
+                <span className="uppercase">{languageCode}</span>
               </div>
             </div>
 

@@ -5,6 +5,10 @@
  */
 
 import { getOpenAI, OPENAI_CONFIG } from "./client";
+import {
+  LOCATIONS_BY_CODE,
+  DEFAULT_LOCATION_CODE,
+} from "@/lib/constants/locations";
 
 /**
  * Generated keywords response
@@ -16,34 +20,6 @@ export interface GeneratedKeywords {
 }
 
 /**
- * Location info for prompts
- */
-interface LocationInfo {
-  name: string;
-  code: number;
-  language: string;
-  languageCode: string;
-}
-
-/**
- * Common locations mapping
- */
-export const LOCATIONS: Record<number, LocationInfo> = {
-  2840: { name: "United States", code: 2840, language: "English", languageCode: "en" },
-  2826: { name: "United Kingdom", code: 2826, language: "English", languageCode: "en" },
-  2124: { name: "Canada", code: 2124, language: "English", languageCode: "en" },
-  2036: { name: "Australia", code: 2036, language: "English", languageCode: "en" },
-  2276: { name: "Germany", code: 2276, language: "German", languageCode: "de" },
-  2250: { name: "France", code: 2250, language: "French", languageCode: "fr" },
-  2724: { name: "Spain", code: 2724, language: "Spanish", languageCode: "es" },
-  2484: { name: "Mexico", code: 2484, language: "Spanish", languageCode: "es" },
-  2076: { name: "Brazil", code: 2076, language: "Portuguese", languageCode: "pt" },
-  2356: { name: "India", code: 2356, language: "English", languageCode: "en" },
-  2392: { name: "Japan", code: 2392, language: "Japanese", languageCode: "ja" },
-  2320: { name: "Guatemala", code: 2320, language: "Spanish", languageCode: "es" },
-};
-
-/**
  * Generate keyword ideas from a natural language description
  *
  * @param description - User's description of their niche/idea
@@ -53,18 +29,18 @@ export const LOCATIONS: Record<number, LocationInfo> = {
  */
 export async function generateKeywords(
   description: string,
-  locationCode: number = 2840,
+  locationCode: number = DEFAULT_LOCATION_CODE,
   languageCode: string = "en"
 ): Promise<GeneratedKeywords> {
   const openai = getOpenAI();
-  const location = LOCATIONS[locationCode] || LOCATIONS[2840];
+  const location = LOCATIONS_BY_CODE.get(locationCode) ?? LOCATIONS_BY_CODE.get(DEFAULT_LOCATION_CODE)!;
 
   const systemPrompt = `You are a keyword research assistant specializing in SEO. Generate search keywords that real users would type into Google.
 
 Your task: Generate 10-15 keyword ideas for market validation based on the user's description.
 
 Rules:
-1. Generate keywords in ${languageCode === "en" ? "English" : location.language} appropriate for ${location.name}
+1. Generate keywords in ${languageCode === "en" ? "English" : location.languageName} appropriate for ${location.name}
 2. Mix different intents: informational (how to, what is), commercial (best, review), transactional (buy, price)
 3. Include a mix of short-tail (1-2 words) and long-tail (3-5 words) keywords
 4. Focus on keywords real people would search for
@@ -81,7 +57,7 @@ Output ONLY valid JSON in this exact format, no other text:
 "${description}"
 
 Location: ${location.name}
-Language: ${languageCode === "en" ? "English" : location.language}`;
+Language: ${languageCode === "en" ? "English" : location.languageName}`;
 
   const response = await openai.chat.completions.create({
     model: OPENAI_CONFIG.model,

@@ -10,7 +10,6 @@ export {
   generateKeywords,
   generateTitle,
   classifyKeywordIntents,
-  LOCATIONS,
   type GeneratedKeywords,
   type KeywordIntent,
 } from "./keywords";

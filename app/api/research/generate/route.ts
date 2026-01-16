@@ -12,6 +12,10 @@ import {
 } from "@/lib/credits";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { createSession, updateSession } from "@/lib/research/sessions";
+import {
+  DEFAULT_LOCATION_CODE,
+  DEFAULT_LANGUAGE_CODE,
+} from "@/lib/constants/locations";
 
 /**
  * POST /api/research/generate
@@ -36,8 +40,8 @@ export async function POST(request: Request) {
     const {
       description,
       keywords: manualKeywords,
-      locationCode = 2840,
-      languageCode = "en",
+      locationCode = DEFAULT_LOCATION_CODE,
+      languageCode = DEFAULT_LANGUAGE_CODE,
       sessionId,
     } = body;
 
