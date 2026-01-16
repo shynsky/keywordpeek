@@ -109,19 +109,12 @@ export function LocationSelector({
                       <span>{location.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span
-                        className={cn(
-                          "text-xs uppercase font-medium px-1.5 py-0.5 rounded",
-                          value === location.code
-                            ? "bg-white/20 text-white"
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
+                      <span className="text-xs uppercase font-medium tracking-wide text-muted-foreground group-data-[selected=true]:text-accent-foreground">
                         {location.languageCode}
                       </span>
                       <Check
                         className={cn(
-                          "h-4 w-4 shrink-0 text-muted-foreground",
+                          "h-4 w-4 shrink-0 text-muted-foreground group-data-[selected=true]:text-accent-foreground",
                           value === location.code ? "opacity-100" : "opacity-0"
                         )}
                       />

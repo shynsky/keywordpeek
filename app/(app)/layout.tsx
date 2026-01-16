@@ -99,7 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile header */}
       <header className="lg:hidden sticky top-0 z-50 border-b-2 border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between h-16 px-4">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
+          <Link href="/dashboard" className="flex items-center gap-2.5 no-underline">
             <div className="w-9 h-9 rounded-xl bg-gradient-primary flex items-center justify-center shadow-playful">
               <span className="text-white font-bold text-sm">K</span>
             </div>
@@ -176,7 +176,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 border-r-2 border-border bg-card">
           {/* Logo */}
           <div className="flex items-center gap-3 h-20 px-6 border-b-2 border-border">
-            <Link href="/dashboard" className="flex items-center gap-3">
+            <Link href="/dashboard" className="flex items-center gap-3 no-underline">
               <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-playful animate-float">
                 <span className="text-white font-bold text-lg">K</span>
               </div>
