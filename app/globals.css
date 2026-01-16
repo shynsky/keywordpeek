@@ -355,6 +355,10 @@
   outline-offset: 2px;
 }
 
+[data-slot="command-input"]:focus-visible {
+  outline: none;
+}
+
 /* Scrollbar - minimal */
 ::-webkit-scrollbar {
   width: 8px;
