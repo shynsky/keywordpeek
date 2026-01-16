@@ -1,4 +1,4 @@
-export { ResearchInput } from "./research-input";
+export { ResearchInput, type InputMode, type ResearchSubmitParams } from "./research-input";
 export { ValidationSummary } from "./validation-summary";
 export { CompetitorCard, CompetitorList } from "./competitor-card";
 export { ContentPlan, ContentClusterCard, ContentGapCard } from "./content-plan";

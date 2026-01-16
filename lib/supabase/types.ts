@@ -280,6 +280,8 @@ export type Database = {
           location_code: number;
           language_code: string;
           status: string;
+          input_mode: string;
+          manual_keywords: string[] | null;
           generated_keywords: string[] | null;
           keywords: Json | null;
           validation_summary: Json | null;
@@ -300,6 +302,8 @@ export type Database = {
           location_code?: number;
           language_code?: string;
           status?: string;
+          input_mode?: string;
+          manual_keywords?: string[] | null;
           generated_keywords?: string[] | null;
           keywords?: Json | null;
           validation_summary?: Json | null;
@@ -320,6 +324,8 @@ export type Database = {
           location_code?: number;
           language_code?: string;
           status?: string;
+          input_mode?: string;
+          manual_keywords?: string[] | null;
           generated_keywords?: string[] | null;
           keywords?: Json | null;
           validation_summary?: Json | null;

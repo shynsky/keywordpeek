@@ -16,6 +16,7 @@ import {
   RecentSessions,
   SessionHeader,
   type ResearchTab,
+  type ResearchSubmitParams,
 } from "@/components/research";
 import type { ResearchSession } from "@/lib/research/sessions";
 import type { ValidationSummary as ValidationSummaryType } from "@/lib/openai";
@@ -92,7 +93,7 @@ export default function DashboardPage() {
 
   // Handle research generation (Tab 1)
   const handleGenerate = useCallback(
-    async (description: string, locationCode: number, languageCode: string) => {
+    async (params: ResearchSubmitParams) => {
       setError(null);
       setLoadingTab("validation");
 
@@ -101,9 +102,10 @@ export default function DashboardPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            description,
-            locationCode,
-            languageCode,
+            description: params.mode === "ai" ? params.description : undefined,
+            keywords: params.mode === "manual" ? params.keywords : undefined,
+            locationCode: params.locationCode,
+            languageCode: params.languageCode,
             sessionId: currentSession?.id,
           }),
         });

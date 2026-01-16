@@ -33,39 +33,65 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { description, locationCode = 2840, languageCode = "en", sessionId } = body;
+    const {
+      description,
+      keywords: manualKeywords,
+      locationCode = 2840,
+      languageCode = "en",
+      sessionId,
+    } = body;
 
-    // Validate input
-    if (!description || typeof description !== "string") {
-      return NextResponse.json(
-        { error: "Description is required" },
-        { status: 400 }
-      );
+    // Determine mode based on input
+    const isManualMode = Array.isArray(manualKeywords) && manualKeywords.length > 0;
+
+    // Validate input based on mode
+    if (isManualMode) {
+      // Manual mode validation
+      if (manualKeywords.length > 20) {
+        return NextResponse.json(
+          { error: "Maximum 20 keywords allowed" },
+          { status: 400 }
+        );
+      }
+      if (manualKeywords.some((kw: string) => typeof kw !== "string" || kw.length > 80)) {
+        return NextResponse.json(
+          { error: "Invalid keywords format" },
+          { status: 400 }
+        );
+      }
+    } else {
+      // AI mode validation
+      if (!description || typeof description !== "string") {
+        return NextResponse.json(
+          { error: "Description is required" },
+          { status: 400 }
+        );
+      }
+
+      if (description.length < 10) {
+        return NextResponse.json(
+          { error: "Description must be at least 10 characters" },
+          { status: 400 }
+        );
+      }
+
+      if (description.length > 500) {
+        return NextResponse.json(
+          { error: "Description must be less than 500 characters" },
+          { status: 400 }
+        );
+      }
     }
 
-    if (description.length < 10) {
-      return NextResponse.json(
-        { error: "Description must be at least 10 characters" },
-        { status: 400 }
-      );
-    }
-
-    if (description.length > 500) {
-      return NextResponse.json(
-        { error: "Description must be less than 500 characters" },
-        { status: 400 }
-      );
-    }
-
-    // Estimate credits needed:
-    // - LLM keyword generation: 1 credit
-    // - Keyword search (assuming ~15 keywords): ~2 credits
-    // - LLM validation summary: 1 credit
-    // Total: ~4 credits minimum
-    const estimatedCredits =
-      CREDIT_COSTS.LLM_KEYWORD_GENERATION +
-      calculateSearchCredits(15) +
-      CREDIT_COSTS.LLM_VALIDATION_SUMMARY;
+    // Estimate credits needed based on mode:
+    // AI mode: LLM (1) + search (~2) + summary (1) = ~4 credits
+    // Manual mode: search (~2) + summary (1) = ~3 credits
+    const keywordCount = isManualMode ? manualKeywords.length : 15;
+    const estimatedCredits = isManualMode
+      ? calculateSearchCredits(keywordCount) + CREDIT_COSTS.LLM_VALIDATION_SUMMARY
+      : CREDIT_COSTS.LLM_KEYWORD_GENERATION +
+        calculateSearchCredits(keywordCount) +
+        CREDIT_COSTS.LLM_VALIDATION_SUMMARY;
 
     // Reserve credits
     let transactionId: string;
@@ -89,20 +115,32 @@ export async function POST(request: Request) {
     let actualCreditsUsed = 0;
 
     try {
-      // Step 1: Generate keywords with LLM
-      const generated = await generateKeywords(description, locationCode, languageCode);
-      actualCreditsUsed += CREDIT_COSTS.LLM_KEYWORD_GENERATION;
+      let keywordsToSearch: string[];
+      let generatedData: { keywords: string[]; seedTopics: string[]; marketAngle: string } | null =
+        null;
 
-      if (!generated.keywords || generated.keywords.length === 0) {
-        throw new Error("No keywords generated. Please try a more specific description.");
+      if (isManualMode) {
+        // Manual mode: Use provided keywords directly
+        keywordsToSearch = manualKeywords.map((kw: string) => kw.trim().toLowerCase());
+      } else {
+        // AI mode: Generate keywords with LLM
+        const generated = await generateKeywords(description, locationCode, languageCode);
+        actualCreditsUsed += CREDIT_COSTS.LLM_KEYWORD_GENERATION;
+
+        if (!generated.keywords || generated.keywords.length === 0) {
+          throw new Error("No keywords generated. Please try a more specific description.");
+        }
+
+        keywordsToSearch = generated.keywords;
+        generatedData = generated;
       }
 
-      // Step 2: Search keywords with DataForSEO
-      const keywordResults = await searchKeywords(generated.keywords, {
+      // Step 2: Search keywords with DataForSEO (same for both modes)
+      const keywordResults = await searchKeywords(keywordsToSearch, {
         locationCode,
         languageCode,
       });
-      actualCreditsUsed += calculateSearchCredits(generated.keywords.length);
+      actualCreditsUsed += calculateSearchCredits(keywordsToSearch.length);
 
       // Step 3: Generate validation summary with LLM
       const keywordsWithMetrics = keywordResults.map((k) => ({
@@ -112,9 +150,14 @@ export async function POST(request: Request) {
         cpc: k.cpc,
       }));
 
+      // For manual mode, create a simple description for the summary
+      const summaryDescription = isManualMode
+        ? `Keywords: ${keywordsToSearch.slice(0, 5).join(", ")}${keywordsToSearch.length > 5 ? "..." : ""}`
+        : description;
+
       const validationSummary = await generateValidationSummary(
         keywordsWithMetrics,
-        description
+        summaryDescription
       );
       actualCreditsUsed += CREDIT_COSTS.LLM_VALIDATION_SUMMARY;
 
@@ -122,21 +165,25 @@ export async function POST(request: Request) {
       let currentSessionId = sessionId;
 
       if (!currentSessionId) {
-        // Generate title and create new session
-        const title = await generateTitle(description);
+        // Generate title
+        const title = isManualMode
+          ? `${keywordsToSearch[0]}${keywordsToSearch.length > 1 ? ` (+${keywordsToSearch.length - 1})` : ""}`
+          : await generateTitle(description);
 
         const session = await createSession(user.id, {
           title,
-          description,
+          description: isManualMode ? undefined : description,
           locationCode,
           languageCode,
+          inputMode: isManualMode ? "manual" : "ai",
+          manualKeywords: isManualMode ? keywordsToSearch : undefined,
         });
         currentSessionId = session.id;
       }
 
       // Update session with results
       await updateSession(currentSessionId, {
-        generatedKeywords: generated.keywords,
+        generatedKeywords: keywordsToSearch,
         keywords: keywordResults,
         validationSummary,
         creditsUsed: actualCreditsUsed,
@@ -152,16 +199,17 @@ export async function POST(request: Request) {
         user_id: user.id,
         endpoint: "/api/research/generate",
         credits_used: actualCreditsUsed,
-        keywords_count: generated.keywords.length,
+        keywords_count: keywordsToSearch.length,
         response_status: 200,
       });
 
       return NextResponse.json({
         data: {
           sessionId: currentSessionId,
-          generatedKeywords: generated.keywords,
-          seedTopics: generated.seedTopics,
-          marketAngle: generated.marketAngle,
+          mode: isManualMode ? "manual" : "ai",
+          generatedKeywords: keywordsToSearch,
+          seedTopics: generatedData?.seedTopics || [],
+          marketAngle: generatedData?.marketAngle || null,
           keywords: keywordResults,
           validationSummary,
         },

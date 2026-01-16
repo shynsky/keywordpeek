@@ -20,6 +20,11 @@ import type { CompetitorDomain, CompetitorKeyword } from "@/lib/dataforseo/compe
 export type SessionStatus = "in_progress" | "completed";
 
 /**
+ * Input mode for research session
+ */
+export type InputMode = "ai" | "manual";
+
+/**
  * Research session data
  */
 export interface ResearchSession {
@@ -30,6 +35,8 @@ export interface ResearchSession {
   locationCode: number;
   languageCode: string;
   status: SessionStatus;
+  inputMode: InputMode;
+  manualKeywords: string[] | null;
 
   // Tab 1: Validation data
   generatedKeywords: string[] | null;
@@ -59,6 +66,8 @@ export interface CreateSessionInput {
   description?: string;
   locationCode?: number;
   languageCode?: string;
+  inputMode?: InputMode;
+  manualKeywords?: string[];
 }
 
 /**
@@ -91,6 +100,8 @@ interface ResearchSessionRow {
   location_code: number;
   language_code: string;
   status: string;
+  input_mode: string;
+  manual_keywords: string[] | null;
   generated_keywords: string[] | null;
   keywords: Json;
   validation_summary: Json;
@@ -120,6 +131,8 @@ function rowToSession(row: ResearchSessionRow): ResearchSession {
     locationCode: row.location_code,
     languageCode: row.language_code,
     status: row.status as SessionStatus,
+    inputMode: (row.input_mode as InputMode) || "ai",
+    manualKeywords: row.manual_keywords,
     generatedKeywords: row.generated_keywords,
     keywords: row.keywords as KeywordResult[] | null,
     validationSummary: row.validation_summary as ValidationSummary | null,
@@ -155,6 +168,8 @@ export async function createSession(
       description: input.description ?? null,
       location_code: input.locationCode ?? 2840,
       language_code: input.languageCode ?? "en",
+      input_mode: input.inputMode ?? "ai",
+      manual_keywords: input.manualKeywords ?? null,
     })
     .select()
     .single();
