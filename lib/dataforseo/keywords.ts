@@ -206,12 +206,12 @@ function transformLabsSearchVolumeResult(
   const searchVolume = keyword_info?.search_volume ?? 0;
   const cpc = keyword_info?.cpc ?? 0;
 
-  // Map competition level
-  const competitionLevel =
-    keyword_info?.competition_level?.toLowerCase() as
-      | "low"
-      | "medium"
-      | "high";
+  // Map competition level (with safe default)
+  const rawLevel = keyword_info?.competition_level?.toLowerCase();
+  const competitionLevel: "low" | "medium" | "high" =
+    rawLevel === "low" || rawLevel === "medium" || rawLevel === "high"
+      ? rawLevel
+      : "medium";
 
   // Map intent
   const intent = search_intent_info?.main_intent ?? null;
@@ -234,7 +234,7 @@ function transformLabsSearchVolumeResult(
     keyword: result.keyword,
     searchVolume,
     cpc,
-    competition: competitionLevel ?? "medium",
+    competition: competitionLevel,
     competitionScore: competition,
     difficulty: Math.round(difficulty),
     keywordScore: calculateKeywordScore(searchVolume, competition, cpc),

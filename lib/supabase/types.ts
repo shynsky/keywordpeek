@@ -398,6 +398,13 @@ export type Database = {
         };
         Returns: number;
       };
+      add_session_credits_used: {
+        Args: {
+          p_session_id: string;
+          p_credits: number;
+        };
+        Returns: number;
+      };
     };
     Enums: {
       [_ in never]: never;

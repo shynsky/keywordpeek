@@ -15,9 +15,9 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
 
-    // Pagination params
-    const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 100);
-    const offset = parseInt(searchParams.get("offset") || "0");
+    // Pagination params (validated to prevent negative values)
+    const limit = Math.max(1, Math.min(parseInt(searchParams.get("limit") || "20") || 20, 100));
+    const offset = Math.max(0, parseInt(searchParams.get("offset") || "0") || 0);
 
     // Fetch search history
     const { data: history, error, count } = await supabase

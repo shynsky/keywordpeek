@@ -168,14 +168,20 @@ export async function POST(request: Request) {
       // Get updated balance
       const newBalance = await getBalance(user.id);
 
-      // Log API usage
-      const supabase = await createClient();
-      await supabase.from("api_usage").insert({
-        user_id: user.id,
-        endpoint: "/api/research/competitors",
-        credits_used: actualCreditsUsed,
-        keywords_count: serpKeywords.length,
-        response_status: 200,
+      // Log API usage (fire-and-forget, don't fail request if logging fails)
+      createClient().then((supabase) => {
+        supabase
+          .from("api_usage")
+          .insert({
+            user_id: user.id,
+            endpoint: "/api/research/competitors",
+            credits_used: actualCreditsUsed,
+            keywords_count: serpKeywords.length,
+            response_status: 200,
+          })
+          .then(({ error }) => {
+            if (error) console.error("Failed to log API usage:", error);
+          });
       });
 
       return NextResponse.json({

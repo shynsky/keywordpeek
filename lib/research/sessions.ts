@@ -301,38 +301,25 @@ export async function deleteSession(sessionId: string): Promise<void> {
 }
 
 /**
- * Add credits used to a session (incremental)
+ * Add credits used to a session (atomic increment via RPC)
  */
 export async function addCreditsUsed(
   sessionId: string,
   credits: number
-): Promise<void> {
+): Promise<number> {
   const supabase = await createClient();
 
-  // Get current credits
-  const { data: session, error: getError } = await supabase
-    .from("research_sessions")
-    .select("credits_used")
-    .eq("id", sessionId)
-    .single();
+  const { data, error } = await supabase.rpc("add_session_credits_used", {
+    p_session_id: sessionId,
+    p_credits: credits,
+  });
 
-  if (getError) {
-    console.error("Error getting session credits:", getError);
-    throw new Error(`Failed to get session: ${getError.message}`);
+  if (error) {
+    console.error("Error adding session credits:", error);
+    throw new Error(`Failed to add credits: ${error.message}`);
   }
 
-  const currentCredits = (session as { credits_used: number }).credits_used ?? 0;
-
-  // Update with new total
-  const { error: updateError } = await supabase
-    .from("research_sessions")
-    .update({ credits_used: currentCredits + credits })
-    .eq("id", sessionId);
-
-  if (updateError) {
-    console.error("Error updating session credits:", updateError);
-    throw new Error(`Failed to update credits: ${updateError.message}`);
-  }
+  return data ?? 0;
 }
 
 /**
