@@ -100,7 +100,7 @@ export function LocationSelector({
                     key={location.code}
                     value={`${location.name} ${location.countryCode}`}
                     onSelect={() => handleSelect(location)}
-                    className="flex items-center justify-between"
+                    className="group flex items-center justify-between cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-base">
@@ -109,12 +109,19 @@ export function LocationSelector({
                       <span>{location.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground uppercase">
+                      <span
+                        className={cn(
+                          "text-xs text-muted-foreground uppercase transition-opacity duration-150",
+                          value === location.code
+                            ? "opacity-100"
+                            : "opacity-0 group-hover:opacity-100"
+                        )}
+                      >
                         {location.languageCode}
                       </span>
                       <Check
                         className={cn(
-                          "h-4 w-4 shrink-0",
+                          "h-4 w-4 shrink-0 text-muted-foreground",
                           value === location.code ? "opacity-100" : "opacity-0"
                         )}
                       />
