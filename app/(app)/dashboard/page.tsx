@@ -1,49 +1,56 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { KeywordSearch } from "@/components/keyword-search";
-import { KeywordTable, type KeywordData } from "@/components/keyword-table";
-import { CsvExportButton } from "@/components/csv-export-button";
-import { BulkSaveButton } from "@/components/save-keyword-button";
-import { ProjectSelector, type Project } from "@/components/project-selector";
-import { LowCreditWarning } from "@/components/credit-display";
+import { Sparkles, AlertCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import type { Json } from "@/lib/supabase/types";
-import { Sparkles, Target, TrendingUp, Coins, AlertCircle, History, ChevronRight } from "lucide-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { LowCreditWarning } from "@/components/credit-display";
+import { KeywordTable, type KeywordData } from "@/components/keyword-table";
 import {
-  OnboardingProvider,
-  useOnboarding,
-  WelcomeModal,
-  SuggestionCards,
-  ResultsEducationCard,
-  DiscoverMorePrompt,
-  ProjectPrompt,
-} from "@/components/onboarding";
+  ResearchInput,
+  ValidationSummary,
+  CompetitorList,
+  ContentPlan,
+  ResearchTabs,
+  TabContent,
+  RecentSessions,
+  SessionHeader,
+  type ResearchTab,
+} from "@/components/research";
+import type { ResearchSession } from "@/lib/research/sessions";
+import type { ValidationSummary as ValidationSummaryType } from "@/lib/openai";
+import type { CompetitorDomain, CompetitorKeyword } from "@/lib/dataforseo/competitors";
+import type { ContentCluster, ContentGap } from "@/lib/openai";
 
 export default function DashboardPage() {
-  return (
-    <OnboardingProvider>
-      <WelcomeModal />
-      <DashboardContent />
-    </OnboardingProvider>
-  );
-}
-
-function DashboardContent() {
-  const [keywords, setKeywords] = useState<KeywordData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // UI State
   const [credits, setCredits] = useState<number | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [recentSearches, setRecentSearches] = useState<{
-    id: string;
-    query_keywords: string[];
-    created_at: string;
-  }[]>([]);
-  const { state: onboardingState, incrementSearchCount } = useOnboarding();
+  const [error, setError] = useState<string | null>(null);
+
+  // Session state
+  const [currentSession, setCurrentSession] = useState<ResearchSession | null>(null);
+  const [recentSessions, setRecentSessions] = useState<ResearchSession[]>([]);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(true);
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<ResearchTab>("validation");
+  const [completedTabs, setCompletedTabs] = useState<ResearchTab[]>([]);
+  const [loadingTab, setLoadingTab] = useState<ResearchTab | null>(null);
+
+  // Tab 1: Validation data
+  const [keywords, setKeywords] = useState<KeywordData[]>([]);
+  const [validationSummary, setValidationSummary] = useState<ValidationSummaryType | null>(null);
+
+  // Tab 2: Competitor data
+  const [competitors, setCompetitors] = useState<CompetitorDomain[]>([]);
+  const [competitorKeywords, setCompetitorKeywords] = useState<Array<{
+    domain: string;
+    keywords: CompetitorKeyword[];
+  }>>([]);
+
+  // Tab 3: Content plan data
+  const [contentClusters, setContentClusters] = useState<ContentCluster[]>([]);
+  const [contentGaps, setContentGaps] = useState<ContentGap[]>([]);
 
   // Fetch initial data
   useEffect(() => {
@@ -65,44 +72,124 @@ function DashboardContent() {
           setCredits(profile.credits);
         }
 
-        // Fetch projects
-        const { data: projectsData } = await supabase
-          .from("projects")
-          .select("id, name, domain")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
-
-        if (projectsData) {
-          setProjects(
-            projectsData.map((p) => ({
-              id: p.id,
-              name: p.name,
-              domain: p.domain,
-            }))
-          );
-        }
-
-        // Fetch recent searches
-        const historyResponse = await fetch("/api/keywords/history?limit=5");
-        if (historyResponse.ok) {
-          const historyData = await historyResponse.json();
-          setRecentSearches(historyData.data || []);
+        // Fetch recent research sessions
+        try {
+          const response = await fetch("/api/research/sessions?limit=6");
+          if (response.ok) {
+            const data = await response.json();
+            setRecentSessions(data.data || []);
+          }
+        } catch {
+          console.error("Failed to fetch sessions");
         }
       }
+
+      setIsLoadingSessions(false);
     };
 
     fetchData();
   }, []);
 
-  const handleSearch = useCallback(async (searchKeywords: string[]) => {
-    setIsLoading(true);
+  // Handle research generation (Tab 1)
+  const handleGenerate = useCallback(
+    async (description: string, locationCode: number, languageCode: string) => {
+      setError(null);
+      setLoadingTab("validation");
+
+      try {
+        const response = await fetch("/api/research/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            description,
+            locationCode,
+            languageCode,
+            sessionId: currentSession?.id,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (response.status === 402) {
+            setError("Insufficient credits. Please purchase more credits to continue.");
+          } else {
+            setError(data.error || "Failed to generate keywords");
+          }
+          return;
+        }
+
+        // Transform keywords to KeywordData format
+        const keywordData: KeywordData[] = data.data.keywords.map(
+          (kw: {
+            keyword: string;
+            searchVolume: number;
+            difficulty: number;
+            cpc: number;
+            competition: string;
+            keywordScore: number;
+            trend?: { year: number; month: number; volume: number }[];
+          }) => ({
+            keyword: kw.keyword,
+            searchVolume: kw.searchVolume,
+            difficulty: kw.difficulty,
+            cpc: kw.cpc,
+            competition: kw.competition as "low" | "medium" | "high",
+            keywordScore: kw.keywordScore,
+            trend: kw.trend,
+          })
+        );
+
+        setKeywords(keywordData);
+        setValidationSummary(data.data.validationSummary);
+
+        // Set session if new
+        if (!currentSession) {
+          // Fetch the full session
+          const sessionResponse = await fetch(
+            `/api/research/sessions/${data.data.sessionId}`
+          );
+          if (sessionResponse.ok) {
+            const sessionData = await sessionResponse.json();
+            setCurrentSession(sessionData.data);
+          }
+        }
+
+        // Mark validation as completed
+        setCompletedTabs(["validation"]);
+
+        // Update credits
+        if (data.creditsRemaining !== undefined) {
+          setCredits(data.creditsRemaining);
+        }
+      } catch (err) {
+        setError("An error occurred. Please try again.");
+        console.error(err);
+      } finally {
+        setLoadingTab(null);
+      }
+    },
+    [currentSession]
+  );
+
+  // Handle competitor discovery (Tab 2)
+  const handleFindCompetitors = useCallback(async () => {
+    if (!currentSession) return;
+
     setError(null);
+    setLoadingTab("competitors");
+    setActiveTab("competitors");
 
     try {
-      const response = await fetch("/api/keywords/search", {
+      const response = await fetch("/api/research/competitors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keywords: searchKeywords }),
+        body: JSON.stringify({
+          sessionId: currentSession.id,
+          serpKeywordCount: 5,
+          competitorLimit: 5,
+          fetchCompetitorKeywords: true,
+        }),
       });
 
       const data = await response.json();
@@ -111,21 +198,89 @@ function DashboardContent() {
         if (response.status === 402) {
           setError("Insufficient credits. Please purchase more credits to continue.");
         } else {
-          setError(data.error || "Failed to search keywords");
+          setError(data.error || "Failed to discover competitors");
         }
         return;
       }
 
-      // Transform API response to KeywordData format
-      const keywordData: KeywordData[] = data.data.map((kw: {
-        keyword: string;
-        searchVolume: number;
-        difficulty: number;
-        cpc: number;
-        competition: string;
-        keywordScore: number;
-        trend?: { year: number; month: number; volume: number }[];
-      }) => ({
+      setCompetitors(data.data.competitors);
+      setCompetitorKeywords(
+        data.data.competitorKeywords.map((ck: { domain: string; topKeywords: CompetitorKeyword[] }) => ({
+          domain: ck.domain,
+          keywords: ck.topKeywords,
+        }))
+      );
+
+      // Mark competitors as completed
+      setCompletedTabs((prev) => [...prev, "competitors"]);
+
+      // Update credits
+      if (data.creditsRemaining !== undefined) {
+        setCredits(data.creditsRemaining);
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setLoadingTab(null);
+    }
+  }, [currentSession]);
+
+  // Handle content planning (Tab 3)
+  const handleGenerateContentPlan = useCallback(async () => {
+    if (!currentSession) return;
+
+    setError(null);
+    setLoadingTab("content");
+    setActiveTab("content");
+
+    try {
+      const response = await fetch("/api/research/content-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: currentSession.id,
+          includeGaps: competitors.length > 0,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 402) {
+          setError("Insufficient credits. Please purchase more credits to continue.");
+        } else {
+          setError(data.error || "Failed to generate content plan");
+        }
+        return;
+      }
+
+      setContentClusters(data.data.clusters);
+      setContentGaps(data.data.contentGaps);
+
+      // Mark content as completed
+      setCompletedTabs((prev) => [...prev, "content"]);
+
+      // Update credits
+      if (data.creditsRemaining !== undefined) {
+        setCredits(data.creditsRemaining);
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setLoadingTab(null);
+    }
+  }, [currentSession, competitors.length]);
+
+  // Handle selecting a recent session
+  const handleSelectSession = useCallback(async (session: ResearchSession) => {
+    setCurrentSession(session);
+    setError(null);
+
+    // Restore session data
+    if (session.keywords) {
+      const keywordData: KeywordData[] = session.keywords.map((kw) => ({
         keyword: kw.keyword,
         searchVolume: kw.searchVolume,
         difficulty: kw.difficulty,
@@ -134,103 +289,120 @@ function DashboardContent() {
         keywordScore: kw.keywordScore,
         trend: kw.trend,
       }));
-
       setKeywords(keywordData);
-
-      // Update credits
-      if (data.creditsRemaining !== undefined) {
-        setCredits(data.creditsRemaining);
-      }
-
-      // Track for onboarding
-      incrementSearchCount();
-    } catch (err) {
-      setError("An error occurred while searching. Please try again.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
     }
-  }, [incrementSearchCount]);
 
-  const handleCreateProject = async (name: string, domain?: string): Promise<Project> => {
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    if (session.validationSummary) {
+      setValidationSummary(session.validationSummary);
+    }
 
-    if (!user) throw new Error("Not authenticated");
+    if (session.competitors) {
+      setCompetitors(session.competitors);
+    }
 
-    const { data, error } = await supabase
-      .from("projects")
-      .insert({
-        user_id: user.id,
-        name,
-        domain: domain || null,
-      })
-      .select("id, name, domain")
-      .single();
+    if (session.competitorKeywords) {
+      // Group by domain
+      const byDomain = new Map<string, CompetitorKeyword[]>();
+      session.competitorKeywords.forEach((kw) => {
+        const domain = (kw as unknown as { sourceDomain?: string }).sourceDomain || "";
+        if (!byDomain.has(domain)) {
+          byDomain.set(domain, []);
+        }
+        byDomain.get(domain)!.push(kw);
+      });
+      setCompetitorKeywords(
+        Array.from(byDomain.entries()).map(([domain, keywords]) => ({
+          domain,
+          keywords,
+        }))
+      );
+    }
 
-    if (error) throw error;
+    if (session.contentClusters) {
+      setContentClusters(session.contentClusters);
+    }
 
-    const newProject = {
-      id: data.id,
-      name: data.name,
-      domain: data.domain,
-    };
+    if (session.contentGaps) {
+      setContentGaps(session.contentGaps);
+    }
 
-    setProjects((prev) => [newProject, ...prev]);
-    return newProject;
-  };
+    // Set completed tabs based on data
+    const completed: ResearchTab[] = [];
+    if (session.keywords && session.keywords.length > 0) {
+      completed.push("validation");
+    }
+    if (session.competitors && session.competitors.length > 0) {
+      completed.push("competitors");
+    }
+    if (session.contentClusters && session.contentClusters.length > 0) {
+      completed.push("content");
+    }
+    setCompletedTabs(completed);
 
-  const handleBulkSave = async (keywordsToSave: KeywordData[], projectId: string) => {
-    const supabase = createClient();
+    // Set active tab to last completed or first incomplete
+    if (completed.includes("content")) {
+      setActiveTab("content");
+    } else if (completed.includes("competitors")) {
+      setActiveTab("competitors");
+    } else {
+      setActiveTab("validation");
+    }
+  }, []);
 
-    const keywordRecords = keywordsToSave.map((kw) => ({
-      project_id: projectId,
-      keyword: kw.keyword,
-      search_volume: kw.searchVolume,
-      difficulty: kw.difficulty,
-      cpc: kw.cpc,
-      keyword_score: kw.keywordScore,
-      data: {
-        competition: kw.competition,
-        trend: kw.trend?.map((t) => ({
-          year: t.year,
-          month: t.month,
-          volume: t.volume,
-        })),
-      } as Json,
-    }));
+  // Handle starting new research
+  const handleNewResearch = useCallback(() => {
+    setCurrentSession(null);
+    setKeywords([]);
+    setValidationSummary(null);
+    setCompetitors([]);
+    setCompetitorKeywords([]);
+    setContentClusters([]);
+    setContentGaps([]);
+    setCompletedTabs([]);
+    setActiveTab("validation");
+    setError(null);
+  }, []);
 
-    const { error } = await supabase.from("keywords").insert(keywordRecords);
-
-    if (error) throw error;
-  };
+  // Calculate metrics for validation summary
+  const totalVolume = keywords.reduce((sum, kw) => sum + kw.searchVolume, 0);
+  const avgDifficulty =
+    keywords.length > 0
+      ? keywords.reduce((sum, kw) => sum + kw.difficulty, 0) / keywords.length
+      : 0;
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="animate-fade-in-up">
         <div className="flex items-center gap-3 mb-2">
-          <span className="text-3xl">🔍</span>
-          <h1 className="text-3xl font-bold">Keyword Research</h1>
+          <span className="text-3xl">🔬</span>
+          <h1 className="text-3xl font-bold">Research Hub</h1>
         </div>
         <p className="text-muted-foreground text-lg">
-          Enter keywords to discover search volume, difficulty, and CPC data.
+          Describe your idea and we'll help you validate the market, find competitors, and plan your content.
         </p>
       </div>
 
       {/* Low credit warning */}
       {credits !== null && <LowCreditWarning credits={credits} />}
 
-      {/* Search */}
-      <div className="animate-fade-in-up stagger-1">
-        <KeywordSearch
-          onSearch={handleSearch}
-          isLoading={isLoading}
-          placeholder="Enter keywords (e.g., seo tools, keyword research, content marketing)"
-        />
-      </div>
+      {/* Session header if active */}
+      {currentSession && (
+        <div className="animate-fade-in-up">
+          <SessionHeader session={currentSession} onClose={handleNewResearch} />
+        </div>
+      )}
+
+      {/* Research input (only show if no active session or no validation done) */}
+      {(!currentSession || !completedTabs.includes("validation")) && (
+        <div className="animate-fade-in-up stagger-1">
+          <ResearchInput
+            onSubmit={handleGenerate}
+            isLoading={loadingTab === "validation"}
+            defaultDescription={currentSession?.description || ""}
+          />
+        </div>
+      )}
 
       {/* Error display */}
       {error && (
@@ -245,167 +417,170 @@ function DashboardContent() {
         </div>
       )}
 
-      {/* Results section */}
-      {(keywords.length > 0 || isLoading) && (
+      {/* Tabs and content (show after validation started) */}
+      {(completedTabs.length > 0 || loadingTab) && (
         <div className="space-y-6 animate-fade-in-up stagger-2">
-          {/* Toolbar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-muted/50 border-2 border-border">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-primary/15">
-                <Sparkles className="h-5 w-5 text-primary" />
-              </div>
-              <h2 className="text-lg font-bold">
-                {isLoading ? "Searching..." : `${keywords.length} keywords found`}
-              </h2>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <ProjectSelector
-                projects={projects}
-                selectedProjectId={selectedProjectId}
-                onSelect={setSelectedProjectId}
-                onCreate={handleCreateProject}
-                placeholder="Select project..."
-              />
-              <BulkSaveButton
-                keywords={keywords}
-                projects={projects}
-                onSave={handleBulkSave}
-              />
-              <CsvExportButton keywords={keywords} filename="keyword-research" />
-            </div>
-          </div>
+          {/* Tabs */}
+          <ResearchTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            completedTabs={completedTabs}
+            loadingTab={loadingTab}
+          />
 
-          {/* Results table */}
-          <KeywordTable keywords={keywords} isLoading={isLoading} />
+          {/* Tab 1: Validation */}
+          <TabContent isActive={activeTab === "validation"}>
+            <div className="space-y-6">
+              {validationSummary && (
+                <ValidationSummary
+                  summary={validationSummary}
+                  totalVolume={totalVolume}
+                  avgDifficulty={avgDifficulty}
+                  keywordCount={keywords.length}
+                  onFindCompetitors={
+                    completedTabs.includes("validation")
+                      ? handleFindCompetitors
+                      : undefined
+                  }
+                />
+              )}
 
-          {/* Onboarding: Education card after first search */}
-          {!isLoading && keywords.length > 0 && <ResultsEducationCard />}
-
-          {/* Onboarding: Feature discovery prompts */}
-          {!isLoading && keywords.length > 0 && <DiscoverMorePrompt />}
-
-          {/* Onboarding: Soft project creation prompt */}
-          {!isLoading && keywords.length > 0 && <ProjectPrompt />}
-        </div>
-      )}
-
-      {/* Recent searches quick access */}
-      {!isLoading && keywords.length === 0 && recentSearches.length > 0 && (
-        <div className="animate-fade-in-up stagger-2">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <History className="h-5 w-5 text-muted-foreground" />
-              <h2 className="font-bold text-lg">Recent Searches</h2>
-            </div>
-            <Link
-              href="/dashboard/history"
-              className="text-sm text-primary hover:underline flex items-center gap-1"
-            >
-              View all
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {recentSearches.slice(0, 6).map((search) => (
-              <div
-                key={search.id}
-                className="p-4 rounded-xl border-2 border-border bg-card hover:border-primary/30 transition-colors"
-              >
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {search.query_keywords.slice(0, 2).map((kw, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-0.5 rounded-md bg-muted text-xs font-medium truncate max-w-[100px]"
-                    >
-                      {kw}
-                    </span>
-                  ))}
-                  {search.query_keywords.length > 2 && (
-                    <span className="text-xs text-muted-foreground">
-                      +{search.query_keywords.length - 2}
-                    </span>
-                  )}
+              {keywords.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 rounded-xl bg-primary/15">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-bold">
+                      {keywords.length} Keywords Generated
+                    </h3>
+                  </div>
+                  <KeywordTable keywords={keywords} isLoading={loadingTab === "validation"} />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(search.created_at).toLocaleDateString(undefined, {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+              )}
+            </div>
+          </TabContent>
 
-      {/* Onboarding: Suggestion cards when user selected intent but hasn't searched yet */}
-      {!isLoading && keywords.length === 0 && onboardingState.intent && !onboardingState.completedSteps.firstSearch && (
-        <div className="animate-fade-in-up stagger-2">
-          <SuggestionCards onSearch={handleSearch} isLoading={isLoading} />
-        </div>
-      )}
-
-      {/* Empty state - show when not in onboarding suggestion flow */}
-      {!isLoading && keywords.length === 0 && (!onboardingState.intent || onboardingState.completedSteps.firstSearch) && (
-        <div className="text-center py-20 animate-fade-in-up stagger-2">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-primary mb-8 shadow-playful-lg animate-float">
-            <Sparkles className="h-10 w-10 text-white" />
-          </div>
-          <h2 className="text-2xl font-bold mb-3">
-            Start your research
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-md mx-auto mb-10">
-            Enter one or more keywords above to get search volume, difficulty scores,
-            and CPC data. Separate multiple keywords with commas.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            {[
-              {
-                emoji: "🎯",
-                icon: Target,
-                title: "Keyword Score",
-                description: "Our 0-100 score helps you quickly identify the best opportunities.",
-                color: "bg-primary/15 text-primary border-primary/30",
-              },
-              {
-                emoji: "📈",
-                icon: TrendingUp,
-                title: "Trend Data",
-                description: "See 12-month search trends to spot seasonal patterns.",
-                color: "bg-score-easy/15 text-score-easy border-score-easy/30",
-              },
-              {
-                emoji: "💰",
-                icon: Coins,
-                title: "Pay-as-you-go",
-                description: "Only pay for what you use. No monthly subscriptions.",
-                color: "bg-accent/20 text-accent-foreground border-accent/40",
-              },
-            ].map((feature, i) => (
-              <div
-                key={feature.title}
-                className={cn(
-                  "p-6 rounded-2xl bg-card border-2 text-left transition-all duration-300 hover:shadow-playful-lg hover:-translate-y-1 animate-bounce-in",
-                )}
-                style={{ animationDelay: `${0.3 + i * 0.1}s` }}
-              >
-                <div
-                  className={cn(
-                    "w-12 h-12 rounded-xl border-2 flex items-center justify-center mb-4",
-                    feature.color
-                  )}
-                >
-                  <feature.icon className="h-6 w-6" />
+          {/* Tab 2: Competitors */}
+          <TabContent isActive={activeTab === "competitors"}>
+            <div className="space-y-6">
+              {loadingTab === "competitors" ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+                  <p>Discovering competitors...</p>
                 </div>
-                <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
-              </div>
-            ))}
-          </div>
+              ) : competitors.length > 0 ? (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold">
+                      Top {competitors.length} Competitors
+                    </h3>
+                    {completedTabs.includes("competitors") && (
+                      <button
+                        onClick={handleGenerateContentPlan}
+                        className={cn(
+                          "px-4 py-2 rounded-xl font-medium",
+                          "bg-primary text-primary-foreground hover:bg-primary/90",
+                          "transition-colors"
+                        )}
+                      >
+                        Generate Content Plan →
+                      </button>
+                    )}
+                  </div>
+                  <CompetitorList
+                    competitors={competitors}
+                    competitorKeywords={competitorKeywords}
+                  />
+                </div>
+              ) : completedTabs.includes("validation") ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">
+                    Ready to discover your competitors?
+                  </p>
+                  <button
+                    onClick={handleFindCompetitors}
+                    className={cn(
+                      "px-6 py-3 rounded-xl font-medium",
+                      "bg-primary text-primary-foreground hover:bg-primary/90",
+                      "transition-colors"
+                    )}
+                  >
+                    Find Competitors
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  Complete validation first to discover competitors.
+                </div>
+              )}
+            </div>
+          </TabContent>
+
+          {/* Tab 3: Content Plan */}
+          <TabContent isActive={activeTab === "content"}>
+            <div className="space-y-6">
+              {loadingTab === "content" ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+                  <p>Creating your content plan...</p>
+                </div>
+              ) : contentClusters.length > 0 ? (
+                <ContentPlan clusters={contentClusters} gaps={contentGaps} />
+              ) : completedTabs.includes("competitors") ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">
+                    Ready to create your content roadmap?
+                  </p>
+                  <button
+                    onClick={handleGenerateContentPlan}
+                    className={cn(
+                      "px-6 py-3 rounded-xl font-medium",
+                      "bg-primary text-primary-foreground hover:bg-primary/90",
+                      "transition-colors"
+                    )}
+                  >
+                    Generate Content Plan
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  Complete competitor discovery first to generate content plan.
+                </div>
+              )}
+            </div>
+          </TabContent>
         </div>
       )}
+
+      {/* Recent sessions (show when no active session and no results) */}
+      {!currentSession && keywords.length === 0 && !loadingTab && (
+        <div className="animate-fade-in-up stagger-2">
+          <RecentSessions
+            sessions={recentSessions}
+            onSelectSession={handleSelectSession}
+            isLoading={isLoadingSessions}
+          />
+        </div>
+      )}
+
+      {/* Empty state (show when no session and no recent sessions) */}
+      {!currentSession &&
+        keywords.length === 0 &&
+        !loadingTab &&
+        recentSessions.length === 0 &&
+        !isLoadingSessions && (
+          <div className="text-center py-20 animate-fade-in-up stagger-2">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-primary mb-8 shadow-playful-lg animate-float">
+              <Sparkles className="h-10 w-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold mb-3">Start your first research</h2>
+            <p className="text-muted-foreground text-lg max-w-md mx-auto mb-10">
+              Describe your niche idea above and we'll help you validate the market,
+              discover competitors, and plan your content strategy.
+            </p>
+          </div>
+        )}
     </div>
   );
 }

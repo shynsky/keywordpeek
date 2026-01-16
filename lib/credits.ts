@@ -153,6 +153,18 @@ export const CREDIT_COSTS = {
   SUGGESTIONS: 1,
   // People Also Ask questions
   QUESTIONS: 1,
+
+  // === Research Hub Features ===
+  // LLM keyword generation from natural language
+  LLM_KEYWORD_GENERATION: 1,
+  // SERP check per keyword for competitor discovery
+  SERP_CHECK: 0.5,
+  // Keywords for Site (competitor keyword profile)
+  KEYWORDS_FOR_SITE: 2,
+  // LLM content clustering
+  LLM_CONTENT_CLUSTERING: 1,
+  // LLM validation summary
+  LLM_VALIDATION_SUMMARY: 1,
 } as const;
 
 /**
@@ -175,4 +187,46 @@ export function calculateSearchCredits(keywordCount: number): number {
  */
 export function calculateBulkCredits(keywordCount: number): number {
   return Math.ceil(keywordCount / 25) * CREDIT_COSTS.BULK_CHECK;
+}
+
+/**
+ * Calculate credits needed for SERP competitor discovery
+ * @param keywordCount - Number of keywords to check SERPs for
+ */
+export function calculateSerpCredits(keywordCount: number): number {
+  return keywordCount * CREDIT_COSTS.SERP_CHECK;
+}
+
+/**
+ * Calculate credits needed for competitor keyword analysis
+ * @param competitorCount - Number of competitor domains to analyze
+ */
+export function calculateCompetitorCredits(competitorCount: number): number {
+  return competitorCount * CREDIT_COSTS.KEYWORDS_FOR_SITE;
+}
+
+/**
+ * Estimate total credits for a full research session
+ * Validation + Competitors + Content Planning
+ */
+export function estimateResearchCredits(
+  keywordCount: number,
+  serpKeywordCount: number = 5,
+  competitorCount: number = 3
+): number {
+  // Tab 1: Validation
+  const validationCredits =
+    CREDIT_COSTS.LLM_KEYWORD_GENERATION +
+    calculateSearchCredits(keywordCount) +
+    CREDIT_COSTS.LLM_VALIDATION_SUMMARY;
+
+  // Tab 2: Competitors
+  const competitorCredits =
+    calculateSerpCredits(serpKeywordCount) +
+    calculateCompetitorCredits(competitorCount);
+
+  // Tab 3: Content Planning
+  const contentCredits = CREDIT_COSTS.LLM_CONTENT_CLUSTERING;
+
+  return validationCredits + competitorCredits + contentCredits;
 }

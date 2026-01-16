@@ -271,6 +271,77 @@ export type Database = {
           }
         ];
       };
+      research_sessions: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          description: string | null;
+          location_code: number;
+          language_code: string;
+          status: string;
+          generated_keywords: string[] | null;
+          keywords: Json | null;
+          validation_summary: Json | null;
+          competitors: Json | null;
+          competitor_keywords: Json | null;
+          content_clusters: Json | null;
+          content_gaps: Json | null;
+          credits_used: number;
+          current_tab: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          description?: string | null;
+          location_code?: number;
+          language_code?: string;
+          status?: string;
+          generated_keywords?: string[] | null;
+          keywords?: Json | null;
+          validation_summary?: Json | null;
+          competitors?: Json | null;
+          competitor_keywords?: Json | null;
+          content_clusters?: Json | null;
+          content_gaps?: Json | null;
+          credits_used?: number;
+          current_tab?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          description?: string | null;
+          location_code?: number;
+          language_code?: string;
+          status?: string;
+          generated_keywords?: string[] | null;
+          keywords?: Json | null;
+          validation_summary?: Json | null;
+          competitors?: Json | null;
+          competitor_keywords?: Json | null;
+          content_clusters?: Json | null;
+          content_gaps?: Json | null;
+          credits_used?: number;
+          current_tab?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "research_sessions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -339,6 +410,7 @@ export type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 export type ApiUsage = Database["public"]["Tables"]["api_usage"]["Row"];
 export type KeywordCache = Database["public"]["Tables"]["keyword_cache"]["Row"];
 export type SearchHistory = Database["public"]["Tables"]["search_history"]["Row"];
+export type ResearchSessionRow = Database["public"]["Tables"]["research_sessions"]["Row"];
 
 // Insert types
 export type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
@@ -348,6 +420,10 @@ export type TransactionInsert = Database["public"]["Tables"]["transactions"]["In
 export type ApiUsageInsert = Database["public"]["Tables"]["api_usage"]["Insert"];
 export type KeywordCacheInsert = Database["public"]["Tables"]["keyword_cache"]["Insert"];
 export type SearchHistoryInsert = Database["public"]["Tables"]["search_history"]["Insert"];
+export type ResearchSessionInsert = Database["public"]["Tables"]["research_sessions"]["Insert"];
+
+// Update types
+export type ResearchSessionUpdate = Database["public"]["Tables"]["research_sessions"]["Update"];
 
 // Update types
 export type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
