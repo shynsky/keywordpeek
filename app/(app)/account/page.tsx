@@ -246,7 +246,7 @@ export default function AccountPage() {
                     "h-4 w-4",
                     pkg.popular ? "text-primary" : "text-score-easy"
                   )} />
-                  <span>Never expires</span>
+                  <span>Valid for 1 year</span>
                 </div>
                 <div className={cn(
                   "flex items-center gap-2 text-sm",
