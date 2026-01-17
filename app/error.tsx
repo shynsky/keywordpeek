@@ -4,6 +4,12 @@ import { useEffect } from "react";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Sentry, initSentryClient } from "@/sentry.client.config";
+
+// Initialize Sentry on client side
+if (typeof window !== "undefined") {
+  initSentryClient();
+}
 
 export default function Error({
   error,
@@ -13,7 +19,15 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
+    // Capture error in Sentry
+    Sentry.captureException(error, {
+      tags: {
+        errorBoundary: "app",
+        digest: error.digest,
+      },
+    });
+
+    // Also log to console for development
     console.error("Application error:", error);
   }, [error]);
 

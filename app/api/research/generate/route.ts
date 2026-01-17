@@ -36,7 +36,13 @@ export async function POST(request: Request) {
       return rateLimitResponse(rateLimit);
     }
 
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
     const {
       description,
       keywords: manualKeywords,
@@ -44,6 +50,20 @@ export async function POST(request: Request) {
       languageCode = DEFAULT_LANGUAGE_CODE,
       sessionId,
     } = body;
+
+    // Validate locationCode and languageCode
+    if (locationCode !== undefined && (typeof locationCode !== "number" || locationCode <= 0 || !Number.isInteger(locationCode))) {
+      return NextResponse.json(
+        { error: "locationCode must be a positive integer" },
+        { status: 400 }
+      );
+    }
+    if (languageCode !== undefined && (typeof languageCode !== "string" || languageCode.length !== 2)) {
+      return NextResponse.json(
+        { error: "languageCode must be a 2-character string" },
+        { status: 400 }
+      );
+    }
 
     // Determine mode based on input
     const isManualMode = Array.isArray(manualKeywords) && manualKeywords.length > 0;
@@ -99,11 +119,14 @@ export async function POST(request: Request) {
 
     // Reserve credits
     let transactionId: string;
+    const creditDescription = isManualMode
+      ? `Research: Manual keywords (${manualKeywords.length} keywords)`
+      : `Research: Generate keywords for "${description.slice(0, 30)}..."`;
     try {
       transactionId = await reserveCredits(
         user.id,
         estimatedCredits,
-        `Research: Generate keywords for "${description.slice(0, 30)}..."`
+        creditDescription
       );
     } catch {
       return NextResponse.json(

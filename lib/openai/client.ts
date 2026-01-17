@@ -1,17 +1,21 @@
 /**
  * OpenAI Client
  *
- * Configured for GPT-5 nano - fast and cheap for keyword generation.
- * $0.05/1M input, $0.40/1M output
+ * Configured for GPT-4o mini - fast and cheap for keyword generation.
+ * Includes 60-second timeout for AI requests (can be slow for complex prompts).
  */
 
 import OpenAI from "openai";
+
+// Default timeout of 60 seconds for OpenAI requests (AI can be slow)
+const DEFAULT_TIMEOUT_MS = 60000;
 
 // Singleton instance
 let openaiInstance: OpenAI | null = null;
 
 /**
  * Get the OpenAI client instance
+ * Includes automatic timeout configuration
  */
 export function getOpenAI(): OpenAI {
   if (!openaiInstance) {
@@ -21,7 +25,11 @@ export function getOpenAI(): OpenAI {
       throw new Error("OPENAI_API_KEY environment variable is not set");
     }
 
-    openaiInstance = new OpenAI({ apiKey });
+    openaiInstance = new OpenAI({
+      apiKey,
+      timeout: DEFAULT_TIMEOUT_MS,
+      maxRetries: 2,
+    });
   }
 
   return openaiInstance;

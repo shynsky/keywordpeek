@@ -3,11 +3,15 @@
  *
  * Base HTTP client with authentication and error handling.
  * Uses Basic Auth with login:password encoded as base64.
+ * Includes 30-second timeout for all requests.
  */
 
 import type { DataForSEOResponse, DataForSEOError } from "./types";
 
 const DATAFORSEO_API_URL = "https://api.dataforseo.com";
+
+// Default timeout of 30 seconds for DataForSEO requests
+const DEFAULT_TIMEOUT_MS = 30000;
 
 class DataForSEOClient {
   private authHeader: string;
@@ -36,12 +40,18 @@ class DataForSEOClient {
 
   /**
    * Make a POST request to the DataForSEO API
+   * Includes automatic timeout handling (default 30s)
    */
   async post<T>(
     endpoint: string,
-    data: unknown[]
+    data: unknown[],
+    timeoutMs: number = DEFAULT_TIMEOUT_MS
   ): Promise<DataForSEOResponse<T>> {
     const url = `${DATAFORSEO_API_URL}${endpoint}`;
+
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
       const response = await fetch(url, {
@@ -51,6 +61,7 @@ class DataForSEOClient {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -79,12 +90,23 @@ class DataForSEOClient {
         throw error;
       }
 
+      // Handle timeout specifically
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new DataForSEOApiError(
+          `Request timed out after ${timeoutMs}ms`,
+          0,
+          408
+        );
+      }
+
       // Network or parsing error
       throw new DataForSEOApiError(
         error instanceof Error ? error.message : "Unknown error occurred",
         0,
         0
       );
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
