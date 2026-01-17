@@ -96,14 +96,21 @@ export default function AccountPage() {
 
       const data = await response.json();
 
+      if (!response.ok) {
+        toast.error(data.error || "Failed to initiate purchase. Please try again.");
+        setPurchasingPackage(null);
+        return;
+      }
+
       if (data.url) {
         window.location.href = data.url;
       } else {
-        console.error("No checkout URL returned");
+        toast.error("Failed to create checkout session. Please try again.");
         setPurchasingPackage(null);
       }
     } catch (error) {
       console.error("Error initiating purchase:", error);
+      toast.error("Failed to initiate purchase. Please try again.");
       setPurchasingPackage(null);
     }
   };
