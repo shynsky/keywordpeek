@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+  AlertCircle,
   Check,
   Loader2,
   Sparkles,
@@ -41,47 +42,70 @@ export default function AccountPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [purchasingPackage, setPurchasingPackage] = useState<string | null>(null);
 
   const fetchAccountData = async () => {
     setIsLoading(true);
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    setError(null);
 
-    if (!user) {
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError) {
+        console.error("Failed to get user:", authError);
+        setError("Failed to authenticate. Please try logging in again.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch transactions
+      const { data: txns, error: txnError } = await supabase
+        .from("transactions")
+        .select("id, amount, type, description, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (txnError) {
+        console.error("Failed to fetch transactions:", txnError);
+        // Don't fail completely, just skip transactions
+      } else if (txns) {
+        setTransactions(txns);
+      }
+
+      // Fetch usage stats
+      const { data: usage, error: usageError } = await supabase
+        .from("api_usage")
+        .select("credits_used, keywords_count")
+        .eq("user_id", user.id);
+
+      if (usageError) {
+        console.error("Failed to fetch usage stats:", usageError);
+        // Don't fail completely, just skip usage stats
+      } else if (usage) {
+        setUsageStats({
+          totalSearches: usage.length,
+          creditsUsed: usage.reduce((sum, u) => sum + u.credits_used, 0),
+          keywordsResearched: usage.reduce((sum, u) => sum + (u.keywords_count || 0), 0),
+        });
+      }
+
       setIsLoading(false);
-      return;
+    } catch (err) {
+      console.error("Unexpected error fetching account data:", err);
+      setError("Something went wrong loading your account data. Please try again.");
+      setIsLoading(false);
     }
-
-    // Fetch transactions
-    const { data: txns } = await supabase
-      .from("transactions")
-      .select("id, amount, type, description, created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    if (txns) {
-      setTransactions(txns);
-    }
-
-    // Fetch usage stats
-    const { data: usage } = await supabase
-      .from("api_usage")
-      .select("credits_used, keywords_count")
-      .eq("user_id", user.id);
-
-    if (usage) {
-      setUsageStats({
-        totalSearches: usage.length,
-        creditsUsed: usage.reduce((sum, u) => sum + u.credits_used, 0),
-        keywordsResearched: usage.reduce((sum, u) => sum + (u.keywords_count || 0), 0),
-      });
-    }
-
-    setIsLoading(false);
   };
 
   const handlePurchase = async (packageId: string) => {
@@ -133,6 +157,20 @@ export default function AccountPage() {
     return (
       <div className="flex items-center justify-center py-16">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 space-y-4">
+        <div className="flex items-center gap-2 text-destructive">
+          <AlertCircle className="h-6 w-6" />
+          <p className="font-medium">{error}</p>
+        </div>
+        <Button variant="outline" onClick={fetchAccountData}>
+          Try Again
+        </Button>
       </div>
     );
   }
