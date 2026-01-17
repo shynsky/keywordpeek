@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/button";
 import { CreditDisplay } from "@/components/credit-display";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { CreditsProvider, useCredits } from "@/lib/credits-context";
+import { OnboardingProvider, WelcomeModal } from "@/components/onboarding";
 
 interface NavItem {
   label: string;
@@ -39,49 +41,20 @@ const bottomNavItems: NavItem[] = [
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <CreditsProvider>
+      <OnboardingProvider>
+        <AppLayoutInner>{children}</AppLayoutInner>
+        <WelcomeModal />
+      </OnboardingProvider>
+    </CreditsProvider>
+  );
+}
+
+function AppLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [credits, setCredits] = useState<number | null>(null);
+  const { credits } = useCredits();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchCredits = async () => {
-      const supabase = createClient();
-
-      // Dev mode: use mock user ID
-      const devUserId = process.env.NEXT_PUBLIC_DEV_USER_ID;
-      if (devUserId) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("credits")
-          .eq("id", devUserId)
-          .single();
-
-        if (profile) {
-          setCredits(profile.credits);
-        }
-        return;
-      }
-
-      // Production: use real auth
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("credits")
-          .eq("id", user.id)
-          .single();
-
-        if (profile) {
-          setCredits(profile.credits);
-        }
-      }
-    };
-
-    fetchCredits();
-  }, []);
 
   const handleSignOut = async () => {
     // Dev mode: just redirect

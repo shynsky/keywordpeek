@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -17,6 +18,12 @@ export async function GET(request: Request, { params }: RouteParams) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 100 requests per minute for reads
+    const rateLimit = checkRateLimit(user.id, 100, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -64,6 +71,12 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 30 updates per minute
+    const rateLimit = checkRateLimit(`${user.id}:update`, 30, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -138,6 +151,12 @@ export async function DELETE(request: Request, { params }: RouteParams) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 10 deletes per minute
+    const rateLimit = checkRateLimit(`${user.id}:delete`, 10, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 /**
  * GET /api/projects - List all projects for current user
@@ -12,6 +13,12 @@ export async function GET() {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 100 requests per minute for reads
+    const rateLimit = checkRateLimit(user.id, 100, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -58,6 +65,12 @@ export async function POST(request: Request) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 20 project creates per minute
+    const rateLimit = checkRateLimit(`${user.id}:create`, 20, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();

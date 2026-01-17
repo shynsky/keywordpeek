@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 /**
  * GET /api/keywords/history
@@ -10,6 +11,12 @@ export async function GET(request: Request) {
     const user = await getAuthUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 100 requests per minute for reads
+    const rateLimit = checkRateLimit(user.id, 100, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -62,6 +69,12 @@ export async function DELETE(request: Request) {
     const user = await getAuthUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 30 deletes per minute
+    const rateLimit = checkRateLimit(`${user.id}:delete`, 30, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();

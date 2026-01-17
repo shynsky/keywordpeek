@@ -10,9 +10,11 @@ import {
   Clock,
   CreditCard,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CreditDisplay } from "@/components/credit-display";
 import { createClient } from "@/lib/supabase/client";
+import { useCredits } from "@/lib/credits-context";
 import { CREDIT_PACKAGES } from "@/lib/stripe/client";
 import { cn } from "@/lib/utils";
 
@@ -35,25 +37,11 @@ interface UsageStats {
 
 export default function AccountPage() {
   const searchParams = useSearchParams();
-  const [credits, setCredits] = useState<number | null>(null);
+  const { credits, refreshCredits } = useCredits();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [purchasingPackage, setPurchasingPackage] = useState<string | null>(null);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
-  // Check for success/cancel params
-  useEffect(() => {
-    if (searchParams.get("success") === "true") {
-      setShowSuccessMessage(true);
-      // Clear the URL params
-      window.history.replaceState({}, "", "/account");
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    fetchAccountData();
-  }, []);
 
   const fetchAccountData = async () => {
     setIsLoading(true);
@@ -65,17 +53,6 @@ export default function AccountPage() {
     if (!user) {
       setIsLoading(false);
       return;
-    }
-
-    // Fetch profile (credits)
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("credits")
-      .eq("id", user.id)
-      .single();
-
-    if (profile) {
-      setCredits(profile.credits);
     }
 
     // Fetch transactions
@@ -131,6 +108,20 @@ export default function AccountPage() {
     }
   };
 
+  // Check for success/cancel params
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      toast.success("Payment successful! Credits have been added to your account.");
+      refreshCredits();
+      // Clear the URL params
+      window.history.replaceState({}, "", "/account");
+    }
+  }, [searchParams, refreshCredits]);
+
+  useEffect(() => {
+    fetchAccountData();
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -141,27 +132,6 @@ export default function AccountPage() {
 
   return (
     <div className="space-y-8">
-      {/* Success message */}
-      {showSuccessMessage && (
-        <div className="p-4 rounded-lg bg-score-easy/10 border border-score-easy/30 text-score-easy flex items-center gap-3">
-          <Check className="h-5 w-5" />
-          <div>
-            <p className="font-medium">Payment successful!</p>
-            <p className="text-sm opacity-80">
-              Your credits have been added to your account.
-            </p>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-auto"
-            onClick={() => setShowSuccessMessage(false)}
-          >
-            Dismiss
-          </Button>
-        </div>
-      )}
-
       {/* Header */}
       <div>
         <h1 className="text-2xl font-display font-semibold">Account</h1>

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Sparkles, AlertCircle } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { Sparkles, AlertCircle, X } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { LowCreditWarning } from "@/components/credit-display";
+import { useCredits } from "@/lib/credits-context";
+import { useOnboarding } from "@/components/onboarding";
 import { KeywordTable, type KeywordData } from "@/components/keyword-table";
 import {
   ResearchInput,
@@ -24,8 +26,13 @@ import type { CompetitorDomain, CompetitorKeyword } from "@/lib/dataforseo/compe
 import type { ContentCluster, ContentGap } from "@/lib/openai";
 
 export default function DashboardPage() {
+  // Credits from context
+  const { credits, refreshCredits } = useCredits();
+
+  // Onboarding context
+  const { incrementSearchCount } = useOnboarding();
+
   // UI State
-  const [credits, setCredits] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Session state
@@ -55,40 +62,20 @@ export default function DashboardPage() {
 
   // Fetch initial data
   useEffect(() => {
-    const fetchData = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        // Fetch credits
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("credits")
-          .eq("id", user.id)
-          .single();
-
-        if (profile) {
-          setCredits(profile.credits);
+    const fetchSessions = async () => {
+      try {
+        const response = await fetch("/api/research/sessions?limit=6");
+        if (response.ok) {
+          const data = await response.json();
+          setRecentSessions(data.data || []);
         }
-
-        // Fetch recent research sessions
-        try {
-          const response = await fetch("/api/research/sessions?limit=6");
-          if (response.ok) {
-            const data = await response.json();
-            setRecentSessions(data.data || []);
-          }
-        } catch {
-          console.error("Failed to fetch sessions");
-        }
+      } catch {
+        console.error("Failed to fetch sessions");
       }
-
       setIsLoadingSessions(false);
     };
 
-    fetchData();
+    fetchSessions();
   }, []);
 
   // Handle research generation (Tab 1)
@@ -160,10 +147,16 @@ export default function DashboardPage() {
         // Mark validation as completed
         setCompletedTabs(["validation"]);
 
-        // Update credits
+        // Update credits via context
         if (data.creditsRemaining !== undefined) {
-          setCredits(data.creditsRemaining);
+          refreshCredits();
         }
+
+        // Show success toast
+        toast.success(`Generated ${keywordData.length} keywords`);
+
+        // Track search for onboarding
+        incrementSearchCount();
       } catch (err) {
         setError("An error occurred. Please try again.");
         console.error(err);
@@ -171,7 +164,7 @@ export default function DashboardPage() {
         setLoadingTab(null);
       }
     },
-    [currentSession]
+    [currentSession, refreshCredits, incrementSearchCount]
   );
 
   // Handle competitor discovery (Tab 2)
@@ -216,17 +209,20 @@ export default function DashboardPage() {
       // Mark competitors as completed
       setCompletedTabs((prev) => [...prev, "competitors"]);
 
-      // Update credits
+      // Update credits via context
       if (data.creditsRemaining !== undefined) {
-        setCredits(data.creditsRemaining);
+        refreshCredits();
       }
+
+      // Show success toast
+      toast.success(`Found ${data.data.competitors.length} competitors`);
     } catch (err) {
       setError("An error occurred. Please try again.");
       console.error(err);
     } finally {
       setLoadingTab(null);
     }
-  }, [currentSession]);
+  }, [currentSession, refreshCredits]);
 
   // Handle content planning (Tab 3)
   const handleGenerateContentPlan = useCallback(async () => {
@@ -263,17 +259,20 @@ export default function DashboardPage() {
       // Mark content as completed
       setCompletedTabs((prev) => [...prev, "content"]);
 
-      // Update credits
+      // Update credits via context
       if (data.creditsRemaining !== undefined) {
-        setCredits(data.creditsRemaining);
+        refreshCredits();
       }
+
+      // Show success toast
+      toast.success("Content plan generated");
     } catch (err) {
       setError("An error occurred. Please try again.");
       console.error(err);
     } finally {
       setLoadingTab(null);
     }
-  }, [currentSession, competitors.length]);
+  }, [currentSession, competitors.length, refreshCredits]);
 
   // Handle selecting a recent session
   const handleSelectSession = useCallback(async (session: ResearchSession) => {
@@ -412,10 +411,17 @@ export default function DashboardPage() {
           <div className="p-2 rounded-xl bg-destructive/20">
             <AlertCircle className="h-5 w-5" />
           </div>
-          <div>
+          <div className="flex-1">
             <p className="font-bold">Oops! Something went wrong</p>
             <p className="text-sm opacity-90">{error}</p>
           </div>
+          <button
+            onClick={() => setError(null)}
+            className="p-1.5 rounded-lg text-destructive/70 hover:text-destructive hover:bg-destructive/20 transition-colors shrink-0"
+            aria-label="Dismiss error"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
       )}
 

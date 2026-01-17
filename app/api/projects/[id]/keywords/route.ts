@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import type { KeywordStatus } from "@/lib/supabase/types";
 
 interface RouteParams {
@@ -18,6 +19,12 @@ export async function GET(request: Request, { params }: RouteParams) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 100 requests per minute for reads
+    const rateLimit = checkRateLimit(user.id, 100, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -111,6 +118,12 @@ export async function POST(request: Request, { params }: RouteParams) {
       );
     }
 
+    // Rate limit: 50 keyword saves per minute
+    const rateLimit = checkRateLimit(`${user.id}:keyword-save`, 50, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
+    }
+
     const supabase = await createClient();
 
     // Verify project belongs to user
@@ -195,6 +208,12 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 30 bulk updates per minute
+    const rateLimit = checkRateLimit(`${user.id}:keyword-update`, 30, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
@@ -287,6 +306,12 @@ export async function DELETE(request: Request, { params }: RouteParams) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 20 bulk deletes per minute
+    const rateLimit = checkRateLimit(`${user.id}:keyword-delete`, 20, 60000);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit);
     }
 
     const supabase = await createClient();
