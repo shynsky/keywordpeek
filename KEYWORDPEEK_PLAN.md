@@ -4,8 +4,8 @@
 
 ## Overview
 
-**Domain:** keywordpeek.com (Cloudflare)
-**Stack:** Next.js 14 + Supabase + Stripe + Cloudflare Pages
+**Domain:** keywordpeek.com
+**Stack:** Next.js 16 + React 19 + Supabase + Stripe + Vercel
 **Data Provider:** DataForSEO API
 
 ## Architecture
@@ -14,7 +14,7 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                     KeywordPeek.com                         │
 ├─────────────────────────────────────────────────────────────┤
-│  Frontend (Next.js 14 App Router)                          │
+│  Frontend (Next.js 16 App Router + React 19)               │
 │  ├── Landing page (pricing, features)                       │
 │  ├── Dashboard (keyword research UI)                        │
 │  ├── Projects (workspaces for different sites)              │
@@ -37,7 +37,7 @@
 │  External Services                                          │
 │  ├── DataForSEO API (keyword data)                          │
 │  ├── Stripe (payments)                                      │
-│  └── Cloudflare Pages (hosting)                             │
+│  └── Vercel (hosting)                                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -157,11 +157,11 @@ create policy "Users can view own usage" on public.api_usage
 
 ### Pricing
 
-| Package | Credits | Price | Per Keyword |
-|---------|---------|-------|-------------|
-| Starter | 500 | $9 | $0.018 |
-| Growth | 1,500 | $19 | $0.013 |
-| Pro | 5,000 | $49 | $0.010 |
+| Package | Credits | Price | Per Search |
+|---------|---------|-------|------------|
+| Starter | 200 | $9 | $0.045 |
+| Growth | 500 | $24 | $0.048 |
+| Pro | 1,600 | $79 | $0.049 |
 
 ### Credit Costs
 
@@ -244,18 +244,11 @@ keywordpeek/
 **Goal:** Working keyword research tool for internal use
 
 #### 1.1 Project Setup
-- [ ] Initialize Next.js 14 with App Router: `npx create-next-app@latest keywordpeek --typescript --tailwind --eslint --app --src-dir=false`
-- [ ] Install dependencies:
-  ```bash
-  npm install @supabase/supabase-js @supabase/ssr
-  npm install stripe @stripe/stripe-js
-  npm install lucide-react
-  npx shadcn@latest init
-  npx shadcn@latest add button card input table badge dialog dropdown-menu
-  ```
-- [ ] Create Supabase project at supabase.com
-- [ ] Setup `.env.local` with all environment variables
-- [ ] Configure `next.config.js` for Cloudflare Pages compatibility
+- [x] Initialize Next.js 16 with App Router
+- [x] Install dependencies (Supabase, Stripe, shadcn/ui, Tailwind CSS 4)
+- [x] Create Supabase project at supabase.com
+- [x] Setup `.env.local` with all environment variables
+- [x] Configure for Vercel deployment
 
 #### 1.2 DataForSEO Integration
 - [ ] Create `lib/dataforseo/client.ts` - base HTTP client with auth
@@ -305,10 +298,10 @@ keywordpeek/
 
 #### 2.1 Stripe Setup
 - [ ] Create Stripe account and get API keys
-- [ ] Create 3 products in Stripe Dashboard:
-  - Starter: $9 (500 credits)
-  - Growth: $19 (1,500 credits)
-  - Pro: $49 (5,000 credits)
+- [x] Create 3 products in Stripe Dashboard:
+  - Starter: $9 (200 credits)
+  - Growth: $24 (500 credits)
+  - Pro: $79 (1,600 credits)
 - [ ] Create `lib/stripe/client.ts` - Stripe client setup
 - [ ] Create `app/api/credits/purchase/route.ts` - create checkout session
 - [ ] Create `app/api/webhooks/stripe/route.ts` - handle checkout.session.completed
@@ -349,9 +342,8 @@ keywordpeek/
 - [ ] Add SEO meta tags and OpenGraph images
 - [ ] Add favicon and app icons
 - [ ] Setup analytics (Plausible or Umami)
-- [ ] Create `wrangler.toml` for Cloudflare Pages
-- [ ] Deploy to Cloudflare Pages
-- [ ] Configure DNS for keywordpeek.com
+- [x] Deploy to Vercel (auto-deploys from main branch)
+- [x] Configure DNS for keywordpeek.com
 - [ ] Test full flow: signup → search → save → purchase → search more
 
 ## API Route Implementations
@@ -394,9 +386,9 @@ import { createClient } from '@/lib/supabase/server'
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 const CREDIT_PACKAGES: Record<string, number> = {
-  'price_starter': 500,
-  'price_growth': 1500,
-  'price_pro': 5000,
+  'price_starter': 200,
+  'price_growth': 500,
+  'price_pro': 1600,
 }
 
 export async function POST(req: Request) {

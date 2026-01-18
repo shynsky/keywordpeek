@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { User, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,9 +9,9 @@ import { createClient } from "@/lib/supabase/client";
 export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [email, setEmail] = useState("");
+  const hasFetched = useRef(false);
 
-  const fetchUserSettings = async () => {
-    setIsLoading(true);
+  const fetchUserSettings = useCallback(async () => {
     const supabase = createClient();
 
     // Dev mode: use mock user ID
@@ -30,11 +30,15 @@ export default function SettingsPage() {
       setEmail(user.email || "");
     }
     setIsLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
-    fetchUserSettings();
-  }, []);
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Data fetching on mount is a standard pattern
+      fetchUserSettings();
+    }
+  }, [fetchUserSettings]);
 
   if (isLoading) {
     return (

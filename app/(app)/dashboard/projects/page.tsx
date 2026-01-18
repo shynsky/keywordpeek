@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   FolderOpen,
@@ -53,12 +53,9 @@ export default function ProjectsPage() {
   const [newProjectDomain, setNewProjectDomain] = useState("");
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     setIsLoading(true);
     const supabase = createClient();
     const {
@@ -95,7 +92,15 @@ export default function ProjectsPage() {
       );
     }
     setIsLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Data fetching on mount is a standard pattern
+      fetchProjects();
+    }
+  }, [fetchProjects]);
 
   const handleCreateProject = async () => {
     if (!newProjectName.trim()) return;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
@@ -45,6 +46,9 @@ export function TrendSparkline({
   showTrendIndicator = true,
   className,
 }: TrendSparklineProps) {
+  // Hooks must be called unconditionally, before any early returns
+  const id = useId();
+
   if (!data || data.length === 0) {
     return (
       <div
@@ -76,9 +80,9 @@ export function TrendSparkline({
 
   const pathD = `M ${points.join(" L ")}`;
 
-  // Gradient IDs
-  const gradientId = `gradient-${Math.random().toString(36).slice(2)}`;
-  const lineGradientId = `line-gradient-${Math.random().toString(36).slice(2)}`;
+  // Gradient IDs - using useId for stable, unique IDs
+  const gradientId = `gradient-${id}`;
+  const lineGradientId = `line-gradient-${id}`;
 
   // Dynamic colors based on trend
   const colors = {

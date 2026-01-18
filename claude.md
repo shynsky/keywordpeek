@@ -73,7 +73,15 @@ DATAFORSEO_LOGIN, DATAFORSEO_PASSWORD
 STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
 NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
+OPENAI_API_KEY
 ```
+
+### Development User ID
+Two environment variables for bypassing auth in development:
+- `DEV_USER_ID` - Server-side (API routes, server components)
+- `NEXT_PUBLIC_DEV_USER_ID` - Client-side (React components)
+
+This split is intentional: server code uses the non-public version for security, while client components need the `NEXT_PUBLIC_` prefix to access the value.
 
 **Note**: The dev server (`npm run dev`) requires all Supabase environment variables in `.env.local`. Without them, middleware fails with "Your project's URL and Key are required". Use `npm run build` to verify compilation without running the server.
 

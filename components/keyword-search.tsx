@@ -146,6 +146,7 @@ export function KeywordSearch({
                 onClick={handleClear}
                 disabled={isLoading}
                 className="text-muted-foreground hover:text-foreground hover:bg-muted"
+                aria-label="Clear search"
               >
                 <X className="h-4 w-4" />
               </Button>

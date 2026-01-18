@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KeywordPeek
+
+Pay-as-you-go keyword research for bootstrappers. 80% of the value, 20% of the hassle.
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router) + React 19
+- **Database & Auth:** Supabase (Postgres + Auth)
+- **Payments:** Stripe
+- **Keyword Data:** DataForSEO Labs API
+- **Styling:** Tailwind CSS 4 + shadcn/ui
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or pnpm
+- Supabase account
+- Stripe account
+- DataForSEO account
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/yourusername/keywordpeek.git
+cd keywordpeek
+
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env.local
+# Edit .env.local with your credentials
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See `.env.example` for all required variables:
+- Supabase URL and keys
+- DataForSEO credentials
+- Stripe keys
 
-## Learn More
+## Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run dev          # Start development server
+npm run build        # Production build
+npm run lint         # Run ESLint
+npm run test         # Run tests in watch mode
+npm run test:run     # Run tests once
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Pricing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Package | Credits | Price |
+|---------|---------|-------|
+| Starter | 200     | $9    |
+| Growth  | 500     | $24   |
+| Pro     | 1,600   | $79   |
 
-## Deploy on Vercel
+1 credit = 1 search (up to 10 keywords per search)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The app is deployed on **Vercel** with automatic deployments from the `main` branch.
+
+- Push to `main` → automatic deploy
+- Database migrations run manually via Supabase SQL Editor
+
+## Documentation
+
+See [CLAUDE.md](./CLAUDE.md) for detailed development guide including:
+- Architecture overview
+- Database schema
+- API routes
+- Credit system details

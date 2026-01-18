@@ -72,6 +72,7 @@ export function CreditsProvider({ children }: { children: ReactNode }) {
     // Only fetch once on mount to avoid cascading renders
     if (!hasFetched.current) {
       hasFetched.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Data fetching on mount is a standard pattern
       fetchCredits();
     }
   }, [fetchCredits]);

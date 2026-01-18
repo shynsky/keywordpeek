@@ -154,6 +154,7 @@ export default function AccountPage() {
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Data fetching on mount is a standard pattern
       fetchAccountData();
     }
   }, [fetchAccountData]);

@@ -56,6 +56,57 @@ interface KeywordTableProps {
   className?: string;
 }
 
+// Extracted components to avoid creating during render
+function SortIcon({
+  field,
+  sortField,
+  sortDirection,
+}: {
+  field: SortField;
+  sortField: SortField;
+  sortDirection: SortDirection;
+}) {
+  if (sortField !== field) {
+    return <ArrowUpDown className="ml-1 h-3.5 w-3.5 text-muted-foreground/50" />;
+  }
+  return sortDirection === "asc" ? (
+    <ArrowUp className="ml-1 h-3.5 w-3.5" />
+  ) : (
+    <ArrowDown className="ml-1 h-3.5 w-3.5" />
+  );
+}
+
+function SortableHeader({
+  field,
+  children,
+  className: headerClassName,
+  sortField,
+  sortDirection,
+  onSort,
+}: {
+  field: SortField;
+  children: React.ReactNode;
+  className?: string;
+  sortField: SortField;
+  sortDirection: SortDirection;
+  onSort: (field: SortField) => void;
+}) {
+  return (
+    <TableHead className={headerClassName}>
+      <button
+        onClick={() => onSort(field)}
+        className={cn(
+          "inline-flex items-center gap-0.5 hover:text-foreground transition-colors",
+          sortField === field ? "text-foreground" : "text-muted-foreground"
+        )}
+      >
+        {children}
+        <SortIcon field={field} sortField={sortField} sortDirection={sortDirection} />
+      </button>
+    </TableHead>
+  );
+}
+
 export function KeywordTable({
   keywords,
   isLoading = false,
@@ -93,40 +144,6 @@ export function KeywordTable({
     });
   }, [keywords, sortField, sortDirection]);
 
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) {
-      return <ArrowUpDown className="ml-1 h-3.5 w-3.5 text-muted-foreground/50" />;
-    }
-    return sortDirection === "asc" ? (
-      <ArrowUp className="ml-1 h-3.5 w-3.5" />
-    ) : (
-      <ArrowDown className="ml-1 h-3.5 w-3.5" />
-    );
-  };
-
-  const SortableHeader = ({
-    field,
-    children,
-    className: headerClassName,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-    className?: string;
-  }) => (
-    <TableHead className={headerClassName}>
-      <button
-        onClick={() => handleSort(field)}
-        className={cn(
-          "inline-flex items-center gap-0.5 hover:text-foreground transition-colors",
-          sortField === field ? "text-foreground" : "text-muted-foreground"
-        )}
-      >
-        {children}
-        <SortIcon field={field} />
-      </button>
-    </TableHead>
-  );
-
   if (isLoading) {
     return <KeywordTableSkeleton />;
   }
@@ -147,20 +164,20 @@ export function KeywordTable({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
-            <SortableHeader field="keyword" className="w-[280px]">
+            <SortableHeader field="keyword" className="w-[280px]" sortField={sortField} sortDirection={sortDirection} onSort={handleSort}>
               Keyword
             </SortableHeader>
-            <SortableHeader field="keywordScore" className="w-[100px]">
+            <SortableHeader field="keywordScore" className="w-[100px]" sortField={sortField} sortDirection={sortDirection} onSort={handleSort}>
               Score
             </SortableHeader>
-            <SortableHeader field="searchVolume" className="w-[120px]">
+            <SortableHeader field="searchVolume" className="w-[120px]" sortField={sortField} sortDirection={sortDirection} onSort={handleSort}>
               Volume
             </SortableHeader>
-            <SortableHeader field="difficulty" className="w-[120px]">
+            <SortableHeader field="difficulty" className="w-[120px]" sortField={sortField} sortDirection={sortDirection} onSort={handleSort}>
               Difficulty
             </SortableHeader>
             <TableHead className="w-[100px]">Competition</TableHead>
-            <SortableHeader field="cpc" className="w-[100px]">
+            <SortableHeader field="cpc" className="w-[100px]" sortField={sortField} sortDirection={sortDirection} onSort={handleSort}>
               CPC
             </SortableHeader>
             <TableHead className="w-[120px]">Trend</TableHead>

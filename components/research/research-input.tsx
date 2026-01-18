@@ -163,6 +163,7 @@ export function ResearchInput({
                 placeholder="I want to create a website about motorcycles in Guatemala - reviews, tours, gear recommendations..."
                 disabled={isLoading}
                 rows={3}
+                aria-label="Describe your niche idea"
                 className={cn(
                   "w-full px-5 py-4 text-lg bg-transparent resize-none",
                   "outline-none placeholder:text-muted-foreground/50",
@@ -184,6 +185,7 @@ export function ResearchInput({
                 placeholder="motos guatemala, comprar moto, mejores motos 2025&#10;&#10;Enter one keyword per line or separate with commas (max 20)"
                 disabled={isLoading}
                 rows={4}
+                aria-label="Enter keywords to analyze"
                 className={cn(
                   "w-full px-5 py-4 text-base bg-transparent resize-none font-mono",
                   "outline-none placeholder:text-muted-foreground/50",

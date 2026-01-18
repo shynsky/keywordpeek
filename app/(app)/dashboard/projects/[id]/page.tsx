@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useCallback, useRef, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -78,12 +78,9 @@ export default function ProjectDetailPage({
   const [editName, setEditName] = useState("");
   const [editDomain, setEditDomain] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const lastFetchedId = useRef<string | null>(null);
 
-  useEffect(() => {
-    fetchProject();
-  }, [id]);
-
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     setIsLoading(true);
     const supabase = createClient();
 
@@ -115,7 +112,15 @@ export default function ProjectDetailPage({
     }
 
     setIsLoading(false);
-  };
+  }, [id, router]);
+
+  useEffect(() => {
+    if (lastFetchedId.current !== id) {
+      lastFetchedId.current = id;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Data fetching on route change is a standard pattern
+      fetchProject();
+    }
+  }, [id, fetchProject]);
 
   const handleUpdateProject = async () => {
     if (!editName.trim()) return;
