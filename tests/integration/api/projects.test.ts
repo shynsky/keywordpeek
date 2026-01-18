@@ -4,10 +4,17 @@ import { createMockRequest, parseResponse, mockUser, mockProject } from "../help
 // Mock Supabase
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
+  getAuthUser: vi.fn(),
+}));
+
+vi.mock("@/lib/rate-limit", () => ({
+  checkRateLimit: vi.fn(),
+  rateLimitResponse: vi.fn(),
 }));
 
 import { GET, POST } from "@/app/api/projects/route";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 describe("/api/projects", () => {
   beforeEach(() => {
@@ -15,20 +22,15 @@ describe("/api/projects", () => {
   });
 
   function setupAuthenticatedUser(user = mockUser) {
+    vi.mocked(getAuthUser).mockResolvedValue(user as never);
+    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
     return vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user }, error: null }),
-      },
       from: vi.fn(),
     } as never);
   }
 
   function setupUnauthenticated() {
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
-      },
-    } as never);
+    vi.mocked(getAuthUser).mockResolvedValue(null as never);
   }
 
   describe("GET /api/projects", () => {
@@ -44,14 +46,12 @@ describe("/api/projects", () => {
         order: vi.fn().mockResolvedValue({ data: mockProjects, error: null }),
       });
 
+      vi.mocked(getAuthUser).mockResolvedValue(mockUser as never);
+      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
       vi.mocked(createClient).mockResolvedValue({
-        auth: {
-          getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null }),
-        },
         from: mockFrom,
       } as never);
 
-      const request = createMockRequest("GET");
       const response = await GET();
       const { status, data } = await parseResponse(response);
 
@@ -78,10 +78,9 @@ describe("/api/projects", () => {
         order: vi.fn().mockResolvedValue({ data: [mockProject], error: null }),
       });
 
+      vi.mocked(getAuthUser).mockResolvedValue(mockUser as never);
+      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
       vi.mocked(createClient).mockResolvedValue({
-        auth: {
-          getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null }),
-        },
         from: mockFrom,
       } as never);
 
@@ -101,10 +100,9 @@ describe("/api/projects", () => {
         single: vi.fn().mockResolvedValue({ data: mockProject, error: null }),
       });
 
+      vi.mocked(getAuthUser).mockResolvedValue(mockUser as never);
+      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
       vi.mocked(createClient).mockResolvedValue({
-        auth: {
-          getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null }),
-        },
         from: mockFrom,
       } as never);
 
@@ -168,10 +166,9 @@ describe("/api/projects", () => {
         single: vi.fn().mockResolvedValue({ data: mockProject, error: null }),
       });
 
+      vi.mocked(getAuthUser).mockResolvedValue(mockUser as never);
+      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
       vi.mocked(createClient).mockResolvedValue({
-        auth: {
-          getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null }),
-        },
         from: mockFrom,
       } as never);
 

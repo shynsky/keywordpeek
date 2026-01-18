@@ -46,7 +46,7 @@ export async function POST(request: Request) {
         creditsNeeded,
         `People Also Ask: "${keyword}"`
       );
-    } catch (err) {
+    } catch {
       return NextResponse.json(
         {
           error: "Insufficient credits",

@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface Project {

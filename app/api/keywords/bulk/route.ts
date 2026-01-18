@@ -25,8 +25,28 @@ export async function POST(request: Request) {
     const supabase = await createClient();
 
     // Parse request body
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
     const { keywords, locationCode, languageCode } = body;
+
+    // Validate locationCode and languageCode
+    if (locationCode !== undefined && (typeof locationCode !== "number" || locationCode <= 0 || !Number.isInteger(locationCode))) {
+      return NextResponse.json(
+        { error: "locationCode must be a positive integer" },
+        { status: 400 }
+      );
+    }
+    if (languageCode !== undefined && (typeof languageCode !== "string" || languageCode.length !== 2)) {
+      return NextResponse.json(
+        { error: "languageCode must be a 2-character string" },
+        { status: 400 }
+      );
+    }
 
     // Validate input
     if (!keywords || !Array.isArray(keywords)) {
@@ -61,7 +81,7 @@ export async function POST(request: Request) {
         creditsNeeded,
         `Bulk keyword check: ${keywords.length} keywords`
       );
-    } catch (err) {
+    } catch {
       return NextResponse.json(
         {
           error: "Insufficient credits",

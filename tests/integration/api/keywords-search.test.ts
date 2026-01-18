@@ -4,6 +4,7 @@ import { createMockRequest, parseResponse, mockUser, mockKeywordResult } from ".
 // Mock modules before importing route
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
+  getAuthUser: vi.fn(),
 }));
 
 vi.mock("@/lib/dataforseo/keywords", () => ({
@@ -14,6 +15,10 @@ vi.mock("@/lib/dataforseo/keywords", () => ({
 vi.mock("@/lib/credits", () => ({
   hasCredits: vi.fn(),
   deductCredits: vi.fn(),
+  reserveCredits: vi.fn(),
+  rollbackCredits: vi.fn(),
+  getBalance: vi.fn(),
+  calculateSearchCredits: vi.fn(),
   CREDIT_COSTS: {
     KEYWORD_SEARCH: 1,
     BULK_CHECK: 0.2,
@@ -22,10 +27,16 @@ vi.mock("@/lib/credits", () => ({
   },
 }));
 
+vi.mock("@/lib/rate-limit", () => ({
+  checkRateLimit: vi.fn(),
+  rateLimitResponse: vi.fn(),
+}));
+
 import { POST } from "@/app/api/keywords/search/route";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { searchKeywords, searchKeywordExtended } from "@/lib/dataforseo/keywords";
-import { hasCredits, deductCredits } from "@/lib/credits";
+import { reserveCredits, getBalance, calculateSearchCredits } from "@/lib/credits";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 describe("POST /api/keywords/search", () => {
   beforeEach(() => {
@@ -34,10 +45,9 @@ describe("POST /api/keywords/search", () => {
 
   function setupAuthenticatedUser(user = mockUser) {
     const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
+    vi.mocked(getAuthUser).mockResolvedValue(user as never);
+    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
     vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user }, error: null }),
-      },
       from: vi.fn().mockReturnValue({
         insert: mockInsert,
       }),
@@ -46,17 +56,14 @@ describe("POST /api/keywords/search", () => {
   }
 
   function setupUnauthenticated() {
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
-      },
-    } as never);
+    vi.mocked(getAuthUser).mockResolvedValue(null as never);
   }
 
   it("returns keyword data for valid single keyword request", async () => {
     setupAuthenticatedUser();
-    vi.mocked(hasCredits).mockResolvedValue(true);
-    vi.mocked(deductCredits).mockResolvedValue(99);
+    vi.mocked(calculateSearchCredits).mockReturnValue(1);
+    vi.mocked(reserveCredits).mockResolvedValue("txn-123");
+    vi.mocked(getBalance).mockResolvedValue(99);
     vi.mocked(searchKeywords).mockResolvedValue([mockKeywordResult]);
 
     const request = createMockRequest("POST", { keywords: "test keyword" });
@@ -71,8 +78,9 @@ describe("POST /api/keywords/search", () => {
 
   it("handles array of keywords", async () => {
     setupAuthenticatedUser();
-    vi.mocked(hasCredits).mockResolvedValue(true);
-    vi.mocked(deductCredits).mockResolvedValue(97);
+    vi.mocked(calculateSearchCredits).mockReturnValue(3);
+    vi.mocked(reserveCredits).mockResolvedValue("txn-123");
+    vi.mocked(getBalance).mockResolvedValue(97);
     vi.mocked(searchKeywords).mockResolvedValue([
       mockKeywordResult,
       { ...mockKeywordResult, keyword: "keyword 2" },
@@ -103,7 +111,8 @@ describe("POST /api/keywords/search", () => {
 
   it("returns 402 when insufficient credits", async () => {
     setupAuthenticatedUser();
-    vi.mocked(hasCredits).mockResolvedValue(false);
+    vi.mocked(calculateSearchCredits).mockReturnValue(1);
+    vi.mocked(reserveCredits).mockRejectedValue(new Error("Insufficient credits"));
 
     const request = createMockRequest("POST", { keywords: "test" });
     const response = await POST(request);
@@ -114,10 +123,11 @@ describe("POST /api/keywords/search", () => {
     expect(data).toHaveProperty("code", "INSUFFICIENT_CREDITS");
   });
 
-  it("deducts correct credits (1 per keyword)", async () => {
+  it("reserves correct credits (based on calculateSearchCredits)", async () => {
     setupAuthenticatedUser();
-    vi.mocked(hasCredits).mockResolvedValue(true);
-    vi.mocked(deductCredits).mockResolvedValue(95);
+    vi.mocked(calculateSearchCredits).mockReturnValue(5);
+    vi.mocked(reserveCredits).mockResolvedValue("txn-123");
+    vi.mocked(getBalance).mockResolvedValue(95);
     vi.mocked(searchKeywords).mockResolvedValue([
       mockKeywordResult,
       mockKeywordResult,
@@ -131,8 +141,8 @@ describe("POST /api/keywords/search", () => {
     });
     await POST(request);
 
-    expect(hasCredits).toHaveBeenCalledWith(mockUser.id, 5);
-    expect(deductCredits).toHaveBeenCalledWith(
+    expect(calculateSearchCredits).toHaveBeenCalledWith(5);
+    expect(reserveCredits).toHaveBeenCalledWith(
       mockUser.id,
       5,
       "Keyword search: 5 keyword(s)"
@@ -175,8 +185,9 @@ describe("POST /api/keywords/search", () => {
 
   it("handles extended=true for single keyword", async () => {
     setupAuthenticatedUser();
-    vi.mocked(hasCredits).mockResolvedValue(true);
-    vi.mocked(deductCredits).mockResolvedValue(99);
+    vi.mocked(calculateSearchCredits).mockReturnValue(1);
+    vi.mocked(reserveCredits).mockResolvedValue("txn-123");
+    vi.mocked(getBalance).mockResolvedValue(99);
     vi.mocked(searchKeywordExtended).mockResolvedValue({
       ...mockKeywordResult,
       suggestions: ["related1", "related2"],
@@ -198,8 +209,9 @@ describe("POST /api/keywords/search", () => {
 
   it("logs to api_usage table", async () => {
     const { mockInsert } = setupAuthenticatedUser();
-    vi.mocked(hasCredits).mockResolvedValue(true);
-    vi.mocked(deductCredits).mockResolvedValue(99);
+    vi.mocked(calculateSearchCredits).mockReturnValue(1);
+    vi.mocked(reserveCredits).mockResolvedValue("txn-123");
+    vi.mocked(getBalance).mockResolvedValue(99);
     vi.mocked(searchKeywords).mockResolvedValue([mockKeywordResult]);
 
     const request = createMockRequest("POST", { keywords: "test" });

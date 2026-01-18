@@ -4,6 +4,12 @@ import { createMockRequest, parseResponse, mockUser } from "../helpers";
 // Mock modules
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
+  getAuthUser: vi.fn(),
+}));
+
+vi.mock("@/lib/rate-limit", () => ({
+  checkRateLimit: vi.fn(),
+  rateLimitResponse: vi.fn(),
 }));
 
 vi.mock("@/lib/stripe/client", () => ({
@@ -40,8 +46,9 @@ vi.mock("@/lib/stripe/client", () => ({
 }));
 
 import { POST } from "@/app/api/credits/purchase/route";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/server";
 import { createCheckoutSession } from "@/lib/stripe/client";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 describe("POST /api/credits/purchase", () => {
   beforeEach(() => {
@@ -49,19 +56,12 @@ describe("POST /api/credits/purchase", () => {
   });
 
   function setupAuthenticatedUser(user = mockUser) {
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user }, error: null }),
-      },
-    } as never);
+    vi.mocked(getAuthUser).mockResolvedValue(user as never);
+    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 9 });
   }
 
   function setupUnauthenticated() {
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
-      },
-    } as never);
+    vi.mocked(getAuthUser).mockResolvedValue(null as never);
   }
 
   it("creates checkout session for starter package", async () => {

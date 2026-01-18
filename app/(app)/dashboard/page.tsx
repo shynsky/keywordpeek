@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { Sparkles, AlertCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -365,11 +365,17 @@ export default function DashboardPage() {
   }, []);
 
   // Calculate metrics for validation summary
-  const totalVolume = keywords.reduce((sum, kw) => sum + kw.searchVolume, 0);
-  const avgDifficulty =
-    keywords.length > 0
-      ? keywords.reduce((sum, kw) => sum + kw.difficulty, 0) / keywords.length
-      : 0;
+  const totalVolume = useMemo(
+    () => keywords.reduce((sum, kw) => sum + kw.searchVolume, 0),
+    [keywords]
+  );
+  const avgDifficulty = useMemo(
+    () =>
+      keywords.length > 0
+        ? keywords.reduce((sum, kw) => sum + kw.difficulty, 0) / keywords.length
+        : 0,
+    [keywords]
+  );
 
   return (
     <div className="space-y-8">
@@ -380,7 +386,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold">Research Hub</h1>
         </div>
         <p className="text-muted-foreground text-lg">
-          Describe your idea and we'll help you validate the market, find competitors, and plan your content.
+          Describe your idea and we&apos;ll help you validate the market, find competitors, and plan your content.
         </p>
       </div>
 
@@ -584,7 +590,7 @@ export default function DashboardPage() {
             </div>
             <h2 className="text-2xl font-bold mb-3">Start your first research</h2>
             <p className="text-muted-foreground text-lg max-w-md mx-auto mb-10">
-              Describe your niche idea above and we'll help you validate the market,
+              Describe your niche idea above and we&apos;ll help you validate the market,
               discover competitors, and plan your content strategy.
             </p>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { Sentry, initSentryClient } from "@/sentry.client.config";
 
 // Initialize Sentry on client side
@@ -134,7 +135,7 @@ export default function GlobalError({
                 Try again
               </button>
 
-              <a
+              <Link
                 href="/"
                 style={{
                   padding: "0.5rem 1rem",
@@ -161,7 +162,7 @@ export default function GlobalError({
                   <polyline points="9 22 9 12 15 12 15 22" />
                 </svg>
                 Go home
-              </a>
+              </Link>
             </div>
 
             {error.digest && (

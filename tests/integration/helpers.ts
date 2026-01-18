@@ -69,7 +69,7 @@ export const mockKeywordResult = {
   competitionScore: 0.5,
   difficulty: 45,
   keywordScore: 65,
-  intent: "informational",
+  intent: "informational" as const,
   trend: [
     { year: 2024, month: 1, volume: 4800 },
     { year: 2024, month: 2, volume: 5000 },

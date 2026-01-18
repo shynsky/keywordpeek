@@ -25,8 +25,28 @@ export async function POST(request: Request) {
     const supabase = await createClient();
 
     // Parse request body
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
     const { keywords, extended = false, locationCode, languageCode } = body;
+
+    // Validate locationCode and languageCode
+    if (locationCode !== undefined && (typeof locationCode !== "number" || locationCode <= 0 || !Number.isInteger(locationCode))) {
+      return NextResponse.json(
+        { error: "locationCode must be a positive integer" },
+        { status: 400 }
+      );
+    }
+    if (languageCode !== undefined && (typeof languageCode !== "string" || languageCode.length !== 2)) {
+      return NextResponse.json(
+        { error: "languageCode must be a 2-character string" },
+        { status: 400 }
+      );
+    }
 
     // Validate input
     if (!keywords) {
@@ -53,6 +73,22 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate each keyword
+    for (const keyword of keywordList) {
+      if (typeof keyword !== "string" || keyword.trim().length === 0) {
+        return NextResponse.json(
+          { error: "Each keyword must be a non-empty string" },
+          { status: 400 }
+        );
+      }
+      if (keyword.length > 256) {
+        return NextResponse.json(
+          { error: "Each keyword must be less than 256 characters" },
+          { status: 400 }
+        );
+      }
+    }
+
     // Calculate credits needed
     // 1-10 keywords: 1 credit, 11+ keywords: 1 + 0.1 per extra
     const creditsNeeded = calculateSearchCredits(keywordList.length);
@@ -65,7 +101,7 @@ export async function POST(request: Request) {
         creditsNeeded,
         `Keyword search: ${keywordList.length} keyword(s)`
       );
-    } catch (err) {
+    } catch {
       // Insufficient credits or user not found
       return NextResponse.json(
         {

@@ -78,7 +78,6 @@ export default function ProjectDetailPage({
   const [editName, setEditName] = useState("");
   const [editDomain, setEditDomain] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [deletingKeywordId, setDeletingKeywordId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProject();
@@ -149,31 +148,6 @@ export default function ProjectDetailPage({
       router.push("/dashboard/projects");
     }
     setIsDeleting(false);
-  };
-
-  const handleDeleteKeyword = async (keywordId: string) => {
-    setDeletingKeywordId(keywordId);
-    const supabase = createClient();
-    const { error } = await supabase.from("keywords").delete().eq("id", keywordId);
-
-    if (!error) {
-      setKeywords((prev) => prev.filter((k) => k.id !== keywordId));
-    }
-    setDeletingKeywordId(null);
-  };
-
-  const handleUpdateKeywordStatus = async (keywordId: string, newStatus: string) => {
-    const supabase = createClient();
-    const { error } = await supabase
-      .from("keywords")
-      .update({ status: newStatus })
-      .eq("id", keywordId);
-
-    if (!error) {
-      setKeywords((prev) =>
-        prev.map((k) => (k.id === keywordId ? { ...k, status: newStatus } : k))
-      );
-    }
   };
 
   // Transform saved keywords to KeywordData format
