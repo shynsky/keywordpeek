@@ -82,6 +82,8 @@ vi.mock("lucide-react", () => ({
   Save: () => <span data-testid="icon-save" />,
   ExternalLink: () => <span data-testid="icon-external" />,
   MoreHorizontal: () => <span data-testid="icon-more" />,
+  Sparkles: () => <span data-testid="icon-sparkles" />,
+  Zap: () => <span data-testid="icon-zap" />,
 }));
 
 // Mock URL.createObjectURL and revokeObjectURL for CSV export tests

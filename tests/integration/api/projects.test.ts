@@ -23,7 +23,7 @@ describe("/api/projects", () => {
 
   function setupAuthenticatedUser(user = mockUser) {
     vi.mocked(getAuthUser).mockResolvedValue(user as never);
-    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
+    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99, resetAt: Date.now() + 60000 });
     return vi.mocked(createClient).mockResolvedValue({
       from: vi.fn(),
     } as never);
@@ -47,7 +47,7 @@ describe("/api/projects", () => {
       });
 
       vi.mocked(getAuthUser).mockResolvedValue(mockUser as never);
-      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
+      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99, resetAt: Date.now() + 60000 });
       vi.mocked(createClient).mockResolvedValue({
         from: mockFrom,
       } as never);
@@ -79,7 +79,7 @@ describe("/api/projects", () => {
       });
 
       vi.mocked(getAuthUser).mockResolvedValue(mockUser as never);
-      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
+      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99, resetAt: Date.now() + 60000 });
       vi.mocked(createClient).mockResolvedValue({
         from: mockFrom,
       } as never);
@@ -101,7 +101,7 @@ describe("/api/projects", () => {
       });
 
       vi.mocked(getAuthUser).mockResolvedValue(mockUser as never);
-      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
+      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99, resetAt: Date.now() + 60000 });
       vi.mocked(createClient).mockResolvedValue({
         from: mockFrom,
       } as never);
@@ -167,7 +167,7 @@ describe("/api/projects", () => {
       });
 
       vi.mocked(getAuthUser).mockResolvedValue(mockUser as never);
-      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
+      vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99, resetAt: Date.now() + 60000 });
       vi.mocked(createClient).mockResolvedValue({
         from: mockFrom,
       } as never);

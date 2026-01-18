@@ -63,13 +63,13 @@ describe("DifficultyBadge", () => {
   describe("dots variant", () => {
     it("renders 5 dots", () => {
       const { container } = render(<DifficultyBadge difficulty={50} variant="dots" />);
-      const dots = container.querySelectorAll(".rounded-full.w-2.h-2");
+      const dots = container.querySelectorAll("[class*='rounded-full'][class*='w-2.5'][class*='h-2.5']");
       expect(dots.length).toBe(5);
     });
 
     it("fills correct number of dots for difficulty 20 (1 dot)", () => {
       const { container } = render(<DifficultyBadge difficulty={20} variant="dots" showLabel={false} />);
-      const dots = container.querySelectorAll(".rounded-full.w-2.h-2");
+      const dots = container.querySelectorAll("[class*='rounded-full'][class*='w-2.5'][class*='h-2.5']");
       // difficulty 20 → 20/20 = 1 filled dot
       const filledCount = Array.from(dots).filter(dot =>
         dot.className.includes("bg-score-")
@@ -79,7 +79,7 @@ describe("DifficultyBadge", () => {
 
     it("fills correct number of dots for difficulty 60 (3 dots)", () => {
       const { container } = render(<DifficultyBadge difficulty={60} variant="dots" showLabel={false} />);
-      const dots = container.querySelectorAll(".rounded-full.w-2.h-2");
+      const dots = container.querySelectorAll("[class*='rounded-full'][class*='w-2.5'][class*='h-2.5']");
       // difficulty 60 → 60/20 = 3 filled dots
       const filledCount = Array.from(dots).filter(dot =>
         dot.className.includes("bg-score-")
@@ -89,7 +89,7 @@ describe("DifficultyBadge", () => {
 
     it("fills all 5 dots for difficulty 100", () => {
       const { container } = render(<DifficultyBadge difficulty={100} variant="dots" showLabel={false} />);
-      const dots = container.querySelectorAll(".rounded-full.w-2.h-2");
+      const dots = container.querySelectorAll("[class*='rounded-full'][class*='w-2.5'][class*='h-2.5']");
       // difficulty 100 → 100/20 = 5 filled dots
       const filledCount = Array.from(dots).filter(dot =>
         dot.className.includes("bg-score-")

@@ -95,12 +95,11 @@ describe("POST /api/research/generate", () => {
     });
     vi.mocked(generateTitle).mockResolvedValue("Research Session Title");
     vi.mocked(generateValidationSummary).mockResolvedValue({
-      verdict: "Promising niche",
-      overallScore: 75,
-      strengths: ["Good search volume"],
-      weaknesses: ["High competition"],
-      opportunities: ["Emerging market"],
-      recommendations: ["Target long-tail"],
+      demandLevel: "good",
+      competitionLevel: "moderate",
+      opportunityScore: 75,
+      insight: "Good search volume with moderate competition",
+      recommendation: "Target long-tail keywords",
     });
   }
 
@@ -114,7 +113,7 @@ describe("POST /api/research/generate", () => {
 
   function setupSessionOk() {
     vi.mocked(createSession).mockResolvedValue({ id: "session_123" } as never);
-    vi.mocked(updateSession).mockResolvedValue(undefined);
+    vi.mocked(updateSession).mockResolvedValue({} as never);
   }
 
   describe("AI Mode (description input)", () => {

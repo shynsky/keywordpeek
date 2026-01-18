@@ -30,11 +30,11 @@ describe("TrendSparkline", () => {
       expect(paths.length).toBeGreaterThanOrEqual(1);
     });
 
-    it("renders end dot circle", () => {
+    it("renders end dot circles (outer glow + inner)", () => {
       const data = createMockTrendData([100, 150, 200]);
       const { container } = render(<TrendSparkline data={data} />);
       const circles = container.querySelectorAll("circle");
-      expect(circles.length).toBe(1);
+      expect(circles.length).toBe(2);
     });
   });
 
@@ -99,8 +99,8 @@ describe("TrendSparkline", () => {
       const data = createMockTrendData([100, 200, 300]);
       const { container } = render(<TrendSparkline data={data} />);
       const svg = container.querySelector("svg");
-      expect(svg).toHaveAttribute("width", "80");
-      expect(svg).toHaveAttribute("height", "24");
+      expect(svg).toHaveAttribute("width", "100");
+      expect(svg).toHaveAttribute("height", "32");
     });
   });
 });

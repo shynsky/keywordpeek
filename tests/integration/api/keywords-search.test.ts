@@ -46,7 +46,7 @@ describe("POST /api/keywords/search", () => {
   function setupAuthenticatedUser(user = mockUser) {
     const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
     vi.mocked(getAuthUser).mockResolvedValue(user as never);
-    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99 });
+    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 99, resetAt: Date.now() + 60000 });
     vi.mocked(createClient).mockResolvedValue({
       from: vi.fn().mockReturnValue({
         insert: mockInsert,

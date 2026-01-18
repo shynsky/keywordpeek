@@ -127,18 +127,18 @@ describe("LowCreditWarning", () => {
 
   it("shows warning at threshold (10 credits)", () => {
     render(<LowCreditWarning credits={10} />);
-    expect(screen.getByText("Low credits")).toBeInTheDocument();
+    expect(screen.getByText("Running low on credits")).toBeInTheDocument();
   });
 
   it("shows warning below threshold", () => {
     render(<LowCreditWarning credits={5} />);
-    expect(screen.getByText("Low credits")).toBeInTheDocument();
+    expect(screen.getByText("Running low on credits")).toBeInTheDocument();
     expect(screen.getByText(/Only 5 credits left/)).toBeInTheDocument();
   });
 
-  it("shows 'No credits remaining' at 0", () => {
+  it("shows 'Out of credits!' at 0", () => {
     render(<LowCreditWarning credits={0} />);
-    expect(screen.getByText("No credits remaining")).toBeInTheDocument();
+    expect(screen.getByText("Out of credits!")).toBeInTheDocument();
   });
 
   it("shows purchase message at 0 credits", () => {

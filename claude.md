@@ -1,15 +1,31 @@
 # CLAUDE.md
 
+## Reference Docs
+See `.claude-docs/` for global setup guides (CC best practices, migration guide, project tracker).
+
+---
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Info
+
+| Service | Value |
+|---------|-------|
+| **GitHub** | [shynsky/keywordpeek](https://github.com/shynsky/keywordpeek) |
+| **Domain** | keywordpeek.com |
+| **Vercel** | project `keywordpeek` (team: mwmw, id: `prj_kQgrEMr47GawGKl1jqC573asZ563`) |
+| **Supabase** | ref `olgscjrndwuqbjnpkejl` (Central EU / Frankfurt) |
+| **Stripe** | Marek Wituszyński Media Works sandbox (test mode) |
 
 ## Commands
 
 ```bash
-npm run dev          # Start development server (http://localhost:3000)
-npm run build        # Production build
-npm run lint         # ESLint
-npm run test         # Run tests in watch mode
-npm run test:run     # Run tests once
+npm run dev           # Start development server (http://localhost:3000)
+npm run build         # Production build
+npm run lint          # ESLint
+npm run test          # Run tests in watch mode
+npm run test:run      # Run tests once
+npm run test:coverage # Run tests with coverage report
 npm run test:run -- tests/unit/lib/credits.test.ts  # Run single test file
 ```
 
@@ -18,6 +34,14 @@ npm run test:run -- tests/unit/lib/credits.test.ts  # Run single test file
 - **Frontend**: Push to `main` on GitHub to deploy (Vercel auto-deploys from GitHub).
 - **Database**: Supabase. Run migrations manually via SQL Editor in dashboard.
 - **Migrations**: Located in `supabase/migrations/`. Copy SQL to Supabase SQL Editor.
+
+### After Pushing to GitHub
+Always check CI status after pushing:
+```bash
+gh run list --limit 3              # Check recent CI runs
+gh run view <id> --log-failed      # Get failure details if any failed
+```
+If CI fails, investigate and fix the issues before moving on.
 
 ## Architecture
 

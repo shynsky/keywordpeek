@@ -57,7 +57,7 @@ describe("POST /api/credits/purchase", () => {
 
   function setupAuthenticatedUser(user = mockUser) {
     vi.mocked(getAuthUser).mockResolvedValue(user as never);
-    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 9 });
+    vi.mocked(checkRateLimit).mockReturnValue({ success: true, remaining: 9, resetAt: Date.now() + 60000 });
   }
 
   function setupUnauthenticated() {
