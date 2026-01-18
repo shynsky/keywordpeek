@@ -13,7 +13,7 @@ export default function MarketingLayout({
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2 font-mono font-bold text-sm uppercase tracking-widest no-underline text-foreground hover:text-primary">
-              <Image src="/K.png" alt="KeywordPeek" width={28} height={28} className="w-7 h-7" />
+              <Image src="/K-big.png" alt="KeywordPeek" width={28} height={28} className="w-7 h-7" />
               <span className="hidden sm:inline">[KEYWORDPEEK]</span>
             </Link>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -38,9 +39,9 @@ export function WelcomeModal() {
       >
         <DialogHeader className="p-6 pb-4 border-b-2 border-border">
           <div className="flex items-center gap-3 mb-1">
-            <span className="text-3xl">👋</span>
-            <DialogTitle className="text-2xl font-black uppercase tracking-wide">
-              Welcome to KeywordPeek
+            <Image src="/K-big.png" alt="KeywordPeek" width={36} height={36} className="w-9 h-9" />
+            <DialogTitle className="font-mono font-bold text-lg uppercase tracking-widest">
+              Welcome to [KEYWORDPEEK]
             </DialogTitle>
           </div>
           <DialogDescription className="text-base text-muted-foreground">

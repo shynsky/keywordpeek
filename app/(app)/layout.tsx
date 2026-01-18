@@ -74,8 +74,8 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
       <header className="lg:hidden sticky top-0 z-50 border-b-2 border-border bg-background">
         <div className="flex items-center justify-between h-16 px-4">
           <Link href="/dashboard" className="flex items-center gap-2.5 no-underline">
-            <Image src="/K.png" alt="KeywordPeek" width={36} height={36} className="w-9 h-9" />
-            <span className="font-bold text-lg text-foreground">KeywordPeek</span>
+            <Image src="/K-big.png" alt="KeywordPeek" width={36} height={36} className="w-9 h-9" />
+            <span className="font-mono font-bold text-sm uppercase tracking-widest text-foreground">[KEYWORDPEEK]</span>
           </Link>
           <div className="flex items-center gap-3">
             {credits !== null && (
@@ -148,8 +148,8 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           {/* Logo */}
           <div className="flex items-center gap-3 h-20 px-6 border-b-2 border-border">
             <Link href="/dashboard" className="flex items-center gap-3 no-underline">
-              <Image src="/K.png" alt="KeywordPeek" width={40} height={40} className="w-10 h-10" />
-              <span className="font-bold text-xl text-foreground">KeywordPeek</span>
+              <Image src="/K-big.png" alt="KeywordPeek" width={40} height={40} className="w-10 h-10" />
+              <span className="font-mono font-bold text-base uppercase tracking-widest text-foreground">[KEYWORDPEEK]</span>
             </Link>
           </div>
 

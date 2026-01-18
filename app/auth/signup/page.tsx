@@ -138,8 +138,8 @@ export default function SignupPage() {
         <div className="w-full max-w-sm">
           {/* Logo */}
           <Link href="/" className="inline-flex items-center gap-2 mb-8 no-underline">
-            <Image src="/K.png" alt="KeywordPeek" width={32} height={32} className="w-8 h-8" />
-            <span className="font-bold text-lg text-foreground">KeywordPeek</span>
+            <Image src="/K-big.png" alt="KeywordPeek" width={32} height={32} className="w-8 h-8" />
+            <span className="font-mono font-bold text-sm uppercase tracking-widest text-foreground">[KEYWORDPEEK]</span>
           </Link>
 
           <h1 className="text-2xl font-bold mb-2">
