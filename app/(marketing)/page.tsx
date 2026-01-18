@@ -74,12 +74,14 @@ export default function LandingPage() {
         className="border-b-2 border-foreground"
         decorations={
           <>
-            <QuarterCircle position="top-right" color="primary" size="xl" grain />
-            <Circle position={{ bottom: "10%", left: "5%" }} color="secondary" size="md" grain />
+            <QuarterCircle position="top-right" color="primary" size="2xl" />
+            <Circle position={{ top: "15%", right: "8%" }} color="secondary" size="lg" />
+            <Circle position={{ bottom: "10%", left: "5%" }} color="secondary" size="md" />
+            <Circle position={{ bottom: "25%", left: "2%" }} color="primary" size="sm" className="opacity-60" />
           </>
         }
       >
-        <section className="grain-subtle">
+        <section className="grain">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
             {/* Label */}
             <RevealOnScroll>
@@ -152,7 +154,7 @@ export default function LandingPage() {
       </GeometricContainer>
 
       {/* Social Proof - Inverted with primary */}
-      <section className="bg-primary text-primary-foreground border-b-2 border-foreground grain">
+      <section className="bg-primary text-primary-foreground border-b-2 border-foreground grain-logo">
         <div className="max-w-6xl mx-auto">
           <RevealOnScroll>
             <div className="grid grid-cols-2 md:grid-cols-4">
@@ -225,10 +227,13 @@ export default function LandingPage() {
       <GeometricContainer
         className="border-b-2 border-foreground bg-accent"
         decorations={
-          <QuarterCircle position="bottom-right" color="secondary" size="lg" grain />
+          <>
+            <QuarterCircle position="bottom-right" color="secondary" size="xl" />
+            <Circle position={{ top: "20%", right: "5%" }} color="primary" size="md" />
+          </>
         }
       >
-        <section className="grain-subtle">
+        <section className="grain">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
             <RevealOnScroll>
               <h2 className="uppercase tracking-wide">The Solution</h2>
@@ -349,10 +354,14 @@ export default function LandingPage() {
         className="border-b-2 border-foreground scroll-mt-14"
         id="features"
         decorations={
-          <Circle position={{ top: "5%", right: "2%" }} color="primary" size="sm" grain />
+          <>
+            <Circle position={{ top: "5%", right: "2%" }} color="primary" size="lg" />
+            <Circle position={{ top: "15%", right: "6%" }} color="secondary" size="sm" />
+            <QuarterCircle position="bottom-left" color="secondary" size="lg" />
+          </>
         }
       >
-        <section className="grain-subtle">
+        <section className="grain">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
             <RevealOnScroll>
               <h2 className="uppercase tracking-wide">Features</h2>
@@ -384,7 +393,17 @@ export default function LandingPage() {
       </GeometricContainer>
 
       {/* Pricing */}
-      <section id="pricing" className="border-b-2 border-foreground scroll-mt-14 bg-muted grain-subtle">
+      <GeometricContainer
+        id="pricing"
+        className="border-b-2 border-foreground scroll-mt-14 bg-muted"
+        decorations={
+          <>
+            <Circle position={{ top: "10%", left: "3%" }} color="primary" size="md" />
+            <QuarterCircle position="top-right" color="secondary" size="lg" />
+          </>
+        }
+      >
+      <section className="grain">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <RevealOnScroll>
             <h2 className="uppercase tracking-wide">Pricing</h2>
@@ -458,6 +477,7 @@ export default function LandingPage() {
           </RevealOnScroll>
         </div>
       </section>
+      </GeometricContainer>
 
       {/* FAQ */}
       <section id="faq" className="border-b-2 border-foreground scroll-mt-14">
@@ -486,17 +506,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Final CTA - Primary color */}
+      {/* Final CTA - Primary color with logo-mimicking circles */}
       <GeometricContainer
         className="bg-primary text-primary-foreground"
         decorations={
           <>
-            <QuarterCircle position="top-left" color="secondary" size="lg" />
-            <QuarterCircle position="bottom-right" color="accent" size="xl" />
+            <QuarterCircle position="top-left" color="secondary" size="xl" />
+            <QuarterCircle position="bottom-right" color="accent" size="2xl" />
+            <Circle position={{ top: "20%", right: "10%" }} color="secondary" size="lg" />
+            <Circle position={{ bottom: "15%", left: "8%" }} color="accent" size="md" />
           </>
         }
       >
-        <section className="grain">
+        <section className="grain-logo">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
             <RevealOnScroll>
               <div className="text-center">

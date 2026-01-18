@@ -2,13 +2,15 @@ import { cn } from "@/lib/utils"
 
 type Position = "top-left" | "top-right" | "bottom-left" | "bottom-right"
 type Color = "primary" | "secondary" | "accent"
-type Size = "sm" | "md" | "lg" | "xl"
+type Size = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl"
 
 const sizeClasses: Record<Size, string> = {
   sm: "w-16 h-16",
   md: "w-24 h-24",
   lg: "w-32 h-32",
   xl: "w-48 h-48",
+  "2xl": "w-64 h-64",
+  "3xl": "w-96 h-96",
 }
 
 const colorClasses: Record<Color, string> = {
@@ -44,7 +46,7 @@ export function QuarterCircle({
   color = "primary",
   size = "lg",
   className,
-  grain = false,
+  grain = true,
 }: QuarterCircleProps) {
   return (
     <div
@@ -61,7 +63,7 @@ export function QuarterCircle({
           "w-[200%] h-[200%] absolute",
           colorClasses[color],
           rotationClasses[position],
-          grain && "grain",
+          grain && "grain-logo",
           // Position the full circle so only 1/4 is visible
           position === "top-left" && "-top-full -left-full",
           position === "top-right" && "-top-full -right-full",
@@ -87,7 +89,7 @@ export function Circle({
   color = "secondary",
   size = "md",
   className,
-  grain = false,
+  grain = true,
 }: CircleProps) {
   const isCustomPosition = typeof position === "object"
 
@@ -98,7 +100,7 @@ export function Circle({
         sizeClasses[size],
         colorClasses[color],
         !isCustomPosition && positionClasses[position as Position],
-        grain && "grain",
+        grain && "grain-logo",
         className
       )}
       style={{
@@ -165,5 +167,45 @@ export function GeometricContainer({
       {decorations}
       <div className="relative z-10">{children}</div>
     </div>
+  )
+}
+
+type HalfPosition = "top" | "bottom" | "left" | "right"
+
+const halfPositionClasses: Record<HalfPosition, string> = {
+  top: "top-0 left-1/2 -translate-x-1/2 -translate-y-1/2",
+  bottom: "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2",
+  left: "left-0 top-1/2 -translate-x-1/2 -translate-y-1/2",
+  right: "right-0 top-1/2 translate-x-1/2 -translate-y-1/2",
+}
+
+interface HalfCircleProps {
+  position?: HalfPosition
+  color?: Color
+  size?: Size
+  className?: string
+  grain?: boolean
+}
+
+export function HalfCircle({
+  position = "bottom",
+  color = "primary",
+  size = "xl",
+  className,
+  grain = true,
+}: HalfCircleProps) {
+  return (
+    <div
+      className={cn(
+        "absolute pointer-events-none",
+        sizeClasses[size],
+        colorClasses[color],
+        halfPositionClasses[position],
+        grain && "grain-logo",
+        className
+      )}
+      style={{ borderRadius: "50%" }}
+      aria-hidden="true"
+    />
   )
 }

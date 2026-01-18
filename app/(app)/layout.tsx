@@ -22,6 +22,7 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { CreditsProvider, useCredits } from "@/lib/credits-context";
 import { OnboardingProvider, WelcomeModal } from "@/components/onboarding";
+import { QuarterCircle, Circle } from "@/components/decorations/geometric-shapes";
 
 interface NavItem {
   label: string;
@@ -144,9 +145,13 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
 
       <div className="lg:flex">
         {/* Desktop sidebar */}
-        <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 border-r-2 border-border bg-card grain-subtle">
+        <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 border-r-2 border-border bg-card grain overflow-hidden">
+          {/* Decorative shapes */}
+          <QuarterCircle position="bottom-right" color="primary" size="lg" className="opacity-30" />
+          <Circle position={{ top: "12%", right: "8%" }} color="secondary" size="sm" className="opacity-40" />
+
           {/* Logo */}
-          <div className="flex items-center gap-3 h-20 px-6 border-b-2 border-border">
+          <div className="flex items-center gap-3 h-20 px-6 border-b-2 border-border relative z-10">
             <Link href="/dashboard" className="flex items-center gap-3 no-underline">
               <Image src="/K-big.png" alt="KeywordPeek" width={40} height={40} className="w-10 h-10" />
               <span className="font-mono font-bold text-base uppercase tracking-widest text-foreground">[KEYWORDPEEK]</span>
@@ -154,7 +159,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 px-4 py-6 space-y-2 relative z-10">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -181,7 +186,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* Credit display */}
-          <div className="px-4 py-5 border-t-2 border-border bg-accent/50">
+          <div className="px-4 py-5 border-t-2 border-border bg-accent/50 grain-logo relative">
             {credits !== null && (
               <CreditDisplay credits={credits} variant="default" showBuyButton={false} />
             )}
@@ -198,7 +203,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Bottom navigation */}
-          <div className="px-4 py-4 border-t-2 border-border space-y-1">
+          <div className="px-4 py-4 border-t-2 border-border space-y-1 relative z-10">
             {bottomNavItems.map((item) => (
               <Link
                 key={item.href}
