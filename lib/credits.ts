@@ -141,12 +141,14 @@ export async function rollbackCredits(transactionId: string): Promise<number> {
  * Credit costs for different operations
  * Simplified: 1 credit = 1 search (up to 10 keywords)
  * Designed for 300-400% margins with DataForSEO Labs API
+ *
+ * NOTE: All costs must be integers because Supabase RPC expects int parameters
  */
 export const CREDIT_COSTS = {
   // Base cost for keyword search (covers up to 10 keywords)
   KEYWORD_SEARCH_BASE: 1,
-  // Cost per additional keyword above 10
-  KEYWORD_SEARCH_EXTRA: 0.1,
+  // Cost per additional keyword above 10 (1 credit per 10 extra keywords)
+  KEYWORD_SEARCH_EXTRA_PER_10: 1,
   // Bulk check (covers up to 25 keywords)
   BULK_CHECK: 1,
   // Related keywords / suggestions
@@ -157,8 +159,8 @@ export const CREDIT_COSTS = {
   // === Research Hub Features ===
   // LLM keyword generation from natural language
   LLM_KEYWORD_GENERATION: 1,
-  // SERP check per keyword for competitor discovery
-  SERP_CHECK: 0.5,
+  // SERP check per keyword for competitor discovery (1 credit per 2 keywords)
+  SERP_CHECK_PER_2: 1,
   // Keywords for Site (competitor keyword profile)
   KEYWORDS_FOR_SITE: 2,
   // LLM content clustering
@@ -170,14 +172,16 @@ export const CREDIT_COSTS = {
 /**
  * Calculate credits needed for keyword search
  * 1-10 keywords: 1 credit
- * 11+ keywords: 1 + 0.1 per extra keyword
+ * 11-20 keywords: 2 credits
+ * 21-30 keywords: 3 credits, etc.
  */
 export function calculateSearchCredits(keywordCount: number): number {
   if (keywordCount <= 10) {
     return CREDIT_COSTS.KEYWORD_SEARCH_BASE;
   }
   const extraKeywords = keywordCount - 10;
-  return CREDIT_COSTS.KEYWORD_SEARCH_BASE + extraKeywords * CREDIT_COSTS.KEYWORD_SEARCH_EXTRA;
+  const extraCredits = Math.ceil(extraKeywords / 10) * CREDIT_COSTS.KEYWORD_SEARCH_EXTRA_PER_10;
+  return CREDIT_COSTS.KEYWORD_SEARCH_BASE + extraCredits;
 }
 
 /**
@@ -191,10 +195,12 @@ export function calculateBulkCredits(keywordCount: number): number {
 
 /**
  * Calculate credits needed for SERP competitor discovery
+ * 1-2 keywords: 1 credit
+ * 3-4 keywords: 2 credits, etc.
  * @param keywordCount - Number of keywords to check SERPs for
  */
 export function calculateSerpCredits(keywordCount: number): number {
-  return keywordCount * CREDIT_COSTS.SERP_CHECK;
+  return Math.ceil(keywordCount / 2) * CREDIT_COSTS.SERP_CHECK_PER_2;
 }
 
 /**

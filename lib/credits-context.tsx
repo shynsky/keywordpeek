@@ -6,6 +6,8 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   type ReactNode,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -21,6 +23,7 @@ const CreditsContext = createContext<CreditsContextValue | null>(null);
 export function CreditsProvider({ children }: { children: ReactNode }) {
   const [credits, setCredits] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const hasFetched = useRef(false);
 
   const fetchCredits = useCallback(async () => {
     const supabase = createClient();
@@ -66,16 +69,20 @@ export function CreditsProvider({ children }: { children: ReactNode }) {
   }, [fetchCredits]);
 
   useEffect(() => {
-    // Initial fetch
-    const doFetch = async () => {
-      await fetchCredits();
-    };
-    doFetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // Only fetch once on mount to avoid cascading renders
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchCredits();
+    }
+  }, [fetchCredits]);
+
+  const value = useMemo(
+    () => ({ credits, isLoading, refreshCredits }),
+    [credits, isLoading, refreshCredits]
+  );
 
   return (
-    <CreditsContext.Provider value={{ credits, isLoading, refreshCredits }}>
+    <CreditsContext.Provider value={value}>
       {children}
     </CreditsContext.Provider>
   );

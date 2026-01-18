@@ -10,14 +10,14 @@ import {
 
 describe("lib/credits", () => {
   describe("CREDIT_COSTS", () => {
-    it("has expected cost constants", () => {
+    it("has expected cost constants (all integers)", () => {
       expect(CREDIT_COSTS.KEYWORD_SEARCH_BASE).toBe(1);
-      expect(CREDIT_COSTS.KEYWORD_SEARCH_EXTRA).toBe(0.1);
+      expect(CREDIT_COSTS.KEYWORD_SEARCH_EXTRA_PER_10).toBe(1);
       expect(CREDIT_COSTS.BULK_CHECK).toBe(1);
       expect(CREDIT_COSTS.SUGGESTIONS).toBe(1);
       expect(CREDIT_COSTS.QUESTIONS).toBe(1);
       expect(CREDIT_COSTS.LLM_KEYWORD_GENERATION).toBe(1);
-      expect(CREDIT_COSTS.SERP_CHECK).toBe(0.5);
+      expect(CREDIT_COSTS.SERP_CHECK_PER_2).toBe(1);
       expect(CREDIT_COSTS.KEYWORDS_FOR_SITE).toBe(2);
       expect(CREDIT_COSTS.LLM_CONTENT_CLUSTERING).toBe(1);
       expect(CREDIT_COSTS.LLM_VALIDATION_SUMMARY).toBe(1);
@@ -31,10 +31,11 @@ describe("lib/credits", () => {
       expect(calculateSearchCredits(10)).toBe(1);
     });
 
-    it("adds 0.1 credit per keyword above 10", () => {
-      expect(calculateSearchCredits(11)).toBe(1.1);
-      expect(calculateSearchCredits(15)).toBe(1.5);
+    it("adds 1 credit per 10 keywords above 10 (rounded up)", () => {
+      expect(calculateSearchCredits(11)).toBe(2);
+      expect(calculateSearchCredits(15)).toBe(2);
       expect(calculateSearchCredits(20)).toBe(2);
+      expect(calculateSearchCredits(21)).toBe(3);
       expect(calculateSearchCredits(30)).toBe(3);
     });
 
@@ -61,10 +62,12 @@ describe("lib/credits", () => {
   });
 
   describe("calculateSerpCredits", () => {
-    it("returns 0.5 credits per keyword", () => {
-      expect(calculateSerpCredits(1)).toBe(0.5);
+    it("returns 1 credit per 2 keywords (rounded up)", () => {
+      expect(calculateSerpCredits(1)).toBe(1);
       expect(calculateSerpCredits(2)).toBe(1);
-      expect(calculateSerpCredits(5)).toBe(2.5);
+      expect(calculateSerpCredits(3)).toBe(2);
+      expect(calculateSerpCredits(4)).toBe(2);
+      expect(calculateSerpCredits(5)).toBe(3);
       expect(calculateSerpCredits(10)).toBe(5);
     });
   });
@@ -82,11 +85,11 @@ describe("lib/credits", () => {
       // Default: 15 keywords, 5 SERP checks, 3 competitors
       const estimate = estimateResearchCredits(15);
 
-      // Tab 1 (Validation): LLM (1) + search (1.5) + summary (1) = 3.5
-      // Tab 2 (Competitors): SERP (5 * 0.5 = 2.5) + keywords (3 * 2 = 6) = 8.5
+      // Tab 1 (Validation): LLM (1) + search (2) + summary (1) = 4
+      // Tab 2 (Competitors): SERP (ceil(5/2) = 3) + keywords (3 * 2 = 6) = 9
       // Tab 3 (Content): clustering (1) = 1
-      // Total = 3.5 + 8.5 + 1 = 13
-      expect(estimate).toBe(13);
+      // Total = 4 + 9 + 1 = 14
+      expect(estimate).toBe(14);
     });
 
     it("scales with keyword count", () => {
@@ -117,10 +120,10 @@ describe("lib/credits", () => {
       const estimate = estimateResearchCredits(20, 3, 2);
 
       // Tab 1: LLM (1) + search (20 keywords = 2) + summary (1) = 4
-      // Tab 2: SERP (3 * 0.5 = 1.5) + competitors (2 * 2 = 4) = 5.5
+      // Tab 2: SERP (ceil(3/2) = 2) + competitors (2 * 2 = 4) = 6
       // Tab 3: clustering (1) = 1
-      // Total = 4 + 5.5 + 1 = 10.5
-      expect(estimate).toBe(10.5);
+      // Total = 4 + 6 + 1 = 11
+      expect(estimate).toBe(11);
     });
   });
 });

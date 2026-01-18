@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   AlertCircle,
   Check,
@@ -38,14 +38,16 @@ interface UsageStats {
 
 export default function AccountPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { credits, refreshCredits } = useCredits();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [purchasingPackage, setPurchasingPackage] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
-  const fetchAccountData = async () => {
+  const fetchAccountData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -106,7 +108,7 @@ export default function AccountPage() {
       setError("Something went wrong loading your account data. Please try again.");
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const handlePurchase = async (packageId: string) => {
     setPurchasingPackage(packageId);
@@ -127,7 +129,7 @@ export default function AccountPage() {
       }
 
       if (data.url) {
-        window.location.href = data.url;
+        router.push(data.url);
       } else {
         toast.error("Failed to create checkout session. Please try again.");
         setPurchasingPackage(null);
@@ -145,13 +147,16 @@ export default function AccountPage() {
       toast.success("Payment successful! Credits have been added to your account.");
       refreshCredits();
       // Clear the URL params
-      window.history.replaceState({}, "", "/account");
+      router.replace("/account");
     }
-  }, [searchParams, refreshCredits]);
+  }, [searchParams, refreshCredits, router]);
 
   useEffect(() => {
-    fetchAccountData();
-  }, []);
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchAccountData();
+    }
+  }, [fetchAccountData]);
 
   if (isLoading) {
     return (
