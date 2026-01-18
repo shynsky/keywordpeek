@@ -1,7 +1,7 @@
 /**
  * OpenAI Client
  *
- * Configured for GPT-4o mini - fast and cheap for keyword generation.
+ * Configured for GPT-5 nano - fast and cheap for keyword generation.
  * Includes 60-second timeout for AI requests (can be slow for complex prompts).
  */
 
@@ -46,8 +46,8 @@ export function resetOpenAI(): void {
  * Model configuration
  */
 export const OPENAI_CONFIG = {
-  // GPT-4o mini - fast, cheap, good for structured outputs
-  model: "gpt-4o-mini",
+  // GPT-5 nano - fast, cheap, good for structured outputs
+  model: "gpt-5-nano",
   // Temperature for keyword generation (some creativity, but structured)
   temperature: 0.7,
   // Max tokens for responses
