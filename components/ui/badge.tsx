@@ -12,7 +12,7 @@ const badgeVariants = cva(
         default:
           "border-primary bg-primary text-primary-foreground",
         secondary:
-          "border-border bg-secondary text-secondary-foreground [a&]:hover:border-foreground",
+          "border-secondary bg-secondary text-secondary-foreground [a&]:hover:bg-primary [a&]:hover:border-primary [a&]:hover:text-primary-foreground",
         destructive:
           "border-destructive bg-destructive text-white",
         outline:
@@ -25,6 +25,8 @@ const badgeVariants = cva(
           "border-score-medium bg-score-medium/15 text-score-medium",
         error:
           "border-score-hard bg-score-hard/15 text-score-hard",
+        credit:
+          "border-credit bg-credit/15 text-credit",
       },
     },
     defaultVariants: {

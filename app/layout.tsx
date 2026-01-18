@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Manrope, Fira_Code } from "next/font/google";
+import { Montserrat, Manrope, Fira_Code } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -9,7 +9,7 @@ const manrope = Manrope({
   display: "swap",
 });
 
-const outfit = Outfit({
+const montserrat = Montserrat({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${manrope.variable} ${outfit.variable} ${firaCode.variable} antialiased`}
+        className={`${manrope.variable} ${montserrat.variable} ${firaCode.variable} antialiased`}
       >
         {children}
         <Toaster position="bottom-right" richColors />

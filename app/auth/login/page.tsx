@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Loader2, Mail, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
+import { QuarterCircle, Circle } from "@/components/decorations/geometric-shapes";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -62,17 +63,15 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-8 relative">
         <div className="w-full max-w-sm">
           {/* Logo */}
-          <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-sm">K</span>
-            </div>
-            <span className="font-display font-semibold text-lg">KeywordPeek</span>
+          <Link href="/" className="inline-flex items-center gap-2 mb-8 no-underline">
+            <Image src="/K.png" alt="KeywordPeek" width={32} height={32} className="w-8 h-8" />
+            <span className="font-bold text-lg text-foreground">KeywordPeek</span>
           </Link>
 
-          <h1 className="text-2xl font-display font-semibold mb-2">
+          <h1 className="text-2xl font-bold mb-2">
             Welcome back
           </h1>
           <p className="text-muted-foreground mb-8">
@@ -80,7 +79,7 @@ export default function LoginPage() {
           </p>
 
           {error && (
-            <div className="mb-6 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+            <div className="mb-6 p-3 bg-destructive/10 border-2 border-destructive/30 text-destructive text-sm">
               {error}
             </div>
           )}
@@ -120,7 +119,7 @@ export default function LoginPage() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t-2 border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
@@ -153,7 +152,7 @@ export default function LoginPage() {
                 <Label htmlFor="password">Password</Label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -193,7 +192,7 @@ export default function LoginPage() {
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/signup"
-              className="font-medium text-foreground hover:underline"
+              className="font-medium text-primary hover:underline"
             >
               Sign up free
             </Link>
@@ -202,30 +201,35 @@ export default function LoginPage() {
       </div>
 
       {/* Right side - Decorative */}
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-muted/30 p-12">
-        <div className="max-w-md text-center">
-          <div className="mb-8 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/20">
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-accent p-12 relative overflow-hidden grain">
+        {/* Geometric decorations */}
+        <QuarterCircle position="top-left" color="primary" size="xl" />
+        <QuarterCircle position="bottom-right" color="secondary" size="lg" />
+        <Circle position={{ top: "20%", right: "15%" }} color="primary" size="sm" />
+
+        <div className="max-w-md text-center relative z-10">
+          <div className="mb-8 inline-flex items-center justify-center w-16 h-16 bg-primary/20 border-2 border-primary">
             <span className="text-4xl">🎯</span>
           </div>
-          <h2 className="text-2xl font-display font-semibold mb-4">
+          <h2 className="text-2xl font-bold mb-4">
             Keyword research, simplified
           </h2>
           <p className="text-muted-foreground leading-relaxed">
             No subscriptions. No commitments. Just pay for what you use and get
             instant access to search volumes, difficulty scores, and trend data.
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-display font-bold text-foreground">50</div>
-              <div className="text-xs text-muted-foreground">Free credits</div>
+          <div className="mt-8 grid grid-cols-3 gap-4 text-center border-2 border-foreground bg-card">
+            <div className="p-4 border-r-2 border-foreground">
+              <div className="text-2xl font-bold text-primary font-mono">50</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wide">Free credits</div>
             </div>
-            <div>
-              <div className="text-2xl font-display font-bold text-foreground">$0.009</div>
-              <div className="text-xs text-muted-foreground">Per keyword</div>
+            <div className="p-4 border-r-2 border-foreground">
+              <div className="text-2xl font-bold text-secondary font-mono">$0.009</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wide">Per keyword</div>
             </div>
-            <div>
-              <div className="text-2xl font-display font-bold text-foreground">100%</div>
-              <div className="text-xs text-muted-foreground">Data accuracy</div>
+            <div className="p-4">
+              <div className="text-2xl font-bold font-mono">100%</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wide">Data accuracy</div>
             </div>
           </div>
         </div>

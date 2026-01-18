@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Search,
@@ -70,13 +71,11 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile header */}
-      <header className="lg:hidden sticky top-0 z-50 border-b-2 border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="lg:hidden sticky top-0 z-50 border-b-2 border-border bg-background">
         <div className="flex items-center justify-between h-16 px-4">
           <Link href="/dashboard" className="flex items-center gap-2.5 no-underline">
-            <div className="w-9 h-9 rounded-xl bg-gradient-primary flex items-center justify-center shadow-playful">
-              <span className="text-white font-bold text-sm">K</span>
-            </div>
-            <span className="font-bold text-lg">KeywordPeek</span>
+            <Image src="/K.png" alt="KeywordPeek" width={36} height={36} className="w-9 h-9" />
+            <span className="font-bold text-lg text-foreground">KeywordPeek</span>
           </Link>
           <div className="flex items-center gap-3">
             {credits !== null && (
@@ -86,7 +85,6 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
               variant="ghost"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="rounded-xl"
             >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5" />
@@ -99,14 +97,14 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
 
         {/* Mobile menu */}
         {isMobileMenuOpen && (
-          <nav className="border-t-2 border-border bg-card p-4 space-y-2 animate-fade-in-up">
+          <nav className="border-t-2 border-border bg-card p-4 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium",
+                  "flex items-center gap-3 px-4 py-3 transition-all duration-200 font-medium no-underline",
                   pathname === item.href
                     ? "bg-primary/15 text-primary border-2 border-primary/30"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground border-2 border-transparent"
@@ -123,7 +121,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium",
+                  "flex items-center gap-3 px-4 py-3 transition-all duration-200 font-medium no-underline",
                   pathname === item.href
                     ? "bg-primary/15 text-primary border-2 border-primary/30"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground border-2 border-transparent"
@@ -135,7 +133,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
             ))}
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 font-medium border-2 border-transparent"
+              className="w-full flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 font-medium border-2 border-transparent"
             >
               <span className="text-lg">👋</span>
               Sign out
@@ -146,33 +144,30 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
 
       <div className="lg:flex">
         {/* Desktop sidebar */}
-        <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 border-r-2 border-border bg-card">
+        <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 border-r-2 border-border bg-card grain-subtle">
           {/* Logo */}
           <div className="flex items-center gap-3 h-20 px-6 border-b-2 border-border">
             <Link href="/dashboard" className="flex items-center gap-3 no-underline">
-              <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-playful animate-float">
-                <span className="text-white font-bold text-lg">K</span>
-              </div>
-              <span className="font-bold text-xl">KeywordPeek</span>
+              <Image src="/K.png" alt="KeywordPeek" width={40} height={40} className="w-10 h-10" />
+              <span className="font-bold text-xl text-foreground">KeywordPeek</span>
             </Link>
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2">
-            {navItems.map((item, i) => (
+            {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium animate-fade-in-up",
+                  "flex items-center gap-3 px-4 py-3 transition-all duration-200 font-medium no-underline",
                   pathname === item.href
-                    ? "bg-primary/15 text-primary border-2 border-primary/30 shadow-playful"
+                    ? "bg-primary/15 text-primary border-2 border-primary/30"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground border-2 border-transparent hover:border-border"
                 )}
-                style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className={cn(
-                  "w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200",
+                  "w-9 h-9 flex items-center justify-center transition-all duration-200",
                   pathname === item.href ? "bg-primary/20" : "bg-muted"
                 )}>
                   <item.icon className="h-5 w-5" />
@@ -186,7 +181,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* Credit display */}
-          <div className="px-4 py-5 border-t-2 border-border bg-muted/30">
+          <div className="px-4 py-5 border-t-2 border-border bg-accent/50">
             {credits !== null && (
               <CreditDisplay credits={credits} variant="default" showBuyButton={false} />
             )}
@@ -209,7 +204,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 font-medium",
+                  "flex items-center gap-3 px-3 py-2.5 text-sm transition-all duration-200 font-medium no-underline",
                   pathname.startsWith(item.href)
                     ? "bg-muted text-foreground"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -221,7 +216,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
             ))}
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 font-medium"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 font-medium"
             >
               <LogOut className="h-4 w-4" />
               Sign out

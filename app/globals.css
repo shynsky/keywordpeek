@@ -55,131 +55,131 @@
   --radius-4xl: 0;
 
   /* Typography */
-  --font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-family-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-family-mono: var(--font-mono, ui-monospace, "SF Mono", "Cascadia Code", "Segoe UI Mono", monospace);
+  --font-family-sans: var(--font-sans, "Manrope", system-ui, sans-serif);
+  --font-family-display: var(--font-display, "Montserrat", system-ui, sans-serif);
+  --font-family-mono: var(--font-mono, "Fira Code", ui-monospace, monospace);
 }
 
 :root {
   --radius: 0;  /* ZERO - no rounded corners */
 
   /* ============================================
-     BRUTALIST DATA
-     Anti-design. Dense. Honest.
+     BRUTALIST + WARM LOGO COLORS
+     Hybrid brutalist structure with warm pink/orange
      ============================================ */
 
-  --background: #F5F5F5;                        /* Off-white, almost gray */
-  --foreground: #000000;                        /* Pure black */
+  --background: #FDF8F5;                        /* Warm off-white */
+  --foreground: #1A1A1A;                        /* Near-black */
 
   --card: #FFFFFF;
-  --card-foreground: #000000;
+  --card-foreground: #1A1A1A;
 
   --popover: #FFFFFF;
-  --popover-foreground: #000000;
+  --popover-foreground: #1A1A1A;
 
-  --primary: #0066FF;                           /* Electric blue - accent */
+  --primary: #E84A8C;                           /* Pink from logo */
   --primary-foreground: #FFFFFF;
 
-  --secondary: #E8E8E8;
-  --secondary-foreground: #000000;
+  --secondary: #F5A623;                         /* Orange/yellow from logo */
+  --secondary-foreground: #1A1A1A;
 
-  --muted: #E0E0E0;
-  --muted-foreground: #666666;
+  --muted: #F5EDE8;                             /* Warm muted */
+  --muted-foreground: #6B5B54;                  /* Warm gray */
 
-  --accent: #0066FF;
-  --accent-foreground: #FFFFFF;
+  --accent: #FFE4D6;                            /* Light peach */
+  --accent-foreground: #1A1A1A;
 
-  --accent-secondary: #0066FF;
+  --accent-secondary: #F5A623;
 
   --destructive: #CC0000;                       /* Red - problems */
 
-  --border: #000000;                            /* Black borders */
+  --border: #1A1A1A;                            /* Black borders (brutalist) */
   --input: #FFFFFF;
-  --ring: #0066FF;
+  --ring: #E84A8C;                              /* Pink focus ring */
 
   /* Semantic colors */
-  --positive: #006600;                          /* Green - solutions */
+  --positive: #2D8C4F;                          /* Green - solutions */
   --negative: #CC0000;                          /* Red - problems */
 
-  --score-easy: #006600;
-  --score-medium: #996600;
+  --score-easy: #2D8C4F;
+  --score-medium: #F5A623;                      /* Logo orange */
   --score-hard: #CC0000;
-  --credit: #0066FF;
+  --credit: #E84A8C;                            /* Logo pink */
 
-  /* Chart colors - monochrome with accent */
-  --chart-1: #000000;
-  --chart-2: #333333;
-  --chart-3: #666666;
-  --chart-4: #999999;
-  --chart-5: #0066FF;
+  /* Chart colors - warm palette */
+  --chart-1: #E84A8C;
+  --chart-2: #F5A623;
+  --chart-3: #2D8C4F;
+  --chart-4: #6B5B54;
+  --chart-5: #1A1A1A;
 
   /* Sidebar */
-  --sidebar: #F5F5F5;
-  --sidebar-foreground: #000000;
-  --sidebar-primary: #0066FF;
+  --sidebar: #FDF8F5;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #E84A8C;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #E8E8E8;
-  --sidebar-accent-foreground: #000000;
-  --sidebar-border: #000000;
-  --sidebar-ring: #0066FF;
+  --sidebar-accent: #FFE4D6;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #1A1A1A;
+  --sidebar-ring: #E84A8C;
 }
 
 .dark {
   /* ============================================
-     BRUTALIST DATA - Dark Mode
+     BRUTALIST + WARM - Dark Mode
      ============================================ */
 
-  --background: #0A0A0A;
-  --foreground: #F5F5F5;
+  --background: #1A1614;                        /* Warm dark */
+  --foreground: #FDF8F5;
 
-  --card: #141414;
-  --card-foreground: #F5F5F5;
+  --card: #241E1B;
+  --card-foreground: #FDF8F5;
 
-  --popover: #141414;
-  --popover-foreground: #F5F5F5;
+  --popover: #241E1B;
+  --popover-foreground: #FDF8F5;
 
-  --primary: #3388FF;
-  --primary-foreground: #000000;
+  --primary: #FF6BA8;                           /* Lighter pink */
+  --primary-foreground: #1A1614;
 
-  --secondary: #1A1A1A;
-  --secondary-foreground: #F5F5F5;
+  --secondary: #FFBD5C;                         /* Lighter orange */
+  --secondary-foreground: #1A1614;
 
-  --muted: #1A1A1A;
-  --muted-foreground: #999999;
+  --muted: #2D2622;
+  --muted-foreground: #A89890;
 
-  --accent: #3388FF;
-  --accent-foreground: #000000;
+  --accent: #3D302A;
+  --accent-foreground: #FDF8F5;
 
-  --accent-secondary: #3388FF;
+  --accent-secondary: #FFBD5C;
 
-  --destructive: #FF3333;
+  --destructive: #FF4444;
 
-  --border: #F5F5F5;
-  --input: #1A1A1A;
-  --ring: #3388FF;
+  --border: #FDF8F5;
+  --input: #2D2622;
+  --ring: #FF6BA8;
 
-  --positive: #00CC00;
-  --negative: #FF3333;
+  --positive: #4ADE80;
+  --negative: #FF4444;
 
-  --score-easy: #00CC00;
-  --score-medium: #FFCC00;
-  --score-hard: #FF3333;
-  --credit: #3388FF;
+  --score-easy: #4ADE80;
+  --score-medium: #FFBD5C;
+  --score-hard: #FF4444;
+  --credit: #FF6BA8;
 
-  --chart-1: #F5F5F5;
-  --chart-2: #CCCCCC;
-  --chart-3: #999999;
-  --chart-4: #666666;
-  --chart-5: #3388FF;
+  --chart-1: #FF6BA8;
+  --chart-2: #FFBD5C;
+  --chart-3: #4ADE80;
+  --chart-4: #A89890;
+  --chart-5: #FDF8F5;
 
-  --sidebar: #0A0A0A;
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-primary: #3388FF;
-  --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #1A1A1A;
-  --sidebar-accent-foreground: #F5F5F5;
-  --sidebar-border: #F5F5F5;
-  --sidebar-ring: #3388FF;
+  --sidebar: #1A1614;
+  --sidebar-foreground: #FDF8F5;
+  --sidebar-primary: #FF6BA8;
+  --sidebar-primary-foreground: #1A1614;
+  --sidebar-accent: #3D302A;
+  --sidebar-accent-foreground: #FDF8F5;
+  --sidebar-border: #FDF8F5;
+  --sidebar-ring: #FF6BA8;
 }
 
 @layer base {
@@ -198,7 +198,7 @@
 
   /* Typography - utilitarian + bold */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-display);
     font-weight: 800;
     letter-spacing: -0.03em;
     text-transform: uppercase;
@@ -247,7 +247,7 @@
 }
 
 /* ============================================
-   BRUTALIST - No animations, no effects
+   BRUTALIST - No rounded corners, no shadows
    ============================================ */
 
 @layer utilities {
@@ -313,7 +313,6 @@
     border: none;
     border-top: 2px solid var(--foreground);
     margin-top: 0;
-    /* margin-bottom controlled by Tailwind classes */
   }
 
   /* Minimal animations - only what's necessary */
@@ -323,7 +322,61 @@
 }
 
 /* ============================================
-   BRUTALIST - Score badges (functional only)
+   GRAIN TEXTURE - SVG noise filter
+   ============================================ */
+
+@layer utilities {
+  /* Base grain - 8% opacity */
+  .grain {
+    position: relative;
+  }
+
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    z-index: 1;
+  }
+
+  /* Subtle grain - 5% opacity */
+  .grain-subtle {
+    position: relative;
+  }
+
+  .grain-subtle::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    z-index: 1;
+  }
+
+  /* Strong grain - 15% opacity */
+  .grain-strong {
+    position: relative;
+  }
+
+  .grain-strong::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.15;
+    mix-blend-mode: overlay;
+    z-index: 1;
+  }
+}
+
+/* ============================================
+   SCORE BADGES (functional only)
    ============================================ */
 
 @layer utilities {
@@ -342,7 +395,17 @@
 }
 
 /* ============================================
-   BRUTALIST - Interactive States
+   GRADIENT - Primary (pink to orange)
+   ============================================ */
+
+@layer utilities {
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  }
+}
+
+/* ============================================
+   INTERACTIVE STATES
    ============================================ */
 
 ::selection {
@@ -383,7 +446,6 @@
    ============================================ */
 
 .marketing-page {
-  /* Tighter line height for dense feel */
   line-height: 1.4;
 }
 
@@ -542,7 +604,6 @@
 }
 
 .faq-item:first-child {
-  /* No border-top - section-divider handles this */
   padding-top: 0;
 }
 
@@ -556,7 +617,7 @@
 }
 
 /* ============================================
-   BRUTALIST - Functional Micro-Animations
+   FUNCTIONAL MICRO-ANIMATIONS
    Motion = feedback, not decoration
    ============================================ */
 

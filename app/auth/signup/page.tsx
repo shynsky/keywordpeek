@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Mail, Lock, User, ArrowRight, Check } from "lucide-react";
+import Image from "next/image";
+import { Loader2, Mail, Lock, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
+import { QuarterCircle, Circle } from "@/components/decorations/geometric-shapes";
 
 const BENEFITS = [
   "10 free searches to start",
@@ -78,12 +79,15 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-md text-center">
-          <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-full bg-score-easy/20">
-            <Check className="h-8 w-8 text-score-easy" />
+      <div className="min-h-screen flex items-center justify-center p-8 relative overflow-hidden">
+        <QuarterCircle position="top-right" color="primary" size="xl" />
+        <QuarterCircle position="bottom-left" color="secondary" size="lg" />
+
+        <div className="max-w-md text-center relative z-10">
+          <div className="mb-6 inline-flex items-center justify-center w-16 h-16 bg-positive/20 border-2 border-positive">
+            <Check className="h-8 w-8 text-positive" />
           </div>
-          <h1 className="text-2xl font-display font-semibold mb-2">
+          <h1 className="text-2xl font-bold mb-2">
             Check your email
           </h1>
           <p className="text-muted-foreground mb-6">
@@ -101,25 +105,30 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Decorative */}
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-muted/30 p-12">
-        <div className="max-w-md">
-          <div className="mb-8 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/20">
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-primary p-12 relative overflow-hidden grain">
+        {/* Geometric decorations */}
+        <QuarterCircle position="top-right" color="secondary" size="xl" />
+        <QuarterCircle position="bottom-left" color="accent" size="lg" />
+        <Circle position={{ bottom: "30%", right: "10%" }} color="secondary" size="sm" />
+
+        <div className="max-w-md relative z-10 text-primary-foreground">
+          <div className="mb-8 inline-flex items-center justify-center w-16 h-16 bg-primary-foreground/20 border-2 border-primary-foreground">
             <span className="text-4xl">🚀</span>
           </div>
-          <h2 className="text-2xl font-display font-semibold mb-4">
+          <h2 className="text-2xl font-bold mb-4">
             Start researching in seconds
           </h2>
-          <p className="text-muted-foreground leading-relaxed mb-8">
+          <p className="opacity-90 leading-relaxed mb-8">
             Join thousands of bootstrappers who use KeywordPeek to find
             profitable keywords without expensive monthly subscriptions.
           </p>
           <ul className="space-y-3">
             {BENEFITS.map((benefit) => (
               <li key={benefit} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-score-easy/20 flex items-center justify-center">
-                  <Check className="h-3 w-3 text-score-easy" />
+                <div className="w-5 h-5 bg-positive/30 border-2 border-positive flex items-center justify-center">
+                  <Check className="h-3 w-3 text-positive" />
                 </div>
-                <span className="text-muted-foreground">{benefit}</span>
+                <span className="opacity-90">{benefit}</span>
               </li>
             ))}
           </ul>
@@ -127,17 +136,15 @@ export default function SignupPage() {
       </div>
 
       {/* Right side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-8 relative">
         <div className="w-full max-w-sm">
           {/* Logo */}
-          <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-sm">K</span>
-            </div>
-            <span className="font-display font-semibold text-lg">KeywordPeek</span>
+          <Link href="/" className="inline-flex items-center gap-2 mb-8 no-underline">
+            <Image src="/K.png" alt="KeywordPeek" width={32} height={32} className="w-8 h-8" />
+            <span className="font-bold text-lg text-foreground">KeywordPeek</span>
           </Link>
 
-          <h1 className="text-2xl font-display font-semibold mb-2">
+          <h1 className="text-2xl font-bold mb-2">
             Create your account
           </h1>
           <p className="text-muted-foreground mb-8">
@@ -145,7 +152,7 @@ export default function SignupPage() {
           </p>
 
           {error && (
-            <div className="mb-6 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+            <div className="mb-6 p-3 bg-destructive/10 border-2 border-destructive/30 text-destructive text-sm">
               {error}
             </div>
           )}
@@ -185,7 +192,7 @@ export default function SignupPage() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t-2 border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
@@ -233,6 +240,7 @@ export default function SignupPage() {
 
             <Button
               type="submit"
+              variant="primary"
               className="w-full h-11"
               disabled={isLoading || isGoogleLoading}
             >
@@ -251,7 +259,7 @@ export default function SignupPage() {
             Already have an account?{" "}
             <Link
               href="/auth/login"
-              className="font-medium text-foreground hover:underline"
+              className="font-medium text-primary hover:underline"
             >
               Sign in
             </Link>
@@ -259,11 +267,11 @@ export default function SignupPage() {
 
           <p className="mt-4 text-center text-xs text-muted-foreground">
             By signing up, you agree to our{" "}
-            <Link href="/terms" className="underline hover:text-foreground">
+            <Link href="/terms" className="underline hover:text-primary">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link href="/privacy" className="underline hover:text-foreground">
+            <Link href="/privacy" className="underline hover:text-primary">
               Privacy Policy
             </Link>
           </p>
