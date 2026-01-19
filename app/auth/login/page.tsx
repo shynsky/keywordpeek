@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { getAppUrl } from "@/lib/utils/get-app-url";
 import { QuarterCircle, Circle } from "@/components/decorations/geometric-shapes";
 
 export default function LoginPage() {
@@ -50,7 +51,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${getAppUrl()}/auth/callback`,
       },
     });
 
