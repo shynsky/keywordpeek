@@ -1,0 +1,22 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Noise filter for grain texture -->
+  <defs>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="saturate" values="0" result="mono"/>
+      <feBlend in="SourceGraphic" in2="mono" mode="multiply"/>
+    </filter>
+  </defs>
+
+  <!-- Top-left: Pink quarter circle -->
+  <path d="M0 0 L16 0 L16 16 A16 16 0 0 1 0 0 Z" fill="#E84A8C" filter="url(#grain)"/>
+
+  <!-- Top-right: Orange full circle -->
+  <circle cx="24" cy="8" r="8" fill="#F5A623" filter="url(#grain)"/>
+
+  <!-- Bottom-left: Orange full circle -->
+  <circle cx="8" cy="24" r="8" fill="#F5A623" filter="url(#grain)"/>
+
+  <!-- Bottom-right: Pink quarter circle -->
+  <path d="M16 16 L32 16 L32 32 A16 16 0 0 0 16 16 Z" fill="#E84A8C" filter="url(#grain)"/>
+</svg>
