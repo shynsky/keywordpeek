@@ -87,7 +87,7 @@ Create 3-8 clusters based on the keywords provided.`;
   const response = await openai.chat.completions.create({
     model: OPENAI_CONFIG.model,
     temperature: 0.5,
-    max_tokens: 2000,
+    max_completion_tokens: 2000,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
@@ -200,7 +200,7 @@ Prioritize and suggest actions for each.`;
   const response = await openai.chat.completions.create({
     model: OPENAI_CONFIG.model,
     temperature: 0.4,
-    max_tokens: 1500,
+    max_completion_tokens: 1500,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
@@ -299,7 +299,7 @@ export async function generateValidationSummary(
   const response = await openai.chat.completions.create({
     model: OPENAI_CONFIG.model,
     temperature: 0.6,
-    max_tokens: 300,
+    max_completion_tokens: 300,
     messages: [
       {
         role: "system",

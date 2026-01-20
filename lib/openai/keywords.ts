@@ -62,7 +62,7 @@ Language: ${languageCode === "en" ? "English" : location.languageName}`;
   const response = await openai.chat.completions.create({
     model: OPENAI_CONFIG.model,
     temperature: OPENAI_CONFIG.temperature,
-    max_tokens: OPENAI_CONFIG.maxTokens,
+    max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
@@ -103,7 +103,7 @@ export async function generateTitle(description: string): Promise<string> {
   const response = await openai.chat.completions.create({
     model: OPENAI_CONFIG.model,
     temperature: 0.3, // Low temperature for consistent naming
-    max_tokens: 50,
+    max_completion_tokens: 50,
     messages: [
       {
         role: "system",
@@ -153,7 +153,7 @@ Output ONLY valid JSON mapping keywords to intents:
   const response = await openai.chat.completions.create({
     model: OPENAI_CONFIG.model,
     temperature: 0.3,
-    max_tokens: 1000,
+    max_completion_tokens: 1000,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `Classify these keywords:\n${keywords.join("\n")}` },

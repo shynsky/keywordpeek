@@ -51,5 +51,5 @@ export const OPENAI_CONFIG = {
   // Temperature for keyword generation (some creativity, but structured)
   temperature: 0.7,
   // Max tokens for responses
-  maxTokens: 2000,
+  maxCompletionTokens: 2000,
 } as const;
