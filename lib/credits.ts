@@ -212,6 +212,39 @@ export function calculateCompetitorCredits(competitorCount: number): number {
 }
 
 /**
+ * Estimate credits for the analysis step (after keyword generation)
+ * This is used in the two-step flow: generate-keywords (free) -> analyze (credits)
+ *
+ * @param keywordCount - Number of keywords to analyze
+ * @param options - Optional features to include in the analysis
+ * @returns Estimated credit cost
+ */
+export function estimateAnalysisCost(
+  keywordCount: number,
+  options?: {
+    includeTrends?: boolean;
+    includeBacklinks?: boolean;
+  }
+): number {
+  // Base cost: DataForSEO search + LLM validation summary
+  let cost =
+    calculateSearchCredits(keywordCount) + CREDIT_COSTS.LLM_VALIDATION_SUMMARY;
+
+  // Future: Add costs for optional features
+  if (options?.includeTrends) {
+    // Placeholder for Google Trends integration (Phase 2)
+    cost += 1;
+  }
+
+  if (options?.includeBacklinks) {
+    // Placeholder for Backlinks analysis (Phase 2)
+    cost += 2;
+  }
+
+  return cost;
+}
+
+/**
  * Estimate total credits for a full research session
  * Validation + Competitors + Content Planning
  */

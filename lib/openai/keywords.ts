@@ -136,6 +136,90 @@ export async function generateTitle(description: string): Promise<string> {
 }
 
 /**
+ * Smart suggestion for additional analysis options
+ */
+export interface ContextualSuggestion {
+  type: "trends" | "backlinks" | "local" | "competitor";
+  label: string;
+  description: string;
+  reason: string;
+  available: boolean;
+}
+
+/**
+ * Detect contextual suggestions based on user's description
+ * Returns relevant analysis suggestions based on detected patterns
+ *
+ * @param description - User's niche/idea description
+ * @returns Array of contextual suggestions
+ */
+export function detectContextualSuggestions(description: string): ContextualSuggestion[] {
+  const suggestions: ContextualSuggestion[] = [];
+  const lowerDesc = description.toLowerCase();
+
+  // Detect URL/domain patterns - suggest backlinks analysis
+  const urlPattern = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+)/;
+  if (urlPattern.test(description)) {
+    suggestions.push({
+      type: "backlinks",
+      label: "Analyze Backlinks",
+      description: "View backlink profile and referring domains for this site",
+      reason: "Domain detected in description",
+      available: false, // Phase 2
+    });
+  }
+
+  // Detect product/launch/seasonal keywords - suggest trends
+  const trendKeywords = [
+    "product", "launch", "new", "seasonal", "holiday", "christmas", "summer",
+    "winter", "spring", "fall", "black friday", "prime day", "sale", "trend",
+    "trending", "2024", "2025", "upcoming"
+  ];
+  if (trendKeywords.some(kw => lowerDesc.includes(kw))) {
+    suggestions.push({
+      type: "trends",
+      label: "View Trends",
+      description: "Check Google Trends for seasonality and interest over time",
+      reason: "Product/launch/seasonal terms detected",
+      available: false, // Phase 2
+    });
+  }
+
+  // Detect local business terms - suggest local SEO
+  const localKeywords = [
+    "near me", "local", "city", "store", "shop", "restaurant", "clinic",
+    "dentist", "lawyer", "plumber", "salon", "gym", "hotel", "cafe",
+    "delivery", "service area"
+  ];
+  if (localKeywords.some(kw => lowerDesc.includes(kw))) {
+    suggestions.push({
+      type: "local",
+      label: "Local SEO Analysis",
+      description: "Analyze local search competition and map pack opportunities",
+      reason: "Local business terms detected",
+      available: false, // Phase 2
+    });
+  }
+
+  // Detect competitor mentions - suggest competitor analysis
+  const competitorKeywords = [
+    "competitor", "vs", "versus", "alternative", "like", "similar to",
+    "better than", "compare", "competing"
+  ];
+  if (competitorKeywords.some(kw => lowerDesc.includes(kw))) {
+    suggestions.push({
+      type: "competitor",
+      label: "Competitor Analysis",
+      description: "Find and analyze competitor keywords and content",
+      reason: "Competitor-related terms detected",
+      available: true, // Available in Tab 2
+    });
+  }
+
+  return suggestions;
+}
+
+/**
  * Classify keyword intent
  */
 export type KeywordIntent =

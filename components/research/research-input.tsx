@@ -1,20 +1,42 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Lightbulb, Loader2, Globe, Search } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import {
+  Lightbulb,
+  Loader2,
+  Globe,
+  Search,
+  ArrowLeft,
+  Coins,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocationSelector } from "@/components/ui/location-selector";
 import { cn } from "@/lib/utils";
-import { DEFAULT_LOCATION_CODE } from "@/lib/constants/locations";
+import { useLocationPreference } from "@/lib/hooks/use-location-preference";
+import { KeywordEditor } from "./keyword-editor";
+import { SmartSuggestions } from "./smart-suggestions";
+import type { ContextualSuggestion } from "@/lib/openai/keywords";
 
 export type InputMode = "ai" | "manual";
+export type FlowState = "input" | "review" | "analyzing";
 
 export interface ResearchSubmitParams {
   mode: InputMode;
   description?: string;
-  keywords?: string[];
+  keywords: string[];
   locationCode: number;
   languageCode: string;
+  title?: string;
+}
+
+export interface GeneratedData {
+  keywords: string[];
+  seedTopics: string[];
+  marketAngle: string;
+  title: string;
+  suggestions: ContextualSuggestion[];
+  estimatedCredits: number;
 }
 
 interface ResearchInputProps {
@@ -25,7 +47,6 @@ interface ResearchInputProps {
   defaultMode?: InputMode;
 }
 
-
 export function ResearchInput({
   onSubmit,
   isLoading = false,
@@ -33,13 +54,22 @@ export function ResearchInput({
   defaultDescription = "",
   defaultMode = "ai",
 }: ResearchInputProps) {
+  // Input state
   const [mode, setMode] = useState<InputMode>(defaultMode);
   const [description, setDescription] = useState(defaultDescription);
   const [manualKeywords, setManualKeywords] = useState("");
-  const [locationCode, setLocationCode] = useState(DEFAULT_LOCATION_CODE);
-  const [languageCode, setLanguageCode] = useState("en");
+  const [locationCode, languageCode, setLocation] = useLocationPreference();
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Flow state
+  const [flowState, setFlowState] = useState<FlowState>("input");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
+
+  // Review state data
+  const [generatedData, setGeneratedData] = useState<GeneratedData | null>(null);
+  const [editedKeywords, setEditedKeywords] = useState<string[]>([]);
 
   // Parse manual keywords from textarea (comma or newline separated)
   const parseKeywords = (input: string): string[] => {
@@ -53,26 +83,95 @@ export function ResearchInput({
   const isValidManual = parsedKeywords.length >= 1 && parsedKeywords.length <= 20;
   const isValidAI = description.trim().length >= 10;
 
+  // Calculate credit estimate based on current keywords
+  const calculateCredits = (keywordCount: number): number => {
+    // Base cost: 1 credit per 10 keywords + 1 for validation summary
+    const searchCredits = keywordCount <= 10 ? 1 : 1 + Math.ceil((keywordCount - 10) / 10);
+    return searchCredits + 1; // +1 for LLM validation summary
+  };
+
+  // Credit estimate is calculated dynamically in the UI using calculateCredits()
+
+  // Handle AI keyword generation (step 1)
+  const handleGenerateKeywords = useCallback(async () => {
+    if (!isValidAI || isGenerating) return;
+
+    setIsGenerating(true);
+    setGenerationError(null);
+
+    try {
+      const response = await fetch("/api/research/generate-keywords", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          description: description.trim(),
+          locationCode,
+          languageCode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setGenerationError(data.error || "Failed to generate keywords");
+        return;
+      }
+
+      setGeneratedData(data);
+      setEditedKeywords(data.keywords);
+      setFlowState("review");
+    } catch (err) {
+      setGenerationError("An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [description, locationCode, languageCode, isValidAI, isGenerating]);
+
+  // Handle manual mode transition to review
+  const handleManualReview = useCallback(() => {
+    if (!isValidManual) return;
+
+    // For manual mode, we don't have AI-generated data, but we still show review
+    setEditedKeywords(parsedKeywords);
+    setGeneratedData({
+      keywords: parsedKeywords,
+      seedTopics: [],
+      marketAngle: "",
+      title: `${parsedKeywords[0]}${parsedKeywords.length > 1 ? ` (+${parsedKeywords.length - 1})` : ""}`,
+      suggestions: [],
+      estimatedCredits: calculateCredits(parsedKeywords.length),
+    });
+    setFlowState("review");
+  }, [parsedKeywords, isValidManual]);
+
+  // Handle going back to input
+  const handleBack = useCallback(() => {
+    setFlowState("input");
+    setGenerationError(null);
+  }, []);
+
+  // Handle confirm and submit for analysis
+  const handleConfirm = useCallback(() => {
+    if (editedKeywords.length === 0 || isLoading) return;
+
+    onSubmit({
+      mode,
+      description: mode === "ai" ? description.trim() : undefined,
+      keywords: editedKeywords,
+      locationCode,
+      languageCode,
+      title: generatedData?.title,
+    });
+  }, [mode, description, editedKeywords, locationCode, languageCode, generatedData, isLoading, onSubmit]);
+
+  // Handle form submit (input phase)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLoading) return;
-
     if (mode === "ai") {
-      if (!isValidAI) return;
-      onSubmit({
-        mode: "ai",
-        description: description.trim(),
-        locationCode,
-        languageCode,
-      });
+      handleGenerateKeywords();
     } else {
-      if (!isValidManual) return;
-      onSubmit({
-        mode: "manual",
-        keywords: parsedKeywords,
-        locationCode,
-        languageCode,
-      });
+      handleManualReview();
     }
   };
 
@@ -83,6 +182,114 @@ export function ResearchInput({
     }
   };
 
+  // Review state UI
+  if (flowState === "review") {
+    return (
+      <div className={cn("w-full", className)}>
+        <div className="rounded-2xl border-2 border-border bg-card overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/50 bg-muted/30">
+            <div className="flex items-center gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleBack}
+                disabled={isLoading}
+                className="h-8 w-8"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div>
+                <h3 className="font-semibold">Review Keywords</h3>
+                <p className="text-sm text-muted-foreground">
+                  {editedKeywords.length} keyword{editedKeywords.length !== 1 ? "s" : ""} ready for analysis
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Coins className="h-4 w-4 text-credit" />
+              <span className="font-medium">
+                ~{calculateCredits(editedKeywords.length)} credits
+              </span>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-5 space-y-6">
+            {/* AI-generated insights (only for AI mode) */}
+            {mode === "ai" && generatedData?.marketAngle && (
+              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+                <p className="text-sm text-foreground/80">
+                  <span className="font-medium text-primary">Market insight:</span>{" "}
+                  {generatedData.marketAngle}
+                </p>
+                {generatedData.seedTopics.length > 0 && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Topics: {generatedData.seedTopics.join(", ")}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Keyword editor */}
+            <KeywordEditor
+              keywords={editedKeywords}
+              onChange={setEditedKeywords}
+              disabled={isLoading}
+            />
+
+            {/* Smart suggestions */}
+            {generatedData && generatedData.suggestions.length > 0 && (
+              <SmartSuggestions suggestions={generatedData.suggestions} />
+            )}
+
+            {/* Location indicator */}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Globe className="h-4 w-4" />
+              <span>
+                Results will be based on search data from your selected location
+              </span>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between px-5 py-4 border-t border-border/50 bg-muted/30">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleBack}
+              disabled={isLoading}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Edit
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleConfirm}
+              disabled={isLoading || editedKeywords.length === 0}
+              className="gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Check className="h-4 w-4" />
+                  Run Analysis ({calculateCredits(editedKeywords.length)} credits)
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Input state UI
   return (
     <form onSubmit={handleSubmit} className={cn("w-full", className)}>
       {/* Mode Toggle */}
@@ -91,7 +298,7 @@ export function ResearchInput({
           <button
             type="button"
             onClick={() => setMode("ai")}
-            disabled={isLoading}
+            disabled={isGenerating}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
               mode === "ai"
@@ -105,7 +312,7 @@ export function ResearchInput({
           <button
             type="button"
             onClick={() => setMode("manual")}
-            disabled={isLoading}
+            disabled={isGenerating}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
               mode === "manual"
@@ -161,7 +368,7 @@ export function ResearchInput({
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 placeholder="I want to create a website about motorcycles in Guatemala - reviews, tours, gear recommendations..."
-                disabled={isLoading}
+                disabled={isGenerating}
                 rows={3}
                 aria-label="Describe your niche idea"
                 className={cn(
@@ -183,7 +390,7 @@ export function ResearchInput({
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 placeholder="motos guatemala, comprar moto, mejores motos 2025&#10;&#10;Enter one keyword per line or separate with commas (max 20)"
-                disabled={isLoading}
+                disabled={isGenerating}
                 rows={4}
                 aria-label="Enter keywords to analyze"
                 className={cn(
@@ -195,6 +402,13 @@ export function ResearchInput({
             </div>
           )}
 
+          {/* Error display */}
+          {generationError && (
+            <div className="px-5 pb-3">
+              <p className="text-sm text-destructive">{generationError}</p>
+            </div>
+          )}
+
           {/* Footer with location selector and submit */}
           <div className="flex items-center justify-between px-5 py-3 border-t border-border/50 bg-muted/30 rounded-b-2xl">
             <div className="flex items-center gap-2">
@@ -202,10 +416,9 @@ export function ResearchInput({
               <LocationSelector
                 value={locationCode}
                 onValueChange={(code, lang) => {
-                  setLocationCode(code);
-                  setLanguageCode(lang);
+                  setLocation(code, lang);
                 }}
-                disabled={isLoading}
+                disabled={isGenerating}
               />
               {/* Language indicator */}
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -235,16 +448,16 @@ export function ResearchInput({
                 type="submit"
                 variant="primary"
                 disabled={
-                  isLoading ||
+                  isGenerating ||
                   (mode === "ai" && !isValidAI) ||
                   (mode === "manual" && !isValidManual)
                 }
                 className="h-10 px-5 gap-2"
               >
-                {isLoading ? (
+                {isGenerating ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    {mode === "ai" ? "Generating..." : "Analyzing..."}
+                    Generating...
                   </>
                 ) : mode === "ai" ? (
                   <>
@@ -254,7 +467,7 @@ export function ResearchInput({
                 ) : (
                   <>
                     <Search className="h-4 w-4" />
-                    Analyze Keywords
+                    Review Keywords
                   </>
                 )}
               </Button>

@@ -78,22 +78,25 @@ export default function DashboardPage() {
     fetchSessions();
   }, []);
 
-  // Handle research generation (Tab 1)
+  // Handle research analysis (Tab 1)
+  // Called after user confirms keywords in the review step
   const handleGenerate = useCallback(
     async (params: ResearchSubmitParams) => {
       setError(null);
       setLoadingTab("validation");
 
       try {
-        const response = await fetch("/api/research/generate", {
+        const response = await fetch("/api/research/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            description: params.mode === "ai" ? params.description : undefined,
-            keywords: params.mode === "manual" ? params.keywords : undefined,
+            keywords: params.keywords,
             locationCode: params.locationCode,
             languageCode: params.languageCode,
             sessionId: currentSession?.id,
+            title: params.title,
+            description: params.description,
+            inputMode: params.mode,
           }),
         });
 
