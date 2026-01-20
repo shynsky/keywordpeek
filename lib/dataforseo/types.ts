@@ -421,6 +421,7 @@ export interface KeywordResult {
   trend: MonthlyTrend[];
   locationCode: number;
   languageCode: string;
+  noData?: boolean; // True when DataForSEO has no data for this keyword
 }
 
 export interface MonthlyTrend {

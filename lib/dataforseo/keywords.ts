@@ -335,6 +335,27 @@ export async function searchKeywords(
     }
   }
 
+  // Add missing keywords (no DataForSEO data) with default values
+  const returnedKeywords = new Set(results.map((r) => r.keyword.toLowerCase()));
+  for (const keyword of keywords) {
+    if (!returnedKeywords.has(keyword.toLowerCase())) {
+      results.push({
+        keyword,
+        searchVolume: 0,
+        cpc: 0,
+        competition: "low",
+        competitionScore: 0,
+        difficulty: 0,
+        keywordScore: 0,
+        intent: null,
+        trend: [],
+        locationCode,
+        languageCode,
+        noData: true,
+      });
+    }
+  }
+
   // Sort results to match input order
   const keywordOrder = new Map(
     keywords.map((k, i) => [k.toLowerCase(), i])

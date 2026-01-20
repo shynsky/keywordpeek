@@ -24,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { KeywordScore } from "./keyword-score";
 import { DifficultyBadge, CompetitionBadge } from "./difficulty-badge";
@@ -43,6 +44,7 @@ export interface KeywordData {
   competition: "low" | "medium" | "high";
   keywordScore: number;
   trend?: TrendData[];
+  noData?: boolean;
 }
 
 type SortField = "keyword" | "searchVolume" | "difficulty" | "cpc" | "keywordScore";
@@ -190,44 +192,72 @@ export function KeywordTable({
               key={`${keyword.keyword}-${index}`}
               className={cn(
                 "group transition-colors",
-                onKeywordClick && "cursor-pointer hover:bg-muted/50"
+                onKeywordClick && "cursor-pointer hover:bg-muted/50",
+                keyword.noData && "opacity-60"
               )}
               onClick={() => onKeywordClick?.(keyword.keyword)}
             >
               <TableCell className="font-medium">
                 <div className="flex items-center gap-2">
-                  <span className="truncate max-w-[240px]">{keyword.keyword}</span>
-                  {onKeywordClick && (
+                  <span className="truncate max-w-[200px]">{keyword.keyword}</span>
+                  {keyword.noData && (
+                    <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5 font-normal text-muted-foreground">
+                      No data
+                    </Badge>
+                  )}
+                  {onKeywordClick && !keyword.noData && (
                     <ExternalLink className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   )}
                 </div>
               </TableCell>
               <TableCell>
-                <KeywordScore score={keyword.keywordScore} size="sm" />
+                {keyword.noData ? (
+                  <span className="text-muted-foreground text-xs">—</span>
+                ) : (
+                  <KeywordScore score={keyword.keywordScore} size="sm" />
+                )}
               </TableCell>
               <TableCell>
-                <span className="font-mono tabular-nums text-sm">
-                  {formatVolume(keyword.searchVolume)}
-                </span>
+                {keyword.noData ? (
+                  <span className="text-muted-foreground text-xs">—</span>
+                ) : (
+                  <span className="font-mono tabular-nums text-sm">
+                    {formatVolume(keyword.searchVolume)}
+                  </span>
+                )}
               </TableCell>
               <TableCell>
-                <DifficultyBadge
-                  difficulty={keyword.difficulty}
-                  size="sm"
-                  showLabel={false}
-                  variant="bar"
-                />
+                {keyword.noData ? (
+                  <span className="text-muted-foreground text-xs">—</span>
+                ) : (
+                  <DifficultyBadge
+                    difficulty={keyword.difficulty}
+                    size="sm"
+                    showLabel={false}
+                    variant="bar"
+                  />
+                )}
               </TableCell>
               <TableCell>
-                <CompetitionBadge competition={keyword.competition} size="sm" />
+                {keyword.noData ? (
+                  <span className="text-muted-foreground text-xs">—</span>
+                ) : (
+                  <CompetitionBadge competition={keyword.competition} size="sm" />
+                )}
               </TableCell>
               <TableCell>
-                <span className="font-mono tabular-nums text-sm">
-                  ${keyword.cpc.toFixed(2)}
-                </span>
+                {keyword.noData ? (
+                  <span className="text-muted-foreground text-xs">—</span>
+                ) : (
+                  <span className="font-mono tabular-nums text-sm">
+                    ${keyword.cpc.toFixed(2)}
+                  </span>
+                )}
               </TableCell>
               <TableCell>
-                {keyword.trend ? (
+                {keyword.noData ? (
+                  <span className="text-muted-foreground text-xs">—</span>
+                ) : keyword.trend ? (
                   <TrendSparkline
                     data={keyword.trend}
                     width={80}
