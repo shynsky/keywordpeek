@@ -48,8 +48,6 @@ export function resetOpenAI(): void {
 export const OPENAI_CONFIG = {
   // GPT-5 nano - fast, cheap, good for structured outputs
   model: "gpt-5-nano",
-  // Temperature for keyword generation (some creativity, but structured)
-  temperature: 0.7,
   // Max tokens for responses
   maxCompletionTokens: 2000,
 } as const;
