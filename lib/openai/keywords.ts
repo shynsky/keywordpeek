@@ -5,6 +5,7 @@
  */
 
 import { getOpenAI, OPENAI_CONFIG } from "./client";
+import { withRetry } from "./retry";
 import {
   LOCATIONS_BY_CODE,
   DEFAULT_LOCATION_CODE,
@@ -59,19 +60,30 @@ Output ONLY valid JSON in this exact format, no other text:
 Location: ${location.name}
 Language: ${languageCode === "en" ? "English" : location.languageName}`;
 
-  const response = await openai.chat.completions.create({
-    model: OPENAI_CONFIG.model,
-    max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
-    response_format: { type: "json_object" },
-  });
+  const response = await withRetry(
+    () =>
+      openai.chat.completions.create({
+        model: OPENAI_CONFIG.model,
+        max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        response_format: { type: "json_object" },
+      }),
+    { label: "generateKeywords" }
+  );
 
   const content = response.choices[0]?.message?.content;
 
   if (!content) {
+    console.error("[OpenAI] generateKeywords - empty response:", {
+      choicesLength: response.choices?.length ?? 0,
+      finishReason: response.choices[0]?.finish_reason,
+      refusal: response.choices[0]?.message?.refusal,
+      usage: response.usage,
+      model: response.model,
+    });
     throw new Error("No response from OpenAI");
   }
 
