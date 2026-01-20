@@ -14,8 +14,8 @@ type EnvConfig = {
 const ENV_VARS: EnvConfig[] = [
   // Supabase
   { name: "NEXT_PUBLIC_SUPABASE_URL", required: true, isPublic: true },
-  { name: "NEXT_PUBLIC_SUPABASE_ANON_KEY", required: true, isPublic: true },
-  { name: "SUPABASE_SERVICE_ROLE_KEY", required: true },
+  { name: "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", required: true, isPublic: true },
+  { name: "SUPABASE_SECRET_KEY", required: true },
 
   // Stripe
   { name: "STRIPE_SECRET_KEY", required: true },
