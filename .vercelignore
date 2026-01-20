@@ -33,4 +33,4 @@ yarn-error.log*
 coverage
 
 # Screenshots (dev only)
-*.png
+*-current.png
