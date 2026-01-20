@@ -145,7 +145,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
 
       <div className="lg:flex">
         {/* Desktop sidebar */}
-        <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 border-r-2 border-border bg-card grain overflow-hidden">
+        <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:left-0 z-50 border-r-2 border-border bg-card grain overflow-hidden">
           {/* Decorative shapes */}
           <QuarterCircle position="bottom-right" color="primary" size="lg" className="opacity-30" />
           <Circle position={{ top: "12%", right: "8%" }} color="secondary" size="sm" className="opacity-40" />
