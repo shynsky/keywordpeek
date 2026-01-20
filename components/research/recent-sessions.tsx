@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock, ChevronRight, FolderOpen, CheckCircle2, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Clock, ChevronRight, FolderOpen, CheckCircle2, Loader2, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ResearchSession } from "@/lib/research/sessions";
 
@@ -108,10 +109,28 @@ export function RecentSessions({
 interface SessionHeaderProps {
   session: ResearchSession;
   onClose?: () => void;
+  onUpdateTitle?: (title: string) => void;
   className?: string;
 }
 
-export function SessionHeader({ session, onClose, className }: SessionHeaderProps) {
+export function SessionHeader({ session, onClose, onUpdateTitle, className }: SessionHeaderProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Focus input when entering edit mode
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  const startEditing = () => {
+    setEditedTitle(session.title);
+    setIsEditing(true);
+  };
+
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString(undefined, {
       month: "short",
@@ -119,6 +138,22 @@ export function SessionHeader({ session, onClose, className }: SessionHeaderProp
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const handleSave = () => {
+    const trimmed = editedTitle.trim();
+    if (trimmed && trimmed !== session.title) {
+      onUpdateTitle?.(trimmed);
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSave();
+    } else if (e.key === "Escape") {
+      setIsEditing(false);
+    }
   };
 
   return (
@@ -133,11 +168,41 @@ export function SessionHeader({ session, onClose, className }: SessionHeaderProp
           <FolderOpen className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <h2 className="font-bold text-lg">{session.title}</h2>
+          <div className="flex items-center gap-2 group">
+            {isEditing ? (
+              <input
+                ref={inputRef}
+                type="text"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                onBlur={handleSave}
+                onKeyDown={handleKeyDown}
+                className="font-bold text-lg bg-transparent border-b-2 border-primary outline-none px-0 py-0"
+              />
+            ) : (
+              <>
+                <h2 className="font-bold text-lg">{session.title}</h2>
+                {onUpdateTitle && (
+                  <button
+                    onClick={startEditing}
+                    className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-muted transition-all"
+                    aria-label="Edit title"
+                  >
+                    <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
+                )}
+              </>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">
             Started {formatDate(session.createdAt)}
             {session.creditsUsed > 0 && ` · ${session.creditsUsed} credits used`}
           </p>
+          {session.description && (
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+              {session.description}
+            </p>
+          )}
         </div>
       </div>
 

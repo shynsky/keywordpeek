@@ -367,6 +367,28 @@ export default function DashboardPage() {
     setError(null);
   }, []);
 
+  // Handle updating session title
+  const handleUpdateTitle = useCallback(async (newTitle: string) => {
+    if (!currentSession) return;
+
+    try {
+      const response = await fetch(`/api/research/sessions/${currentSession.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newTitle }),
+      });
+
+      if (response.ok) {
+        setCurrentSession((prev) => prev ? { ...prev, title: newTitle } : null);
+        toast.success("Title updated");
+      } else {
+        toast.error("Failed to update title");
+      }
+    } catch {
+      toast.error("Failed to update title");
+    }
+  }, [currentSession]);
+
   // Calculate metrics for validation summary
   const totalVolume = useMemo(
     () => keywords.reduce((sum, kw) => sum + kw.searchVolume, 0),
@@ -399,7 +421,11 @@ export default function DashboardPage() {
       {/* Session header if active */}
       {currentSession && (
         <div className="animate-fade-in-up">
-          <SessionHeader session={currentSession} onClose={handleNewResearch} />
+          <SessionHeader
+            session={currentSession}
+            onClose={handleNewResearch}
+            onUpdateTitle={handleUpdateTitle}
+          />
         </div>
       )}
 
