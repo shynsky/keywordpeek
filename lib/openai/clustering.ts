@@ -5,6 +5,7 @@
  */
 
 import { getOpenAI, OPENAI_CONFIG } from "./client";
+import { withRetry } from "./retry";
 
 /**
  * Content cluster with grouped keywords
@@ -84,56 +85,62 @@ ${keywordList}
 
 Create 3-8 clusters based on the keywords provided.`;
 
-  const response = await openai.chat.completions.create({
-    model: OPENAI_CONFIG.model,
-    max_completion_tokens: 2000,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
-    response_format: { type: "json_object" },
-  });
+  // Wrap entire flow in retry so empty responses trigger retry
+  return withRetry(
+    async () => {
+      const response = await openai.chat.completions.create({
+        model: OPENAI_CONFIG.model,
+        max_completion_tokens: 2000,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        response_format: { type: "json_object" },
+      });
 
-  const content = response.choices[0]?.message?.content;
+      const content = response.choices[0]?.message?.content;
 
-  if (!content) {
-    console.error("[OpenAI] clusterKeywords - empty response:", {
-      choicesLength: response.choices?.length ?? 0,
-      finishReason: response.choices[0]?.finish_reason,
-      refusal: response.choices[0]?.message?.refusal,
-      usage: response.usage,
-      model: response.model,
-    });
-    throw new Error("No response from OpenAI");
-  }
+      if (!content) {
+        console.error("[OpenAI] clusterKeywords - empty response:", {
+          choicesLength: response.choices?.length ?? 0,
+          finishReason: response.choices[0]?.finish_reason,
+          refusal: response.choices[0]?.message?.refusal,
+          usage: response.usage,
+          model: response.model,
+        });
+        throw new Error("No response from OpenAI");
+      }
 
-  try {
-    const parsed = JSON.parse(content) as { clusters?: ContentCluster[] };
-    const clusters = parsed.clusters ?? [];
+      try {
+        const parsed = JSON.parse(content) as { clusters?: ContentCluster[] };
+        const clusters = parsed.clusters ?? [];
 
-    // Enrich clusters with metrics
-    const keywordMap = new Map(keywords.map((k) => [k.keyword.toLowerCase(), k]));
+        // Enrich clusters with metrics
+        const keywordMap = new Map(keywords.map((k) => [k.keyword.toLowerCase(), k]));
 
-    return clusters.map((cluster) => {
-      const mainKw = keywordMap.get(cluster.mainKeyword.toLowerCase());
-      const supportingKws = cluster.supportingKeywords
-        .map((kw) => keywordMap.get(kw.toLowerCase()))
-        .filter((k): k is KeywordWithMetrics => k !== undefined);
+        return clusters.map((cluster) => {
+          const mainKw = keywordMap.get(cluster.mainKeyword.toLowerCase());
+          const supportingKws = cluster.supportingKeywords
+            .map((kw) => keywordMap.get(kw.toLowerCase()))
+            .filter((k): k is KeywordWithMetrics => k !== undefined);
 
-      const allKws = mainKw ? [mainKw, ...supportingKws] : supportingKws;
+          const allKws = mainKw ? [mainKw, ...supportingKws] : supportingKws;
 
-      return {
-        ...cluster,
-        estimatedVolume: allKws.reduce((sum, k) => sum + k.searchVolume, 0),
-        avgDifficulty:
-          allKws.length > 0
-            ? Math.round(allKws.reduce((sum, k) => sum + k.difficulty, 0) / allKws.length)
-            : 0,
-      };
-    });
-  } catch {
-    throw new Error("Failed to parse OpenAI response as JSON");
-  }
+          return {
+            ...cluster,
+            estimatedVolume: allKws.reduce((sum, k) => sum + k.searchVolume, 0),
+            avgDifficulty:
+              allKws.length > 0
+                ? Math.round(allKws.reduce((sum, k) => sum + k.difficulty, 0) / allKws.length)
+                : 0,
+          };
+        });
+      } catch {
+        throw new Error("Failed to parse OpenAI response as JSON");
+      }
+    },
+    { label: "clusterKeywords" }
+  );
 }
 
 /**

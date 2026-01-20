@@ -60,9 +60,10 @@ Output ONLY valid JSON in this exact format, no other text:
 Location: ${location.name}
 Language: ${languageCode === "en" ? "English" : location.languageName}`;
 
-  const response = await withRetry(
-    () =>
-      openai.chat.completions.create({
+  // Wrap entire flow in retry so empty responses trigger retry
+  return withRetry(
+    async () => {
+      const response = await openai.chat.completions.create({
         model: OPENAI_CONFIG.model,
         max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens,
         messages: [
@@ -70,38 +71,39 @@ Language: ${languageCode === "en" ? "English" : location.languageName}`;
           { role: "user", content: userPrompt },
         ],
         response_format: { type: "json_object" },
-      }),
+      });
+
+      const content = response.choices[0]?.message?.content;
+
+      if (!content) {
+        console.error("[OpenAI] generateKeywords - empty response:", {
+          choicesLength: response.choices?.length ?? 0,
+          finishReason: response.choices[0]?.finish_reason,
+          refusal: response.choices[0]?.message?.refusal,
+          usage: response.usage,
+          model: response.model,
+        });
+        throw new Error("No response from OpenAI");
+      }
+
+      try {
+        const parsed = JSON.parse(content) as {
+          keywords?: string[];
+          seedTopics?: string[];
+          marketAngle?: string;
+        };
+
+        return {
+          keywords: parsed.keywords ?? [],
+          seedTopics: parsed.seedTopics ?? [],
+          marketAngle: parsed.marketAngle ?? "",
+        };
+      } catch {
+        throw new Error("Failed to parse OpenAI response as JSON");
+      }
+    },
     { label: "generateKeywords" }
   );
-
-  const content = response.choices[0]?.message?.content;
-
-  if (!content) {
-    console.error("[OpenAI] generateKeywords - empty response:", {
-      choicesLength: response.choices?.length ?? 0,
-      finishReason: response.choices[0]?.finish_reason,
-      refusal: response.choices[0]?.message?.refusal,
-      usage: response.usage,
-      model: response.model,
-    });
-    throw new Error("No response from OpenAI");
-  }
-
-  try {
-    const parsed = JSON.parse(content) as {
-      keywords?: string[];
-      seedTopics?: string[];
-      marketAngle?: string;
-    };
-
-    return {
-      keywords: parsed.keywords ?? [],
-      seedTopics: parsed.seedTopics ?? [],
-      marketAngle: parsed.marketAngle ?? "",
-    };
-  } catch {
-    throw new Error("Failed to parse OpenAI response as JSON");
-  }
 }
 
 /**
