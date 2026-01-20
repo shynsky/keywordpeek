@@ -76,14 +76,14 @@ Language: ${languageCode === "en" ? "English" : location.languageName}`;
       const content = response.choices[0]?.message?.content;
 
       if (!content) {
-        console.error("[OpenAI] generateKeywords - empty response:", {
+        const diagnostics = {
           choicesLength: response.choices?.length ?? 0,
           finishReason: response.choices[0]?.finish_reason,
           refusal: response.choices[0]?.message?.refusal,
           usage: response.usage,
           model: response.model,
-        });
-        throw new Error("No response from OpenAI");
+        };
+        throw new Error(`No response from OpenAI: ${JSON.stringify(diagnostics)}`);
       }
 
       try {

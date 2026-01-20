@@ -101,14 +101,14 @@ Create 3-8 clusters based on the keywords provided.`;
       const content = response.choices[0]?.message?.content;
 
       if (!content) {
-        console.error("[OpenAI] clusterKeywords - empty response:", {
+        const diagnostics = {
           choicesLength: response.choices?.length ?? 0,
           finishReason: response.choices[0]?.finish_reason,
           refusal: response.choices[0]?.message?.refusal,
           usage: response.usage,
           model: response.model,
-        });
-        throw new Error("No response from OpenAI");
+        };
+        throw new Error(`No response from OpenAI: ${JSON.stringify(diagnostics)}`);
       }
 
       try {
